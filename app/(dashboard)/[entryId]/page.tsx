@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { loadEntrySummary } from "@/lib/fpl/service";
+import { notFound } from "next/navigation";
+import { loadEntrySummary, parseEntryId } from "@/lib/fpl/service";
 import { ProfileCard } from "@/components/cards/ProfileCard";
 import { TotalsCard } from "@/components/cards/TotalsCard";
 import { LatestGwCard } from "@/components/cards/LatestGwCard";
@@ -14,9 +15,10 @@ export async function generateMetadata({
 }: {
   params: EntryPageParams;
 }): Promise<Metadata> {
-  const { entryId } = params;
+  const { entryId: entryIdRaw } = params;
 
   try {
+    const entryId = parseEntryId(entryIdRaw);
     const summary = await loadEntrySummary(entryId);
     return {
       title: `${summary.profile.teamName} | Triple Captain`,
@@ -24,7 +26,7 @@ export async function generateMetadata({
     };
   } catch {
     return {
-      title: `Entry ${entryId} | Triple Captain`,
+      title: `Entry ${entryIdRaw} | Triple Captain`,
     };
   }
 }
@@ -34,7 +36,15 @@ export default async function EntryPage({
 }: {
   params: EntryPageParams;
 }) {
-  const { entryId } = params;
+  const { entryId: entryIdRaw } = params;
+  const entryId = (() => {
+    try {
+      return parseEntryId(entryIdRaw);
+    } catch {
+      notFound();
+    }
+  })();
+
   const summary = await loadEntrySummary(entryId);
 
   return (
