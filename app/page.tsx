@@ -1,6 +1,8 @@
+import { EntryIdForm } from "@/components/EntryIdForm";
+
 export default function Home() {
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-10 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-900 px-6 py-16 text-sky-50">
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-12 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-900 px-6 py-16 text-sky-50">
       <div className="flex max-w-2xl flex-col items-center text-center">
         <span className="rounded-full border border-sky-500/40 px-4 py-1 text-sm uppercase tracking-widest text-sky-200/90">
           Fantasy Premier League Companion
@@ -14,6 +16,7 @@ export default function Home() {
           progress—check back soon for the full experience.
         </p>
       </div>
+      <EntryIdForm />
       <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-sky-100/80">
         <span className="rounded-full border border-sky-500/40 px-3 py-1">
           App Router + RSC

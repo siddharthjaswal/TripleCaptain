@@ -10,23 +10,23 @@
 
 ### M0 — Project Bootstrap (0.5 day, blocker for all other milestones)
 
-- [ ] Spin up Next.js App Router project with TypeScript + pnpm workspace hygiene (`pnpm dlx create-next-app@latest`).
-- [ ] Install core tooling (Tailwind, shadcn/ui optional, Zod, Vitest, Testing Library, Playwright, ESLint, Prettier).
-- [ ] Establish project scaffolding: `app/`, `lib/`, `components/`, `styles/`, plus base layout, fonts, and global styles.
-- [ ] Configure linting + formatting scripts inside `package.json` and wire to `pnpm lint` / `pnpm format`.
+- [x] Spin up Next.js App Router project with TypeScript + pnpm workspace hygiene (`pnpm dlx create-next-app@latest`).
+- [x] Install core tooling (Tailwind, shadcn/ui optional, Zod, Vitest, Testing Library, Playwright, ESLint, Prettier).
+- [x] Establish project scaffolding: `app/`, `lib/`, `components/`, `styles/`, plus base layout, fonts, and global styles.
+- [x] Configure linting + formatting scripts inside `package.json` and wire to `pnpm lint` / `pnpm format`.
 
 ### M1 — Entry Flow & Summary (1–1.5 days, depends on M0)
 
 - **Deliverables:** Single entry flow with summary cards served via RSC.
-- [ ] Implement `EntryIdForm` client component with validation and optimistic navigation to `/[entryId]`.
-- [ ] Build `lib/fpl/schemas.ts` Zod contracts covering: entry profile, entry history, event live data, default classic league snippet.
-- [ ] Create `lib/fpl/client.ts` server-only fetch wrappers with centralized error normalization & caching knobs.
-- [ ] Implement route handlers under `/api/fpl`:
-  - [ ] `GET /api/fpl/profile?entryId=` returning `ProfileDTO`.
-  - [ ] `GET /api/fpl/latest-gw?entryId=` deriving current GW and live points.
-  - [ ] `GET /api/fpl/summary?entryId=` composing profile + totals + latest GW snapshot.
-- [ ] Add DTO mappers in `lib/fpl/mappers.ts`, with unit fixtures for golden data.
-- [ ] Build `/[entryId]/page.tsx` (RSC) rendering ProfileCard, TotalsCard, LatestGwCard with streaming-friendly loading states and inline error banner.
+- [x] Implement `EntryIdForm` client component with validation and optimistic navigation to `/[entryId]`.
+- [x] Build `lib/fpl/schemas.ts` Zod contracts covering: entry profile, entry history, event live data, default classic league snippet.
+- [x] Create `lib/fpl/client.ts` server-only fetch wrappers with centralized error normalization & caching knobs.
+- [x] Implement route handlers under `/api/fpl`:
+  - [x] `GET /api/fpl/profile?entryId=` returning `ProfileDTO`.
+  - [x] `GET /api/fpl/latest-gw?entryId=` deriving current GW and live points.
+  - [x] `GET /api/fpl/summary?entryId=` composing profile + totals + latest GW snapshot.
+- [x] Add DTO mappers in `lib/fpl/mappers.ts`, with unit fixtures for golden data.
+- [x] Build `/[entryId]/page.tsx` (RSC) rendering ProfileCard, TotalsCard, LatestGwCard with streaming-friendly loading states and inline error banner.
 
 ### M2 — League Rankings (0.5–1 day, requires M1 data layer)
 

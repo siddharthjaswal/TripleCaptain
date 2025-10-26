@@ -19,6 +19,7 @@ const eslintConfig = defineConfig([
       "**/__tests__/**/*.{js,jsx,ts,tsx}",
       "**/?(*.)+(spec|test).{js,jsx,ts,tsx}",
     ],
+    ignores: ["tests/e2e/**/*"],
     ...testingLibrary.configs["flat/react"],
     languageOptions: {
       ...testingLibrary.configs["flat/react"].languageOptions,
