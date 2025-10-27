@@ -17,6 +17,16 @@ import {
 } from "./schemas";
 
 const API_BASE = "https://fantasy.premierleague.com/api";
+const shouldLogRequests = process.env.FPL_DEBUG_LOGS === "true";
+
+function logDebug(message: string, details?: Record<string, unknown>) {
+  if (!shouldLogRequests) return;
+  if (details) {
+    console.info(`[FPL] ${message}`, details);
+  } else {
+    console.info(`[FPL] ${message}`);
+  }
+}
 
 type FetchParams<T> = {
   path: string;
@@ -39,6 +49,8 @@ async function fetchFromFpl<T>({
   schema,
   revalidate = 300,
 }: FetchParams<T>): Promise<T> {
+  logDebug("Request", { path, revalidate });
+
   const response = await fetch(`${API_BASE}${path}`, {
     headers: {
       "User-Agent":
@@ -52,6 +64,11 @@ async function fetchFromFpl<T>({
 
   if (!response.ok) {
     const reason = `${response.status} ${response.statusText}`.trim();
+    logDebug("Response error", {
+      path,
+      status: response.status,
+      statusText: response.statusText,
+    });
     throw new FplError(
       `FPL request failed (${reason}) for ${path}`,
       response.status,
@@ -59,6 +76,7 @@ async function fetchFromFpl<T>({
   }
 
   const json = await response.json();
+  logDebug("Response success", { path });
   return schema.parse(json);
 }
 

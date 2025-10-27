@@ -13,9 +13,9 @@ type EntryPageParams = {
 export async function generateMetadata({
   params,
 }: {
-  params: EntryPageParams;
+  params: Promise<EntryPageParams>;
 }): Promise<Metadata> {
-  const { entryId: entryIdRaw } = params;
+  const { entryId: entryIdRaw } = await params;
 
   try {
     const entryId = parseEntryId(entryIdRaw);
@@ -34,9 +34,9 @@ export async function generateMetadata({
 export default async function EntryPage({
   params,
 }: {
-  params: EntryPageParams;
+  params: Promise<EntryPageParams>;
 }) {
-  const { entryId: entryIdRaw } = params;
+  const { entryId: entryIdRaw } = await params;
   const entryId = (() => {
     try {
       return parseEntryId(entryIdRaw);
