@@ -14,17 +14,21 @@ export const BootstrapStaticSchema = z.strictObject({
   total_players: z.number(),
 });
 
-export const EntryProfileSchema = z.strictObject({
-  id: z.number(),
-  name: z.string(),
-  player_first_name: z.string(),
-  player_last_name: z.string(),
-  summary_overall_points: z.number(),
-  summary_overall_rank: z.number().nullable(),
-  summary_event_points: z.number(),
-  summary_event_rank: z.number().nullable(),
-  current_event: z.number().nullable(),
-});
+export const EntryProfileSchema = z
+  .object({
+    id: z.number(),
+    name: z.string(),
+    player_first_name: z.string(),
+    player_last_name: z.string(),
+    summary_overall_points: z.number(),
+    summary_overall_rank: z.number().nullable(),
+    summary_event_points: z.number(),
+    summary_event_rank: z.number().nullable(),
+    current_event: z.number().nullable(),
+  })
+  .passthrough();
+
+export type EntryProfile = z.infer<typeof EntryProfileSchema>;
 
 export const EntryCurrentHistorySchema = z.strictObject({
   event: z.number(),

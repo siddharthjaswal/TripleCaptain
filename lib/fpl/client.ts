@@ -91,7 +91,9 @@ async function fetchFromFpl<T>({
           code: issue.code,
         })),
       });
-      throw new Error(`FPL schema mismatch for ${path}`, { cause: error });
+      const validationError = new Error(`FPL schema mismatch for ${path}`);
+      (validationError as Error & { cause?: unknown }).cause = error;
+      throw validationError;
     }
     throw error;
   }
