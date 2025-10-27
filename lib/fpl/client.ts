@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cache } from "react";
+import { ZodError } from "zod";
 import {
   BootstrapStaticSchema,
   ClassicLeagueStandingsSchema,
@@ -77,7 +78,23 @@ async function fetchFromFpl<T>({
 
   const json = await response.json();
   logDebug("Response success", { path });
-  return schema.parse(json);
+
+  try {
+    return schema.parse(json);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      logDebug("Schema validation error", {
+        path,
+        issues: error.issues.map((issue) => ({
+          path: issue.path.join("."),
+          message: issue.message,
+          code: issue.code,
+        })),
+      });
+      throw new Error(`FPL schema mismatch for ${path}`, { cause: error });
+    }
+    throw error;
+  }
 }
 
 export const getBootstrap = cache(async (): Promise<BootstrapStatic> => {
