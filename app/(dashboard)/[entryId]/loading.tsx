@@ -1,21 +1,44 @@
 export default function EntryLoading() {
   return (
-    <main className="min-h-dvh bg-slate-950 px-4 pb-16 pt-12 text-slate-100">
+    <main className="tc-surface min-h-dvh px-4 pb-16 pt-12">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-        <div className="space-y-2">
-          <div className="h-4 w-28 animate-pulse rounded-full bg-slate-800" />
-          <div className="h-8 w-72 animate-pulse rounded-full bg-slate-800" />
-          <div className="h-4 w-48 animate-pulse rounded-full bg-slate-800" />
-        </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {["profile", "totals"].map((section) => (
-            <div
-              key={section}
-              className="h-48 animate-pulse rounded-3xl border border-slate-800 bg-slate-900/60"
-            />
+        <header className="space-y-3">
+          <div className="h-3 w-24 animate-pulse rounded-full bg-[color:var(--surface-border)]/60" />
+          <div className="h-9 w-64 animate-pulse rounded-full bg-[color:var(--surface-border)]/60" />
+          <div className="h-4 w-40 animate-pulse rounded-full bg-[color:var(--surface-border)]/60" />
+        </header>
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {[0, 1].map((index) => (
+            <article
+              key={index}
+              className="rounded-3xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/80 p-6"
+            >
+              <div className="h-4 w-20 animate-pulse rounded-full bg-[color:var(--surface-border)]/60" />
+              <div className="mt-4 space-y-3">
+                <div className="h-6 w-32 animate-pulse rounded-full bg-[color:var(--surface-border)]/60" />
+                <div className="h-6 w-24 animate-pulse rounded-full bg-[color:var(--surface-border)]/60" />
+              </div>
+            </article>
           ))}
-        </div>
-        <div className="h-52 animate-pulse rounded-3xl border border-slate-800 bg-slate-900/60" />
+        </section>
+        <section className="rounded-3xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/80 p-6">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="h-5 w-48 animate-pulse rounded-full bg-[color:var(--surface-border)]/60" />
+            <div className="h-4 w-32 animate-pulse rounded-full bg-[color:var(--surface-border)]/60" />
+          </div>
+          <div className="mt-6 space-y-3">
+            {[...Array(4)].map((_, row) => (
+              <div
+                key={row}
+                className="flex items-center justify-between rounded-2xl border border-[color:var(--surface-border)]/60 bg-[color:var(--surface-elevated)]/60 px-4 py-3"
+              >
+                <div className="h-4 w-20 animate-pulse rounded-full bg-[color:var(--surface-border)]/60" />
+                <div className="h-4 w-32 animate-pulse rounded-full bg-[color:var(--surface-border)]/60" />
+                <div className="h-4 w-16 animate-pulse rounded-full bg-[color:var(--surface-border)]/60" />
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </main>
   );

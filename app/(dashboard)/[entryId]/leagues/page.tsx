@@ -7,6 +7,7 @@ import { ErrorBanner } from "@/components/ErrorBanner";
 import { LeagueSwitcher } from "@/components/LeagueSwitcher";
 import { LeagueTable } from "@/components/LeagueTable";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { loadEntryLeagues, parseEntryId } from "@/lib/fpl/service";
 
 type LeaguesPageParams = {
@@ -68,25 +69,26 @@ export default async function EntryLeaguesPage({
   }
 
   return (
-    <main className="min-h-dvh bg-slate-950 px-4 pb-16 pt-12 text-slate-100">
+    <main className="tc-surface min-h-dvh px-4 pb-16 pt-12">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-wide text-slate-400">
+            <p className="text-sm uppercase tracking-wide tc-text-muted">
               Entry Dashboard
             </p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-50">
+            <h1 className="mt-2 text-3xl font-semibold">
               {leaguesView.teamName}
             </h1>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm tc-text-muted">
               Managed by {leaguesView.managerName}
             </p>
           </div>
-          <div className="flex flex-col items-start gap-2 sm:items-end">
+          <div className="flex flex-col items-end gap-2">
+            <ThemeToggle />
             <DashboardNav entryId={leaguesView.entryId} active="leagues" />
             <Link
               href="/"
-              className="inline-flex items-center rounded-full border border-slate-700/60 px-4 py-2 text-sm font-medium text-slate-100 transition hover:border-sky-400/60 hover:text-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60"
+              className="tc-focus-visible inline-flex items-center rounded-full border border-[color:var(--surface-border)] px-4 py-2 text-sm font-medium transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
             >
               Search another entry
             </Link>
@@ -94,11 +96,9 @@ export default async function EntryLeaguesPage({
         </div>
 
         <section className="space-y-4">
-          <h2 className="text-base font-semibold text-slate-200">
-            Classic Leagues
-          </h2>
+          <h2 className="text-base font-semibold">Classic Leagues</h2>
           {leaguesView.currentEvent ? (
-            <p className="text-xs text-slate-400">
+            <p className="text-xs tc-text-muted">
               Showing standings for gameweek {leaguesView.currentEvent}
             </p>
           ) : null}

@@ -8,22 +8,23 @@ export function LeagueTable({ league }: LeagueTableProps) {
   const gameweekLabel = league.gameweek ? `GW ${league.gameweek}` : null;
 
   return (
-    <section className="rounded-3xl border border-slate-200/10 bg-slate-900/40 p-6 text-slate-100 shadow-lg backdrop-blur">
+    <section className="tc-card rounded-3xl p-6 shadow-lg">
       <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-slate-50">
-            {league.leagueName}
-          </h2>
-          <p className="text-sm text-slate-400">
+          <h2 className="text-xl font-semibold">{league.leagueName}</h2>
+          <p className="tc-text-muted text-sm">
             Page {league.page}
             {league.hasNextPage ? " • More standings available" : ""}
           </p>
         </div>
+        {gameweekLabel ? (
+          <span className="tc-chip">{gameweekLabel}</span>
+        ) : null}
       </header>
       <div className="mt-6 overflow-x-auto">
         <table className="min-w-full table-fixed text-left text-sm">
-          <thead className="text-slate-300">
-            <tr className="border-b border-slate-700/50">
+          <thead className="tc-text-muted">
+            <tr className="border-b border-[color:var(--surface-border)]">
               <th scope="col" className="w-16 px-3 py-2 font-medium">
                 Rank
               </th>
@@ -37,22 +38,22 @@ export function LeagueTable({ league }: LeagueTableProps) {
                 Manager
               </th>
               <th scope="col" className="w-28 px-3 py-2 font-medium text-right">
-                GW Pts{gameweekLabel ? ` (${gameweekLabel})` : ""}
+                GW Pts
               </th>
               <th scope="col" className="w-28 px-3 py-2 font-medium text-right">
                 Total
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60">
+          <tbody className="divide-y divide-[color:var(--surface-border)]/60">
             {league.entries.map((entry) => {
               const delta = formatRankDelta(entry.rank, entry.lastRank);
               return (
                 <tr
                   key={entry.entryId}
-                  className="transition hover:bg-slate-800/40"
+                  className="transition hover:bg-[color:var(--surface-elevated)]/60"
                 >
-                  <td className="px-3 py-3 font-mono text-sm text-slate-100">
+                  <td className="px-3 py-3 font-mono text-sm">
                     {entry.rank ? `#${entry.rank}` : "—"}
                   </td>
                   <td
@@ -60,16 +61,14 @@ export function LeagueTable({ league }: LeagueTableProps) {
                   >
                     {delta.label}
                   </td>
-                  <td className="px-3 py-3 font-medium text-slate-100">
-                    {entry.entryName}
-                  </td>
-                  <td className="px-3 py-3 text-slate-300">
+                  <td className="px-3 py-3 font-medium">{entry.entryName}</td>
+                  <td className="px-3 py-3 tc-text-muted">
                     {entry.playerName}
                   </td>
-                  <td className="px-3 py-3 text-right font-mono text-sm text-slate-100">
+                  <td className="px-3 py-3 text-right font-mono text-sm">
                     {entry.points.toLocaleString()}
                   </td>
-                  <td className="px-3 py-3 text-right font-mono text-sm text-slate-100">
+                  <td className="px-3 py-3 text-right font-mono text-sm">
                     {entry.totalPoints.toLocaleString()}
                   </td>
                 </tr>
@@ -87,13 +86,13 @@ function formatRankDelta(
   previous: number | null,
 ): { label: string; className: string } {
   if (!current || !previous) {
-    return { label: "—", className: "text-slate-400" };
+    return { label: "—", className: "tc-text-muted" };
   }
 
   const delta = previous - current;
 
   if (delta === 0) {
-    return { label: "↔", className: "text-slate-400" };
+    return { label: "↔", className: "tc-text-muted" };
   }
 
   if (delta > 0) {

@@ -6,12 +6,12 @@ type TotalsCardProps = {
 
 export function TotalsCard({ totals }: TotalsCardProps) {
   return (
-    <section className="rounded-3xl border border-slate-200/10 bg-slate-900/40 p-6 text-slate-100 shadow-lg backdrop-blur">
+    <section className="tc-card rounded-3xl p-6 shadow-lg">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-sm font-medium uppercase tracking-wide text-slate-400">
+        <h2 className="tc-text-muted text-sm font-medium uppercase tracking-wide">
           Overall Performance
         </h2>
-        <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-200">
+        <span className="tc-chip px-3 py-1 text-xs font-semibold">
           GW {totals.currentEvent}
         </span>
       </div>
@@ -35,9 +35,9 @@ type KpiProps = {
 
 function Kpi({ label, value }: KpiProps) {
   return (
-    <div className="rounded-2xl border border-slate-700/40 bg-slate-900/60 px-4 py-5">
-      <p className="text-xs uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-slate-50">{value}</p>
+    <div className="rounded-2xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/90 px-4 py-5">
+      <p className="tc-text-muted text-xs uppercase tracking-wide">{label}</p>
+      <p className="mt-2 text-2xl font-semibold">{value}</p>
     </div>
   );
 }

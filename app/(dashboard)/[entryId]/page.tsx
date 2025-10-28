@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DashboardNav } from "@/components/DashboardNav";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { loadEntrySummary, parseEntryId } from "@/lib/fpl/service";
 import { ProfileCard } from "@/components/cards/ProfileCard";
@@ -50,25 +51,26 @@ export default async function EntryPage({
   const summary = await loadEntrySummary(entryId);
 
   return (
-    <main className="min-h-dvh bg-slate-950 px-4 pb-16 pt-12 text-slate-100">
+    <main className="tc-surface min-h-dvh px-4 pb-16 pt-12">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-wide text-slate-400">
+            <p className="text-sm uppercase tracking-wide tc-text-muted">
               Entry Dashboard
             </p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-50">
+            <h1 className="mt-2 text-3xl font-semibold">
               {summary.profile.teamName}
             </h1>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm tc-text-muted">
               Managed by {summary.profile.managerName}
             </p>
           </div>
-          <div className="flex flex-col items-start gap-2 sm:items-end">
+          <div className="flex flex-col items-end gap-2">
+            <ThemeToggle />
             <DashboardNav entryId={summary.profile.entryId} active="summary" />
             <Link
               href="/"
-              className="inline-flex items-center rounded-full border border-slate-700/60 px-4 py-2 text-sm font-medium text-slate-100 transition hover:border-sky-400/60 hover:text-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60"
+              className="tc-focus-visible inline-flex items-center rounded-full border border-[color:var(--surface-border)] px-4 py-2 text-sm font-medium transition hover:border-[color:var(--accent)] hover:text-[var(--accent)]"
             >
               Search another entry
             </Link>

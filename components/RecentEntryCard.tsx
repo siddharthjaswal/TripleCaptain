@@ -29,13 +29,13 @@ export function RecentEntryCard() {
   }
 
   return (
-    <section className="w-full max-w-md rounded-3xl border border-slate-200/10 bg-slate-900/40 p-6 text-slate-100 shadow-lg backdrop-blur">
+    <section className="tc-card w-full max-w-md rounded-3xl p-6 shadow-lg">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+          <p className="tc-text-muted text-xs font-medium uppercase tracking-wide">
             Recently Viewed
           </p>
-          <p className="text-xs text-slate-400">
+          <p className="tc-text-muted text-xs">
             Showing {recentEntries.length} of up to {MAX_RECENT_ENTRIES} saved
             entries
           </p>
@@ -43,7 +43,7 @@ export function RecentEntryCard() {
         <button
           type="button"
           onClick={handleClear}
-          className="text-xs font-medium text-slate-400 transition hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+          className="tc-focus-visible text-xs font-medium text-[color:var(--accent)] transition hover:opacity-80"
         >
           Clear All
         </button>
@@ -52,29 +52,27 @@ export function RecentEntryCard() {
         {recentEntries.map((entry) => (
           <li
             key={entry.entryId}
-            className="rounded-2xl border border-slate-700/60 bg-slate-900/60 p-4"
+            className="rounded-2xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/90 p-4"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <p className="text-sm font-semibold text-slate-100">
-                  {entry.teamName}
-                </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-sm font-semibold">{entry.teamName}</p>
+                <p className="tc-text-muted text-xs">
                   Managed by {entry.managerName}
                 </p>
               </div>
-              <span className="text-xs text-slate-400">{entry.ageLabel}</span>
+              <span className="tc-text-muted text-xs">{entry.ageLabel}</span>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               <Link
                 href={`/${entry.entryId}`}
-                className="inline-flex items-center rounded-full bg-sky-500 px-3 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-sky-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-sky-400"
+                className="tc-focus-visible inline-flex items-center rounded-full bg-[color:var(--accent)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent-contrast)] transition hover:opacity-90"
               >
                 Open Dashboard
               </Link>
               <Link
                 href={`/${entry.entryId}/leagues`}
-                className="inline-flex items-center rounded-full border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-100 transition hover:border-sky-400/60 hover:text-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60"
+                className="tc-focus-visible inline-flex items-center rounded-full border border-[color:var(--surface-border)] px-3 py-1.5 text-xs font-medium transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
               >
                 View Leagues
               </Link>

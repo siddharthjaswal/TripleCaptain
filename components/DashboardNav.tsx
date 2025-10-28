@@ -21,7 +21,11 @@ export function DashboardNav({ entryId, active }: DashboardNavProps) {
           <Link
             key={link.slug}
             href={href}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:ring-sky-300 ${isActive ? "bg-sky-500 text-slate-950" : "border border-slate-700/60 bg-slate-900/60 text-slate-200 hover:border-sky-400/60 hover:text-sky-200"}`}
+            className={`tc-focus-visible rounded-full px-4 py-2 text-sm font-semibold transition ${
+              isActive
+                ? "bg-[color:var(--accent)] text-[color:var(--accent-contrast)]"
+                : "border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/90 text-[color:var(--text-primary)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+            }`}
             aria-current={isActive ? "page" : undefined}
           >
             {link.name}

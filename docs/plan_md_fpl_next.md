@@ -39,10 +39,10 @@
 ### M3 — Polish & UX (0.5–0.75 day)
 
 - **Deliverables:** Production-ready look and feel.
-- [ ] Introduce skeleton UIs for all major cards and table rows, respecting streaming boundaries.
-- [ ] Finalize responsive layout (mobile-first) and implement dark mode toggle with CSS variables.
-- [ ] Run accessibility pass (labels, ARIA roles, focus states, reduced motion) and capture follow-ups.
-- [ ] Instrument basic analytics (page view + entry submission) with chosen provider (e.g., Vercel Analytics).
+- [x] Introduce skeleton UIs for all major cards and table rows, respecting streaming boundaries.
+- [x] Finalize responsive layout (mobile-first) and implement dark mode toggle with CSS variables.
+- [x] Run accessibility pass (labels, ARIA roles, focus states, reduced motion) and capture follow-ups.
+- [x] Instrument basic analytics (page view + entry submission) with chosen provider (e.g., Vercel Analytics).
 
 ### M4 — Testing & CI (0.5 day, parallelizable after M1)
 

@@ -6,9 +6,9 @@ type LatestGwCardProps = {
 
 export function LatestGwCard({ latest }: LatestGwCardProps) {
   return (
-    <section className="rounded-3xl border border-slate-200/10 bg-slate-900/40 p-6 text-slate-100 shadow-lg backdrop-blur">
+    <section className="tc-card rounded-3xl p-6 shadow-lg">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-medium uppercase tracking-wide text-slate-400">
+        <h2 className="tc-text-muted text-sm font-medium uppercase tracking-wide">
           Latest Gameweek
         </h2>
         <StatusPill isLive={latest.isLive} event={latest.event} />
@@ -21,11 +21,11 @@ export function LatestGwCard({ latest }: LatestGwCardProps) {
         />
         <Metric label="Bench Points" value={latest.pointsOnBench.toString()} />
       </div>
-      <div className="mt-6 text-sm text-slate-300">
+      <div className="mt-6 text-sm tc-text-muted">
         {latest.chipUsed ? (
           <p>
             Chip played:{" "}
-            <span className="font-semibold uppercase tracking-wide text-sky-300">
+            <span className="font-semibold uppercase tracking-wide text-[var(--accent)]">
               {latest.chipUsed.replace(/_/g, " ")}
             </span>
           </p>
@@ -53,7 +53,7 @@ function StatusPill({ isLive, event }: StatusPillProps) {
   }
 
   return (
-    <span className="inline-flex items-center rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold uppercase text-slate-300">
+    <span className="inline-flex items-center rounded-full bg-[color:var(--surface-border)]/30 px-3 py-1 text-xs font-semibold uppercase tc-text-muted">
       Completed — GW {event}
     </span>
   );
@@ -66,9 +66,9 @@ type MetricProps = {
 
 function Metric({ label, value }: MetricProps) {
   return (
-    <div className="rounded-2xl border border-slate-700/40 bg-slate-900/60 px-4 py-5">
-      <p className="text-xs uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-slate-50">{value}</p>
+    <div className="rounded-2xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/90 px-4 py-5">
+      <p className="tc-text-muted text-xs uppercase tracking-wide">{label}</p>
+      <p className="mt-2 text-2xl font-semibold">{value}</p>
     </div>
   );
 }

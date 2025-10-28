@@ -1,6 +1,7 @@
 export const LAST_ENTRY_STORAGE_KEY = "triple-captain:recent-entries";
 export const MAX_RECENT_ENTRIES = 5;
 export const LAST_LEAGUE_STORAGE_KEY = "triple-captain:league-preferences";
+export const THEME_STORAGE_KEY = "triple-captain:theme";
 
 export type StoredEntryProfile = {
   entryId: number;

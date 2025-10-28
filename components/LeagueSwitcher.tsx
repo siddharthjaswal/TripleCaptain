@@ -36,7 +36,7 @@ export function LeagueSwitcher({
 
   if (leagues.length === 0) {
     return (
-      <p className="rounded-2xl border border-slate-700/60 bg-slate-900/60 px-4 py-3 text-sm text-slate-300">
+      <p className="tc-card tc-text-muted rounded-2xl px-4 py-3 text-sm">
         This entry is not part of any classic leagues yet.
       </p>
     );
@@ -52,7 +52,11 @@ export function LeagueSwitcher({
             type="button"
             onClick={() => handleSelect(league.id)}
             disabled={isActive || isPending}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-sky-400 ${isActive ? "bg-sky-500 text-slate-950" : "border border-slate-700/60 bg-slate-900/60 text-slate-200 hover:border-sky-400/60 hover:text-sky-200"}`}
+            className={`tc-focus-visible rounded-full px-4 py-2 text-sm font-medium transition ${
+              isActive
+                ? "bg-[color:var(--accent)] text-[color:var(--accent-contrast)]"
+                : "border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/90 text-[color:var(--text-primary)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+            }`}
           >
             {league.name}
           </button>

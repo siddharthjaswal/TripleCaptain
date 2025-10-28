@@ -39,7 +39,7 @@ export function EntryIdForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-full max-w-md flex-col gap-3 rounded-2xl border border-slate-700/60 bg-slate-900/60 p-6 shadow-lg backdrop-blur"
+      className="tc-card tc-focus-visible flex w-full max-w-md flex-col gap-3 rounded-2xl p-6 shadow-lg"
     >
       <label htmlFor="entryId" className="text-left text-sm font-medium">
         Enter your FPL Entry ID
@@ -52,24 +52,29 @@ export function EntryIdForm() {
         value={entryId}
         onChange={(event) => setEntryId(event.target.value)}
         placeholder="e.g. 1234567"
-        className="rounded-xl border border-slate-700/60 bg-slate-950/60 px-4 py-3 text-base text-sky-50 outline-none ring-0 transition focus:border-sky-400 focus:ring-2 focus:ring-sky-500/60"
+        className="rounded-xl border border-[color:var(--surface-border-strong)] bg-[color:var(--surface-input)] px-4 py-3 text-base text-[color:var(--text-primary)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]"
         aria-invalid={formError ? "true" : "false"}
         aria-describedby={formError ? "entryId-error" : undefined}
         disabled={isPending}
       />
       {formError ? (
-        <p id="entryId-error" className="text-sm text-rose-300">
+        <p
+          id="entryId-error"
+          className="text-sm tc-danger"
+          role="alert"
+          aria-live="polite"
+        >
           {formError}
         </p>
       ) : null}
       <button
         type="submit"
-        className="mt-2 inline-flex items-center justify-center rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-sky-400 disabled:cursor-not-allowed disabled:opacity-70"
+        className="mt-2 inline-flex items-center justify-center rounded-xl bg-[color:var(--accent)] px-4 py-3 text-sm font-semibold text-[color:var(--accent-contrast)] transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--surface-root)] disabled:cursor-not-allowed disabled:opacity-70"
         disabled={isPending}
       >
         {isPending ? "Loading…" : "View Dashboard"}
       </button>
-      <p className="text-xs text-sky-200/70">
+      <p className="text-xs tc-text-muted">
         You can find your entry ID in the URL when viewing your team on the FPL
         website (e.g. <code>.../entry/1234567/event/</code>).
       </p>
