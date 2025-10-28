@@ -3,8 +3,17 @@ import type {
   EntryPicks,
   EntryProfile,
   EntryCurrentHistory,
+  ClassicLeagueStandings,
+  EntryProfileLeagueSnippet,
 } from "./schemas";
-import type { LatestGwDTO, ProfileDTO, TotalsDTO } from "./dto";
+import type {
+  LatestGwDTO,
+  LeagueStandingDTO,
+  LeagueSummaryDTO,
+  LeagueTableEntryDTO,
+  ProfileDTO,
+  TotalsDTO,
+} from "./dto";
 
 export function mapProfile(entry: EntryProfile): ProfileDTO {
   return {
@@ -71,4 +80,45 @@ function findHistoryRecord(
 
   const matched = history.find((item) => item.event === event);
   return matched ?? history[history.length - 1];
+}
+
+export function mapClassicLeagueSummaries(
+  leagues: EntryProfileLeagueSnippet[] | undefined,
+): LeagueSummaryDTO[] {
+  if (!leagues || leagues.length === 0) {
+    return [];
+  }
+
+  return leagues.map((league) => ({
+    id: league.id,
+    name: league.name,
+    shortName: league.short_name ?? null,
+    entryRank: league.entry_rank ?? null,
+    entryLastRank: league.entry_last_rank ?? null,
+    type: "classic" as const,
+  }));
+}
+
+export function mapClassicLeagueStandings(
+  standings: ClassicLeagueStandings,
+): LeagueStandingDTO {
+  const entries: LeagueTableEntryDTO[] = standings.standings.results.map(
+    (result) => ({
+      entryId: result.entry,
+      rank: result.rank ?? null,
+      lastRank: result.last_rank ?? null,
+      entryName: result.entry_name,
+      playerName: result.player_name,
+      points: result.points,
+      totalPoints: result.total,
+    }),
+  );
+
+  return {
+    leagueId: standings.league.id,
+    leagueName: standings.league.name,
+    page: standings.standings.page,
+    hasNextPage: standings.standings.has_next,
+    entries,
+  };
 }

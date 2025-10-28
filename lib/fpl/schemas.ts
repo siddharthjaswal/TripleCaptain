@@ -18,6 +18,26 @@ export const BootstrapStaticSchema = z
   })
   .passthrough();
 
+const EntryProfileLeagueSnippetSchema = z
+  .object({
+    id: z.number(),
+    name: z.string(),
+    short_name: z.string().nullable().optional(),
+    created: z.string().optional(),
+    admin_entry: z.number().nullable().optional(),
+    entry_rank: z.number().nullable().optional(),
+    entry_last_rank: z.number().nullable().optional(),
+    rank: z.number().nullable().optional(),
+  })
+  .passthrough();
+
+const EntryProfileLeaguesSchema = z
+  .object({
+    classic: z.array(EntryProfileLeagueSnippetSchema).default([]),
+    h2h: z.array(EntryProfileLeagueSnippetSchema).default([]),
+  })
+  .passthrough();
+
 export const EntryProfileSchema = z
   .object({
     id: z.number(),
@@ -29,10 +49,13 @@ export const EntryProfileSchema = z
     summary_event_points: z.number(),
     summary_event_rank: z.number().nullable(),
     current_event: z.number().nullable(),
+    leagues: EntryProfileLeaguesSchema.optional(),
   })
   .passthrough();
 
-export type EntryProfile = z.infer<typeof EntryProfileSchema>;
+export type EntryProfileLeagueSnippet = z.infer<
+  typeof EntryProfileLeagueSnippetSchema
+>;
 
 export const EntryCurrentHistorySchema = z
   .object({
@@ -50,27 +73,33 @@ export const EntryCurrentHistorySchema = z
   })
   .passthrough();
 
-export const EntryHistorySchema = z.strictObject({
-  current: z.array(EntryCurrentHistorySchema),
-  chips: z
-    .array(
-      z.strictObject({
-        name: z.string(),
-        event: z.number(),
-        time: z.string(),
-      }),
-    )
-    .default([]),
-  past: z
-    .array(
-      z.strictObject({
-        season_name: z.string(),
-        total_points: z.number(),
-        rank: z.number(),
-      }),
-    )
-    .default([]),
-});
+export const EntryHistorySchema = z
+  .object({
+    current: z.array(EntryCurrentHistorySchema),
+    chips: z
+      .array(
+        z
+          .object({
+            name: z.string(),
+            event: z.number(),
+            time: z.string(),
+          })
+          .passthrough(),
+      )
+      .default([]),
+    past: z
+      .array(
+        z
+          .object({
+            season_name: z.string(),
+            total_points: z.number(),
+            rank: z.number(),
+          })
+          .passthrough(),
+      )
+      .default([]),
+  })
+  .passthrough();
 
 export const EntryPickSchema = z.strictObject({
   element: z.number(),

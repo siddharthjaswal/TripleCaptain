@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { DashboardNav } from "@/components/DashboardNav";
 import { loadEntrySummary, parseEntryId } from "@/lib/fpl/service";
 import { ProfileCard } from "@/components/cards/ProfileCard";
 import { TotalsCard } from "@/components/cards/TotalsCard";
@@ -50,7 +51,7 @@ export default async function EntryPage({
   return (
     <main className="min-h-dvh bg-slate-950 px-4 pb-16 pt-12 text-slate-100">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-wide text-slate-400">
               Entry Dashboard
@@ -62,12 +63,15 @@ export default async function EntryPage({
               Managed by {summary.profile.managerName}
             </p>
           </div>
-          <Link
-            href="/"
-            className="inline-flex items-center rounded-full border border-slate-700/60 px-4 py-2 text-sm font-medium text-slate-100 transition hover:border-sky-400/60 hover:text-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60"
-          >
-            Search another entry
-          </Link>
+          <div className="flex flex-col items-start gap-2 sm:items-end">
+            <DashboardNav entryId={summary.profile.entryId} active="summary" />
+            <Link
+              href="/"
+              className="inline-flex items-center rounded-full border border-slate-700/60 px-4 py-2 text-sm font-medium text-slate-100 transition hover:border-sky-400/60 hover:text-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60"
+            >
+              Search another entry
+            </Link>
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <ProfileCard profile={summary.profile} />

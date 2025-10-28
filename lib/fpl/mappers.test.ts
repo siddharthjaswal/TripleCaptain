@@ -1,6 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { mapLatestGameweek, mapProfile, mapTotals } from "./mappers";
-import type { EntryHistory, EntryProfile } from "./schemas";
+import {
+  mapClassicLeagueStandings,
+  mapClassicLeagueSummaries,
+  mapLatestGameweek,
+  mapProfile,
+  mapTotals,
+} from "./mappers";
+import type {
+  ClassicLeagueStandings,
+  EntryHistory,
+  EntryProfile,
+  EntryProfileLeagueSnippet,
+} from "./schemas";
 
 const profile: EntryProfile = {
   id: 1234,
@@ -53,6 +64,51 @@ const history: EntryHistory = {
   past: [],
 };
 
+const classicLeagues: EntryProfileLeagueSnippet[] = [
+  {
+    id: 111,
+    name: "Work League",
+    short_name: "Work",
+    entry_rank: 12,
+    entry_last_rank: 15,
+  },
+  {
+    id: 222,
+    name: "Friends League",
+    short_name: null,
+    entry_rank: 5,
+    entry_last_rank: 6,
+  },
+];
+
+const leagueStandings: ClassicLeagueStandings = {
+  league: {
+    id: 111,
+    name: "Work League",
+    created: "2024-06-01T11:00:00Z",
+  },
+  new_entries: {
+    has_next: false,
+    results: [],
+  },
+  standings: {
+    has_next: false,
+    page: 1,
+    results: [
+      {
+        id: 1,
+        entry: 987,
+        entry_name: "Test FC",
+        player_name: "Alex Smith",
+        rank: 1,
+        last_rank: 2,
+        points: 68,
+        total: 1987,
+      },
+    ],
+  },
+};
+
 describe("mapProfile", () => {
   it("returns simplified profile", () => {
     const dto = mapProfile(profile);
@@ -62,6 +118,37 @@ describe("mapProfile", () => {
       managerName: "Alex Smith",
       overallPoints: 1987,
       overallRank: 125_000,
+    });
+  });
+});
+
+describe("mapClassicLeagueSummaries", () => {
+  it("maps classic league snippets", () => {
+    const summaries = mapClassicLeagueSummaries(classicLeagues);
+    expect(summaries).toHaveLength(2);
+    expect(summaries[0]).toEqual({
+      id: 111,
+      name: "Work League",
+      shortName: "Work",
+      entryRank: 12,
+      entryLastRank: 15,
+      type: "classic",
+    });
+  });
+});
+
+describe("mapClassicLeagueStandings", () => {
+  it("maps standings into DTO", () => {
+    const dto = mapClassicLeagueStandings(leagueStandings);
+    expect(dto.leagueName).toBe("Work League");
+    expect(dto.entries[0]).toEqual({
+      entryId: 987,
+      entryName: "Test FC",
+      playerName: "Alex Smith",
+      rank: 1,
+      lastRank: 2,
+      points: 68,
+      totalPoints: 1987,
     });
   });
 });

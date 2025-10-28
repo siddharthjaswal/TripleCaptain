@@ -144,9 +144,11 @@ export async function getEventLive(event: number): Promise<EventLive> {
 
 export async function getClassicLeagueStandings(
   leagueId: number,
+  options: { page?: number } = {},
 ): Promise<ClassicLeagueStandings> {
+  const search = options.page ? `?page=${options.page}` : "";
   return fetchFromFpl({
-    path: `/leagues-classic/${leagueId}/standings/`,
+    path: `/leagues-classic/${leagueId}/standings/${search}`,
     schema: ClassicLeagueStandingsSchema,
     revalidate: 600,
   });

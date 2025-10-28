@@ -31,10 +31,10 @@
 ### M2 — League Rankings (0.5–1 day, requires M1 data layer)
 
 - **Deliverables:** Paginated classic league standings for an entry.
-- [ ] Decide default league strategy (auto fetch first classic league vs. manual leagueId input) and codify in UX copy.
-- [ ] Implement `GET /api/fpl/leagues?type=classic|h2h&leagueId=` with reusable cache keys + guards against pagination loops.
-- [ ] Build `/[entryId]/leagues/page.tsx` RSC + `LeagueTable` component, handling >50-entry pagination and empty states.
-- [ ] Wire navigation between summary and leagues pages; ensure consistent breadcrumbs/tab UI.
+- [x] Decide default league strategy (auto fetch first classic league vs. manual leagueId input) and codify in UX copy.
+- [x] Implement `GET /api/fpl/leagues?type=classic|h2h&leagueId=` with reusable cache keys + guards against pagination loops.
+- [x] Build `/[entryId]/leagues/page.tsx` RSC + `LeagueTable` component, handling >50-entry pagination and empty states.
+- [x] Wire navigation between summary and leagues pages; ensure consistent breadcrumbs/tab UI.
 
 ### M3 — Polish & UX (0.5–0.75 day)
 

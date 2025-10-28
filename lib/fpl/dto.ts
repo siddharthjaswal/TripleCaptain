@@ -28,3 +28,38 @@ export type SummaryDTO = {
   totals: TotalsDTO;
   latest: LatestGwDTO;
 };
+
+export type LeagueSummaryDTO = {
+  id: number;
+  name: string;
+  shortName: string | null;
+  entryRank: number | null;
+  entryLastRank: number | null;
+  type: "classic" | "h2h";
+};
+
+export type LeagueTableEntryDTO = {
+  entryId: number;
+  rank: number | null;
+  lastRank: number | null;
+  entryName: string;
+  playerName: string;
+  points: number;
+  totalPoints: number;
+};
+
+export type LeagueStandingDTO = {
+  leagueId: number;
+  leagueName: string;
+  page: number;
+  hasNextPage: boolean;
+  entries: LeagueTableEntryDTO[];
+};
+
+export type LeaguesViewDTO = {
+  entryId: number;
+  teamName: string;
+  leagues: LeagueSummaryDTO[];
+  selectedLeagueId: number | null;
+  selectedLeague: LeagueStandingDTO | null;
+};

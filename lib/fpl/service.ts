@@ -5,9 +5,16 @@ import {
   getEntryHistory,
   getEntryPicks,
   getEntryProfile,
+  getClassicLeagueStandings,
 } from "./client";
-import type { SummaryDTO } from "./dto";
-import { mapLatestGameweek, mapProfile, mapTotals } from "./mappers";
+import type { LeaguesViewDTO, SummaryDTO } from "./dto";
+import {
+  mapClassicLeagueStandings,
+  mapClassicLeagueSummaries,
+  mapLatestGameweek,
+  mapProfile,
+  mapTotals,
+} from "./mappers";
 
 export function parseEntryId(value: string | null): number {
   if (!value) {
@@ -20,6 +27,23 @@ export function parseEntryId(value: string | null): number {
   }
 
   return parsed;
+}
+
+export function parseLeagueId(
+  value: string | number | null | undefined,
+): number {
+  if (value === null || value === undefined) {
+    throw new Error("Missing leagueId parameter");
+  }
+
+  const id =
+    typeof value === "number" ? value : Number.parseInt(String(value), 10);
+
+  if (Number.isNaN(id) || id <= 0) {
+    throw new Error("leagueId must be a positive number");
+  }
+
+  return id;
 }
 
 export async function loadEntrySummary(
@@ -62,6 +86,72 @@ export async function loadEntrySummary(
   } catch (error) {
     if (error instanceof FplError && error.status === 404) {
       notFound();
+    }
+    throw error;
+  }
+}
+
+export async function loadEntryLeagues(
+  entryIdInput: string | number,
+  options: {
+    leagueId?: string | number | null;
+    page?: string | number | null;
+  } = {},
+): Promise<LeaguesViewDTO> {
+  const entryId =
+    typeof entryIdInput === "number"
+      ? entryIdInput
+      : parseEntryId(entryIdInput);
+
+  const profile = await getEntryProfile(entryId);
+  const leagues = mapClassicLeagueSummaries(profile.leagues?.classic);
+  const teamName = profile.name;
+
+  const selectedLeagueId = (() => {
+    if (options.leagueId !== undefined && options.leagueId !== null) {
+      try {
+        return parseLeagueId(options.leagueId);
+      } catch {
+        return null;
+      }
+    }
+    return leagues[0]?.id ?? null;
+  })();
+
+  if (!selectedLeagueId) {
+    return {
+      entryId,
+      teamName,
+      leagues,
+      selectedLeagueId: null,
+      selectedLeague: null,
+    };
+  }
+
+  try {
+    const page =
+      options.page !== undefined && options.page !== null
+        ? Number.parseInt(String(options.page), 10)
+        : undefined;
+    const standings = await getClassicLeagueStandings(selectedLeagueId, {
+      page: Number.isNaN(page) ? undefined : page,
+    });
+    return {
+      entryId,
+      teamName,
+      leagues,
+      selectedLeagueId,
+      selectedLeague: mapClassicLeagueStandings(standings),
+    };
+  } catch (error) {
+    if (error instanceof FplError && error.status === 404) {
+      return {
+        entryId,
+        teamName,
+        leagues,
+        selectedLeagueId,
+        selectedLeague: null,
+      };
     }
     throw error;
   }
