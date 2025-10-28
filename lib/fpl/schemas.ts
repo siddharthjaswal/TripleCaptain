@@ -153,14 +153,14 @@ export const EventLiveSchema = z.strictObject({
 
 export const ClassicLeagueStandingResultSchema = z
   .object({
-    id: z.number(),
-    entry: z.number(),
-    entry_name: z.string(),
-    player_name: z.string(),
-    rank: z.number().nullable(),
-    last_rank: z.number().nullable(),
-    points: z.number(),
-    total: z.number(),
+    id: z.coerce.number(),
+    entry: z.coerce.number(),
+    entry_name: z.string().nullable(),
+    player_name: z.string().nullable(),
+    rank: z.coerce.number().nullable(),
+    last_rank: z.coerce.number().nullable(),
+    points: z.coerce.number(),
+    total: z.coerce.number(),
   })
   .passthrough();
 
@@ -176,16 +176,7 @@ export const ClassicLeagueStandingsSchema = z
     new_entries: z
       .object({
         has_next: z.boolean(),
-        results: z.array(
-          z
-            .object({
-              entry: z.number(),
-              entry_name: z.string(),
-              player_name: z.string(),
-              joined_time: z.string().nullable().optional(),
-            })
-            .passthrough(),
-        ),
+        results: z.array(z.unknown()),
       })
       .passthrough(),
     standings: z
