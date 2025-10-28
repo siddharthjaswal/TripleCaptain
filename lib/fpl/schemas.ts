@@ -30,19 +30,21 @@ export const EntryProfileSchema = z
 
 export type EntryProfile = z.infer<typeof EntryProfileSchema>;
 
-export const EntryCurrentHistorySchema = z.strictObject({
-  event: z.number(),
-  points: z.number(),
-  total_points: z.number(),
-  rank: z.number().nullable(),
-  rank_sort: z.number().nullable(),
-  overall_rank: z.number().nullable(),
-  event_transfers: z.number(),
-  event_transfers_cost: z.number(),
-  value: z.number(),
-  bank: z.number(),
-  points_on_bench: z.number(),
-});
+export const EntryCurrentHistorySchema = z
+  .object({
+    event: z.number(),
+    points: z.number(),
+    total_points: z.number(),
+    rank: z.number().nullable(),
+    rank_sort: z.number().nullable(),
+    overall_rank: z.number().nullable(),
+    event_transfers: z.number(),
+    event_transfers_cost: z.number(),
+    value: z.number(),
+    bank: z.number(),
+    points_on_bench: z.number(),
+  })
+  .passthrough();
 
 export const EntryHistorySchema = z.strictObject({
   current: z.array(EntryCurrentHistorySchema),
