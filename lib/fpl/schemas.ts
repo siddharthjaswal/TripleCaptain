@@ -182,7 +182,7 @@ export const ClassicLeagueStandingsSchema = z
               entry: z.number(),
               entry_name: z.string(),
               player_name: z.string(),
-              joined_time: z.string(),
+              joined_time: z.string().nullable().optional(),
             })
             .passthrough(),
         ),
