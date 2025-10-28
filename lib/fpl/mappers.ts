@@ -1,10 +1,11 @@
-import type {
-  EntryHistory,
-  EntryPicks,
-  EntryProfile,
-  EntryCurrentHistory,
-  ClassicLeagueStandings,
-  EntryProfileLeagueSnippet,
+import {
+  ClassicLeagueStandingResultSchema,
+  type ClassicLeagueStandings,
+  type EntryCurrentHistory,
+  type EntryHistory,
+  type EntryPicks,
+  type EntryProfile,
+  type EntryProfileLeagueSnippet,
 } from "./schemas";
 import type {
   LatestGwDTO,
@@ -102,23 +103,32 @@ export function mapClassicLeagueSummaries(
 export function mapClassicLeagueStandings(
   standings: ClassicLeagueStandings,
 ): LeagueStandingDTO {
-  const entries: LeagueTableEntryDTO[] = standings.standings.results.map(
-    (result) => ({
-      entryId: result.entry ?? result.id ?? 0,
-      rank: result.rank ?? null,
-      lastRank: result.last_rank ?? null,
-      entryName: result.entry_name ?? "—",
-      playerName: result.player_name ?? "—",
-      points: (result.points ?? 0),
-      totalPoints: (result.total ?? 0),
-    }),
-  );
+  const standingsData = standings.standings ?? {};
+  const rawResults = Array.isArray(standingsData.results)
+    ? standingsData.results
+    : [];
+
+  const entries: LeagueTableEntryDTO[] = rawResults.map((result, index) => {
+    const parsed = ClassicLeagueStandingResultSchema.safeParse(result);
+    const data = parsed.success ? parsed.data : {};
+    const entryId = data.entry ?? data.id ?? index + 1;
+
+    return {
+      entryId,
+      rank: data.rank ?? null,
+      lastRank: data.last_rank ?? null,
+      entryName: data.entry_name ?? "—",
+      playerName: data.player_name ?? "—",
+      points: data.points ?? 0,
+      totalPoints: data.total ?? 0,
+    };
+  });
 
   return {
-    leagueId: standings.league.id,
-    leagueName: standings.league.name,
-    page: standings.standings.page,
-    hasNextPage: standings.standings.has_next,
+    leagueId: standings.league?.id ?? 0,
+    leagueName: standings.league?.name ?? "Unknown League",
+    page: standingsData.page ?? 1,
+    hasNextPage: Boolean(standingsData.has_next),
     entries,
   };
 }

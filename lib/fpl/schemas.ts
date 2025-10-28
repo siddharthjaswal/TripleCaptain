@@ -168,22 +168,23 @@ export const ClassicLeagueStandingsSchema = z
   .object({
     league: z
       .object({
-        id: z.number(),
-        name: z.string(),
-        created: z.string(),
+        id: z.coerce.number().optional(),
+        name: z.string().optional(),
+        created: z.string().optional(),
       })
       .passthrough(),
     new_entries: z
       .object({
-        has_next: z.boolean(),
-        results: z.array(z.unknown()),
+        has_next: z.coerce.boolean().optional(),
+        results: z.array(z.unknown()).optional(),
       })
-      .passthrough(),
+      .passthrough()
+      .optional(),
     standings: z
       .object({
-        has_next: z.boolean(),
-        page: z.number(),
-        results: z.array(ClassicLeagueStandingResultSchema),
+        has_next: z.coerce.boolean().optional(),
+        page: z.coerce.number().optional(),
+        results: z.array(z.unknown()).optional(),
       })
       .passthrough(),
   })
