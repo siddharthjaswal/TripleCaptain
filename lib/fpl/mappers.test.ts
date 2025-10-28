@@ -221,7 +221,97 @@ describe("mapLatestGameweek", () => {
     const benchPlayer = dto.players.find((player) => player.isBench);
     expect(benchPlayer?.points).toBe(4);
   });
+
+  it("returns bench picks when squad has no starters", () => {
+    const dto = mapLatestGameweek({
+      entryId: 1234,
+      currentEvent: 10,
+      history,
+      isLive: false,
+      picks: benchOnlyPicks,
+      liveData: liveFixture,
+      elements: benchElements,
+    });
+
+    expect(dto.players).toHaveLength(3);
+    expect(dto.players.every((player) => player.isBench)).toBe(true);
+    expect(dto.players.map((player) => player.points)).toEqual([6, 3, 1]);
+  });
+
+  it("defaults player points to zero when live stats are missing", () => {
+    const dto = mapLatestGameweek({
+      entryId: 1234,
+      currentEvent: 10,
+      history,
+      isLive: true,
+      picks: picksFixture,
+      elements: bootstrapElements,
+    });
+
+    expect(dto.players).toHaveLength(3);
+    dto.players.forEach((player) => {
+      expect(player.points).toBe(0);
+      expect(player.rawPoints).toBe(0);
+    });
+  });
 });
+
+const benchOnlyPicks: EntryPicks = {
+  active_chip: null,
+  entry_history: {
+    event: 10,
+    points: 0,
+    total_points: 1950,
+    rank: 200_000,
+    event_transfers: 0,
+    event_transfers_cost: 0,
+    points_on_bench: 10,
+  },
+  picks: [
+    {
+      element: 4,
+      position: 12,
+      multiplier: 0,
+      is_captain: false,
+      is_vice_captain: false,
+    },
+    {
+      element: 5,
+      position: 13,
+      multiplier: 0,
+      is_captain: false,
+      is_vice_captain: false,
+    },
+    {
+      element: 6,
+      position: 14,
+      multiplier: 0,
+      is_captain: false,
+      is_vice_captain: false,
+    },
+  ],
+};
+
+const benchElements = [
+  {
+    id: 4,
+    web_name: "Bench One",
+    element_type: 2,
+    team: 1,
+  },
+  {
+    id: 5,
+    web_name: "Bench Two",
+    element_type: 3,
+    team: 1,
+  },
+  {
+    id: 6,
+    web_name: "Bench Three",
+    element_type: 4,
+    team: 1,
+  },
+];
 const bootstrapElements = [
   {
     id: 1,
@@ -331,6 +421,75 @@ const liveFixture: EventLive = {
       id: 3,
       stats: {
         total_points: 4,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+    {
+      id: 4,
+      stats: {
+        total_points: 6,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+    {
+      id: 5,
+      stats: {
+        total_points: 3,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+    {
+      id: 6,
+      stats: {
+        total_points: 1,
         minutes: null,
         goals_scored: null,
         assists: null,

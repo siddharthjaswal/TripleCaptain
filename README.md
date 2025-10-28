@@ -1,6 +1,13 @@
 # Triple Captain
 
-Fantasy Premier League companion built with Next.js App Router. The goal is to provide a fast, server-rendered dashboard where managers can enter their FPL entry ID and immediately see profile details, latest gameweek performance, and league standings.
+Fantasy Premier League companion built with Next.js App Router. Managers can enter an FPL entry ID to fetch a server-rendered dashboard featuring profile details, totals, latest gameweek metrics, and a pitch-style card that visualises the most recent XI alongside bench points and captain badges.
+
+## Current Features
+
+- Entry lookup with persisted recent selections and dark/light theme toggle.
+- Summary dashboard with profile/totals cards, live-aware gameweek metrics, and the new Gameweek Pitch Card.
+- League standings view with rank delta colouring and pagination support.
+- Local analytics hooks (Vercel Analytics) plus accessibility-conscious UI primitives.
 
 ## Tech Stack
 
@@ -38,7 +45,7 @@ pnpm exec playwright install
 pnpm test:e2e
 ```
 
-The landing page currently provides a project hero while the core flows are under construction. Be sure to keep the README in sync as milestones progress.
+To surface FPL API logs while developing, prefix commands with `FPL_DEBUG_LOGS=true pnpm dev`.
 
 ## Deployment
 

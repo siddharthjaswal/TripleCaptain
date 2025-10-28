@@ -1,4 +1,5 @@
 import type { LatestGwDTO } from "@/lib/fpl/dto";
+import { formatNumber } from "@/lib/format";
 
 type LatestGwCardProps = {
   latest: LatestGwDTO;
@@ -14,12 +15,15 @@ export function LatestGwCard({ latest }: LatestGwCardProps) {
         <StatusPill isLive={latest.isLive} event={latest.event} />
       </div>
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Metric label="GW Points" value={latest.points.toLocaleString()} />
+        <Metric label="GW Points" value={formatNumber(latest.points)} />
         <Metric
           label="GW Rank"
-          value={latest.rank ? `#${latest.rank.toLocaleString()}` : "—"}
+          value={latest.rank ? `#${formatNumber(latest.rank)}` : "—"}
         />
-        <Metric label="Bench Points" value={latest.pointsOnBench.toString()} />
+        <Metric
+          label="Bench Points"
+          value={formatNumber(latest.pointsOnBench)}
+        />
       </div>
       <div className="mt-6 text-sm tc-text-muted">
         {latest.chipUsed ? (

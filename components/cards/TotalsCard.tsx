@@ -1,4 +1,5 @@
 import type { TotalsDTO } from "@/lib/fpl/dto";
+import { formatNumber } from "@/lib/format";
 
 type TotalsCardProps = {
   totals: TotalsDTO;
@@ -16,11 +17,11 @@ export function TotalsCard({ totals }: TotalsCardProps) {
         </span>
       </div>
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Kpi label="Total Points" value={totals.totalPoints.toLocaleString()} />
+        <Kpi label="Total Points" value={formatNumber(totals.totalPoints)} />
         <Kpi
           label="Overall Rank"
           value={
-            totals.overallRank ? `#${totals.overallRank.toLocaleString()}` : "—"
+            totals.overallRank ? `#${formatNumber(totals.overallRank)}` : "—"
           }
         />
       </div>

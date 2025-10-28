@@ -58,9 +58,12 @@ async function fetchFromFpl<T>({
         "triple-captain-app/0.1 (+https://github.com/siddharthjaswal/TripleCaptain)",
       Accept: "application/json",
     },
-    next: {
-      revalidate,
-    },
+    next:
+      typeof revalidate === "number"
+        ? {
+            revalidate,
+          }
+        : undefined,
   });
 
   if (!response.ok) {
@@ -103,7 +106,7 @@ export const getBootstrap = cache(async (): Promise<BootstrapStatic> => {
   return fetchFromFpl({
     path: "/bootstrap-static/",
     schema: BootstrapStaticSchema,
-    revalidate: 3600,
+    revalidate: undefined,
   });
 });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import type { LatestGwDTO, LatestGwPlayerDTO } from "@/lib/fpl/dto";
+import { formatNumber } from "@/lib/format";
 
 const POSITION_ORDER: Array<LatestGwPlayerDTO["position"]> = [
   "GK",
@@ -32,16 +33,16 @@ export function GameweekPitchCard({ latest }: GameweekPitchCardProps) {
         </div>
         <div className="flex items-center gap-4 text-sm">
           <span>
-            Total Points: <strong>{latest.points}</strong>
+            Total Points: <strong>{formatNumber(latest.points)}</strong>
           </span>
           {latest.rank ? (
             <span>
-              GW Rank: <strong>#{latest.rank.toLocaleString()}</strong>
+              GW Rank: <strong>#{formatNumber(latest.rank)}</strong>
             </span>
           ) : null}
           {latest.pointsOnBench ? (
             <span>
-              Bench: <strong>{latest.pointsOnBench}</strong>
+              Bench: <strong>{formatNumber(latest.pointsOnBench)}</strong>
             </span>
           ) : null}
         </div>

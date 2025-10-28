@@ -6,6 +6,19 @@
 - Keep API error rate under 1% by validating and normalizing all upstream responses.
 - Maintain DX velocity via automated lint, test, and deploy workflows running under 5 minutes.
 
+## Status Update (2025-10-28)
+
+- Gameweek dashboard now includes a pitch-style card showing the last completed XI with bench coverage and consistent number formatting.
+- FPL schemas and fetches accept the latest API shape (historic picks/live stats) while mapper tests cover bench-only squads and missing live data.
+- Summary pipeline locks to the most recent finished gameweek to avoid empty pitch renders.
+- Bootstrap payload now relies on React caching to dodge Next.js’ 2 MB data-cache ceiling; follow-up needed for longer-term caching strategy.
+
+### Outstanding Focus
+
+1. Enrich `GameweekPitchCard` visuals (pitch graphics, crests, player imagery).
+2. Persist manager naming from element data on `/leagues` views when available.
+3. Extend analytics instrumentation to capture EntryId submissions reliably across routes.
+
 ## Milestones
 
 ### M0 — Project Bootstrap (0.5 day, blocker for all other milestones)
@@ -43,6 +56,7 @@
 - [x] Finalize responsive layout (mobile-first) and implement dark mode toggle with CSS variables.
 - [x] Run accessibility pass (labels, ARIA roles, focus states, reduced motion) and capture follow-ups.
 - [x] Instrument basic analytics (page view + entry submission) with chosen provider (e.g., Vercel Analytics).
+- [x] Add live-compatible “Gameweek Pitch Card” with bench state, captain badges, and locale-aware number formatting.
 
 ### M4 — Testing & CI (0.5 day, parallelizable after M1)
 
@@ -97,7 +111,7 @@
 ### Testing
 
 - [ ] Unit: schemas reject shape mismatch; ensure helpful error messages.
-- [ ] Unit: mappers convert representative fixtures including edge cases (bench boost, triple captain).
+- [ ] Unit: mappers convert representative fixtures including edge cases (bench boost, triple captain). _(Latest GW mapper now covers bench-only squads and missing live stats — expand to other DTOs.)_
 - [ ] Route handler tests with mocked fetch/error permutations and cache behaviour assertions.
 - [ ] E2E flows (Playwright) covering mobile + desktop snapshots and accessibility checks.
 - [ ] Smoke deploy validation script hitting `/api/fpl/*` endpoints before promotion.

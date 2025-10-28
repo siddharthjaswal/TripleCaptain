@@ -9,6 +9,7 @@ import {
   getEventLive,
 } from "./client";
 import type { LeaguesViewDTO, SummaryDTO } from "./dto";
+import type { EntryCurrentHistory } from "./schemas";
 import {
   mapClassicLeagueStandings,
   mapClassicLeagueSummaries,
@@ -61,25 +62,29 @@ export async function loadEntrySummary(
       getEntryHistory(entryId),
     ]);
 
-    const currentEvent = await resolveCurrentEvent(profile.current_event);
+    const fallbackEvent = await resolveCurrentEvent(profile.current_event);
+    const latestHistoryEvent = resolveLatestHistoryEvent(history.current);
+    const resolvedEvent = latestHistoryEvent ?? fallbackEvent;
+    const historyRecord = resolveHistoryRecord(history.current, resolvedEvent);
+    const summaryEvent = historyRecord?.event ?? resolvedEvent;
 
     const [picks, bootstrap, liveData] = await Promise.all([
-      getEntryPicks(entryId, currentEvent).catch(() => null),
+      getEntryPicks(entryId, summaryEvent).catch(() => null),
       getBootstrap(),
-      getEventLive(currentEvent).catch(() => null),
+      getEventLive(summaryEvent).catch(() => null),
     ]);
 
     const currentEventMeta = bootstrap.events.find(
-      (event) => event.id === currentEvent,
+      (event) => event.id === summaryEvent,
     );
     const isLive = currentEventMeta?.is_current ?? false;
 
     return {
       profile: mapProfile(profile),
-      totals: mapTotals(profile, currentEvent),
+      totals: mapTotals(profile, summaryEvent),
       latest: mapLatestGameweek({
         entryId,
-        currentEvent,
+        currentEvent: summaryEvent,
         history,
         picks: picks ?? undefined,
         isLive,
@@ -198,4 +203,32 @@ async function resolveCurrentEvent(
   }
 
   throw new Error("Unable to determine current gameweek");
+}
+
+function resolveLatestHistoryEvent(
+  history: EntryCurrentHistory[],
+): number | null {
+  if (history.length === 0) {
+    return null;
+  }
+
+  return history.reduce<number>((latest, item) => {
+    return item.event > latest ? item.event : latest;
+  }, 0);
+}
+
+function resolveHistoryRecord(
+  history: EntryCurrentHistory[],
+  targetEvent: number,
+) {
+  if (history.length === 0) {
+    return undefined;
+  }
+
+  const exact = history.find((item) => item.event === targetEvent);
+  if (exact) {
+    return exact;
+  }
+
+  return history[history.length - 1];
 }

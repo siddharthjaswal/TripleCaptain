@@ -1,4 +1,5 @@
 import type { LeagueStandingDTO } from "@/lib/fpl/dto";
+import { formatNumber } from "@/lib/format";
 
 type LeagueTableProps = {
   league: LeagueStandingDTO;
@@ -54,7 +55,7 @@ export function LeagueTable({ league }: LeagueTableProps) {
                   className="transition hover:bg-[color:var(--surface-elevated)]/60"
                 >
                   <td className="px-3 py-3 font-mono text-sm">
-                    {entry.rank ? `#${entry.rank}` : "—"}
+                    {entry.rank ? `#${formatNumber(entry.rank)}` : "—"}
                   </td>
                   <td
                     className={`px-3 py-3 font-mono text-xs transition ${delta.className}`}
@@ -66,10 +67,10 @@ export function LeagueTable({ league }: LeagueTableProps) {
                     {entry.playerName}
                   </td>
                   <td className="px-3 py-3 text-right font-mono text-sm">
-                    {entry.points.toLocaleString()}
+                    {formatNumber(entry.points)}
                   </td>
                   <td className="px-3 py-3 text-right font-mono text-sm">
-                    {entry.totalPoints.toLocaleString()}
+                    {formatNumber(entry.totalPoints)}
                   </td>
                 </tr>
               );

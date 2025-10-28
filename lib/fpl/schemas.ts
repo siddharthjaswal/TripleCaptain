@@ -115,55 +115,69 @@ export const EntryHistorySchema = z
   })
   .passthrough();
 
-export const EntryPickSchema = z.strictObject({
-  element: z.number(),
-  position: z.number(),
-  multiplier: z.number(),
-  is_captain: z.boolean(),
-  is_vice_captain: z.boolean(),
-});
+export const EntryPickSchema = z
+  .object({
+    element: z.number(),
+    position: z.number(),
+    multiplier: z.number(),
+    is_captain: z.boolean(),
+    is_vice_captain: z.boolean(),
+    element_type: z.number().optional(),
+  })
+  .passthrough();
 
-export const EntryPicksSchema = z.strictObject({
-  active_chip: z.string().nullable(),
-  entry_history: z.strictObject({
-    event: z.number(),
-    points: z.number(),
-    total_points: z.number(),
-    rank: z.number().nullable(),
-    event_transfers: z.number(),
-    event_transfers_cost: z.number(),
-    points_on_bench: z.number(),
-  }),
-  picks: z.array(EntryPickSchema),
-});
+export const EntryPicksSchema = z
+  .object({
+    active_chip: z.string().nullable(),
+    entry_history: z
+      .object({
+        event: z.number(),
+        points: z.number(),
+        total_points: z.number(),
+        rank: z.number().nullable(),
+        event_transfers: z.number(),
+        event_transfers_cost: z.number(),
+        points_on_bench: z.number(),
+      })
+      .passthrough(),
+    picks: z.array(EntryPickSchema),
+    automatic_subs: z.array(z.unknown()).optional(),
+  })
+  .passthrough();
 
-export const EventLiveElementSchema = z.strictObject({
-  id: z.number(),
-  stats: z.strictObject({
-    total_points: z.number(),
-    minutes: z.number().nullable(),
-    goals_scored: z.number().nullable(),
-    assists: z.number().nullable(),
-    clean_sheets: z.number().nullable(),
-    goals_conceded: z.number().nullable(),
-    own_goals: z.number().nullable(),
-    penalties_saved: z.number().nullable(),
-    penalties_missed: z.number().nullable(),
-    yellow_cards: z.number().nullable(),
-    red_cards: z.number().nullable(),
-    saves: z.number().nullable(),
-    bonus: z.number().nullable(),
-    bps: z.number().nullable(),
-    influence: z.number().nullable(),
-    creativity: z.number().nullable(),
-    threat: z.number().nullable(),
-    ict_index: z.union([z.string(), z.number()]),
-  }),
-});
+export const EventLiveElementSchema = z
+  .object({
+    id: z.number(),
+    stats: z
+      .object({
+        total_points: z.number(),
+        minutes: z.number().nullable(),
+        goals_scored: z.number().nullable(),
+        assists: z.number().nullable(),
+        clean_sheets: z.number().nullable(),
+        goals_conceded: z.number().nullable(),
+        own_goals: z.number().nullable(),
+        penalties_saved: z.number().nullable(),
+        penalties_missed: z.number().nullable(),
+        yellow_cards: z.number().nullable(),
+        red_cards: z.number().nullable(),
+        saves: z.number().nullable(),
+        bonus: z.number().nullable(),
+        bps: z.number().nullable(),
+        influence: z.coerce.number().nullable(),
+        creativity: z.coerce.number().nullable(),
+        threat: z.coerce.number().nullable(),
+        ict_index: z.union([z.string(), z.number()]),
+      })
+      .passthrough(),
+  })
+  .passthrough();
 
-export const EventLiveSchema = z.strictObject({
-  elements: z.array(EventLiveElementSchema),
-});
+export const EventLiveSchema = z
+  .object({
+    elements: z.array(EventLiveElementSchema),
+  })
+  .passthrough();
 
 export const ClassicLeagueStandingResultSchema = z
   .object({
