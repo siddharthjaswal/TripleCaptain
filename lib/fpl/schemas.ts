@@ -1,18 +1,22 @@
 import { z } from "zod";
 
-export const BootstrapEventSchema = z.strictObject({
-  id: z.number(),
-  name: z.string(),
-  deadline_time: z.string(),
-  is_current: z.boolean(),
-  is_next: z.boolean(),
-  is_previous: z.boolean(),
-});
+export const BootstrapEventSchema = z
+  .object({
+    id: z.number(),
+    name: z.string(),
+    deadline_time: z.string(),
+    is_current: z.boolean(),
+    is_next: z.boolean(),
+    is_previous: z.boolean(),
+  })
+  .passthrough();
 
-export const BootstrapStaticSchema = z.strictObject({
-  events: z.array(BootstrapEventSchema),
-  total_players: z.number(),
-});
+export const BootstrapStaticSchema = z
+  .object({
+    events: z.array(BootstrapEventSchema),
+    total_players: z.number(),
+  })
+  .passthrough();
 
 export const EntryProfileSchema = z
   .object({
