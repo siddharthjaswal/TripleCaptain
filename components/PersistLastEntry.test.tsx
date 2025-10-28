@@ -21,7 +21,7 @@ describe("PersistLastEntry", () => {
       const raw = window.localStorage.getItem(LAST_ENTRY_STORAGE_KEY);
       expect(raw).toBeTruthy();
       const parsed = raw ? JSON.parse(raw) : null;
-      expect(parsed).toMatchObject({
+      expect(parsed[0]).toMatchObject({
         entryId: 456,
         teamName: "Test FC",
         managerName: "Jamie Doe",
