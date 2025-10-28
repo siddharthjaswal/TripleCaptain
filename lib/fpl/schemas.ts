@@ -151,40 +151,52 @@ export const EventLiveSchema = z.strictObject({
   elements: z.array(EventLiveElementSchema),
 });
 
-export const ClassicLeagueStandingResultSchema = z.strictObject({
-  id: z.number(),
-  entry: z.number(),
-  entry_name: z.string(),
-  player_name: z.string(),
-  rank: z.number().nullable(),
-  last_rank: z.number().nullable(),
-  points: z.number(),
-  total: z.number(),
-});
-
-export const ClassicLeagueStandingsSchema = z.strictObject({
-  league: z.strictObject({
+export const ClassicLeagueStandingResultSchema = z
+  .object({
     id: z.number(),
-    name: z.string(),
-    created: z.string(),
-  }),
-  new_entries: z.strictObject({
-    has_next: z.boolean(),
-    results: z.array(
-      z.strictObject({
-        entry: z.number(),
-        entry_name: z.string(),
-        player_name: z.string(),
-        joined_time: z.string(),
-      }),
-    ),
-  }),
-  standings: z.strictObject({
-    has_next: z.boolean(),
-    page: z.number(),
-    results: z.array(ClassicLeagueStandingResultSchema),
-  }),
-});
+    entry: z.number(),
+    entry_name: z.string(),
+    player_name: z.string(),
+    rank: z.number().nullable(),
+    last_rank: z.number().nullable(),
+    points: z.number(),
+    total: z.number(),
+  })
+  .passthrough();
+
+export const ClassicLeagueStandingsSchema = z
+  .object({
+    league: z
+      .object({
+        id: z.number(),
+        name: z.string(),
+        created: z.string(),
+      })
+      .passthrough(),
+    new_entries: z
+      .object({
+        has_next: z.boolean(),
+        results: z.array(
+          z
+            .object({
+              entry: z.number(),
+              entry_name: z.string(),
+              player_name: z.string(),
+              joined_time: z.string(),
+            })
+            .passthrough(),
+        ),
+      })
+      .passthrough(),
+    standings: z
+      .object({
+        has_next: z.boolean(),
+        page: z.number(),
+        results: z.array(ClassicLeagueStandingResultSchema),
+      })
+      .passthrough(),
+  })
+  .passthrough();
 
 export type BootstrapStatic = z.infer<typeof BootstrapStaticSchema>;
 export type EntryProfile = z.infer<typeof EntryProfileSchema>;
