@@ -1,4 +1,5 @@
 import { EntryIdForm } from "@/components/EntryIdForm";
+import { RecentEntryCard } from "@/components/RecentEntryCard";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
         </p>
       </div>
       <EntryIdForm />
+      <RecentEntryCard />
       <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-sky-100/80">
         <span className="rounded-full border border-sky-500/40 px-3 py-1">
           App Router + RSC

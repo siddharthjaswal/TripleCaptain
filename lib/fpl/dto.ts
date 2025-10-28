@@ -59,6 +59,7 @@ export type LeagueStandingDTO = {
 export type LeaguesViewDTO = {
   entryId: number;
   teamName: string;
+  managerName: string;
   leagues: LeagueSummaryDTO[];
   selectedLeagueId: number | null;
   selectedLeague: LeagueStandingDTO | null;

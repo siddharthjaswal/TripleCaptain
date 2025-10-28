@@ -106,6 +106,8 @@ export async function loadEntryLeagues(
   const profile = await getEntryProfile(entryId);
   const leagues = mapClassicLeagueSummaries(profile.leagues?.classic);
   const teamName = profile.name;
+  const managerName =
+    `${profile.player_first_name} ${profile.player_last_name}`.trim();
 
   const selectedLeagueId = (() => {
     if (options.leagueId !== undefined && options.leagueId !== null) {
@@ -122,6 +124,7 @@ export async function loadEntryLeagues(
     return {
       entryId,
       teamName,
+      managerName,
       leagues,
       selectedLeagueId: null,
       selectedLeague: null,
@@ -139,6 +142,7 @@ export async function loadEntryLeagues(
     return {
       entryId,
       teamName,
+      managerName,
       leagues,
       selectedLeagueId,
       selectedLeague: mapClassicLeagueStandings(standings),
@@ -148,6 +152,7 @@ export async function loadEntryLeagues(
       return {
         entryId,
         teamName,
+        managerName,
         leagues,
         selectedLeagueId,
         selectedLeague: null,

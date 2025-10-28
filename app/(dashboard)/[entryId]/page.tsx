@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DashboardNav } from "@/components/DashboardNav";
+import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { loadEntrySummary, parseEntryId } from "@/lib/fpl/service";
 import { ProfileCard } from "@/components/cards/ProfileCard";
 import { TotalsCard } from "@/components/cards/TotalsCard";
@@ -78,6 +79,11 @@ export default async function EntryPage({
           <TotalsCard totals={summary.totals} />
         </div>
         <LatestGwCard latest={summary.latest} />
+        <PersistLastEntry
+          entryId={summary.profile.entryId}
+          teamName={summary.profile.teamName}
+          managerName={summary.profile.managerName}
+        />
       </div>
     </main>
   );

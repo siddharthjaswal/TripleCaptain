@@ -6,6 +6,7 @@ import { DashboardNav } from "@/components/DashboardNav";
 import { ErrorBanner } from "@/components/ErrorBanner";
 import { LeagueSwitcher } from "@/components/LeagueSwitcher";
 import { LeagueTable } from "@/components/LeagueTable";
+import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { loadEntryLeagues, parseEntryId } from "@/lib/fpl/service";
 
 type LeaguesPageParams = {
@@ -105,6 +106,11 @@ export default async function EntryLeaguesPage({
         ) : leaguesView.leagues.length > 0 ? (
           <ErrorBanner message="We couldn't load standings for this league right now. Try another league or refresh." />
         ) : null}
+        <PersistLastEntry
+          entryId={leaguesView.entryId}
+          teamName={leaguesView.teamName}
+          managerName={leaguesView.managerName}
+        />
       </div>
     </main>
   );
