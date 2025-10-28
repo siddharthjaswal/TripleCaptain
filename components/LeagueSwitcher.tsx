@@ -1,8 +1,12 @@
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { LeagueSummaryDTO } from "@/lib/fpl/dto";
+import {
+  getStoredLeaguePreference,
+  setStoredLeaguePreference,
+} from "@/lib/storage";
 
 type LeagueSwitcherProps = {
   entryId: number;
@@ -17,6 +21,18 @@ export function LeagueSwitcher({
 }: LeagueSwitcherProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const hasSyncedPreference = useRef(false);
+
+  useEffect(() => {
+    if (hasSyncedPreference.current) return;
+    const stored = getStoredLeaguePreference(entryId);
+    if (!stored || stored === selectedLeagueId) return;
+    if (!leagues.some((league) => league.id === stored)) return;
+    hasSyncedPreference.current = true;
+    startTransition(() => {
+      router.replace(`/${entryId}/leagues?leagueId=${stored}`);
+    });
+  }, [entryId, leagues, router, selectedLeagueId, startTransition]);
 
   if (leagues.length === 0) {
     return (
@@ -46,6 +62,7 @@ export function LeagueSwitcher({
   );
 
   function handleSelect(leagueId: number) {
+    setStoredLeaguePreference(entryId, leagueId);
     startTransition(() => {
       const url = `/${entryId}/leagues?leagueId=${leagueId}`;
       router.push(url);

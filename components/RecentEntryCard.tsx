@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LAST_ENTRY_STORAGE_KEY, type StoredEntryProfile } from "@/lib/storage";
+import {
+  LAST_ENTRY_STORAGE_KEY,
+  MAX_RECENT_ENTRIES,
+  type StoredEntryProfile,
+} from "@/lib/storage";
 
 export function RecentEntryCard() {
   const [recentEntries, setRecentEntries] = useState<
@@ -32,7 +36,8 @@ export function RecentEntryCard() {
             Recently Viewed
           </p>
           <p className="text-xs text-slate-400">
-            Up to {recentEntries.length} saved entries
+            Showing {recentEntries.length} of up to {MAX_RECENT_ENTRIES} saved
+            entries
           </p>
         </div>
         <button
@@ -58,9 +63,7 @@ export function RecentEntryCard() {
                   Managed by {entry.managerName}
                 </p>
               </div>
-              <span className="text-xs text-slate-400">
-                {entry.ageLabel} ago
-              </span>
+              <span className="text-xs text-slate-400">{entry.ageLabel}</span>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               <Link
@@ -120,6 +123,7 @@ function readRecent(): Array<StoredEntryProfile & { ageLabel: string }> {
 
     return parsed
       .filter((item) => item?.entryId && item?.teamName)
+      .slice(0, MAX_RECENT_ENTRIES)
       .map((item) => ({
         ...item,
         ageLabel: timeAgoLabel(item.persistedAt),

@@ -108,6 +108,12 @@ export async function loadEntryLeagues(
   const teamName = profile.name;
   const managerName =
     `${profile.player_first_name} ${profile.player_last_name}`.trim();
+  let currentEvent: number | null = null;
+  try {
+    currentEvent = await resolveCurrentEvent(profile.current_event);
+  } catch {
+    currentEvent = null;
+  }
 
   const selectedLeagueId = (() => {
     if (options.leagueId !== undefined && options.leagueId !== null) {
@@ -125,6 +131,7 @@ export async function loadEntryLeagues(
       entryId,
       teamName,
       managerName,
+      currentEvent,
       leagues,
       selectedLeagueId: null,
       selectedLeague: null,
@@ -143,9 +150,12 @@ export async function loadEntryLeagues(
       entryId,
       teamName,
       managerName,
+      currentEvent,
       leagues,
       selectedLeagueId,
-      selectedLeague: mapClassicLeagueStandings(standings),
+      selectedLeague: mapClassicLeagueStandings(standings, {
+        gameweek: currentEvent ?? undefined,
+      }),
     };
   } catch (error) {
     if (error instanceof FplError && error.status === 404) {
@@ -153,6 +163,7 @@ export async function loadEntryLeagues(
         entryId,
         teamName,
         managerName,
+        currentEvent,
         leagues,
         selectedLeagueId,
         selectedLeague: null,

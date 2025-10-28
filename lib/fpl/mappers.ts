@@ -102,6 +102,7 @@ export function mapClassicLeagueSummaries(
 
 export function mapClassicLeagueStandings(
   standings: ClassicLeagueStandings,
+  context: { gameweek?: number } = {},
 ): LeagueStandingDTO {
   const standingsData = standings.standings ?? {};
   const rawResults = Array.isArray(standingsData.results)
@@ -129,6 +130,7 @@ export function mapClassicLeagueStandings(
     leagueName: standings.league?.name ?? "Unknown League",
     page: standingsData.page ?? 1,
     hasNextPage: Boolean(standingsData.has_next),
+    gameweek: context.gameweek ?? null,
     entries,
   };
 }

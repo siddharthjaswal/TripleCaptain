@@ -53,6 +53,7 @@ export type LeagueStandingDTO = {
   leagueName: string;
   page: number;
   hasNextPage: boolean;
+  gameweek: number | null;
   entries: LeagueTableEntryDTO[];
 };
 
@@ -60,6 +61,7 @@ export type LeaguesViewDTO = {
   entryId: number;
   teamName: string;
   managerName: string;
+  currentEvent: number | null;
   leagues: LeagueSummaryDTO[];
   selectedLeagueId: number | null;
   selectedLeague: LeagueStandingDTO | null;

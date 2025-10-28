@@ -78,6 +78,9 @@ export default async function EntryLeaguesPage({
             <h1 className="mt-2 text-3xl font-semibold text-slate-50">
               {leaguesView.teamName}
             </h1>
+            <p className="text-sm text-slate-300">
+              Managed by {leaguesView.managerName}
+            </p>
           </div>
           <div className="flex flex-col items-start gap-2 sm:items-end">
             <DashboardNav entryId={leaguesView.entryId} active="leagues" />
@@ -94,6 +97,11 @@ export default async function EntryLeaguesPage({
           <h2 className="text-base font-semibold text-slate-200">
             Classic Leagues
           </h2>
+          {leaguesView.currentEvent ? (
+            <p className="text-xs text-slate-400">
+              Showing standings for gameweek {leaguesView.currentEvent}
+            </p>
+          ) : null}
           <LeagueSwitcher
             entryId={leaguesView.entryId}
             leagues={leaguesView.leagues}

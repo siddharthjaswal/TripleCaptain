@@ -36,6 +36,7 @@ describe("RecentEntryCard", () => {
 
     render(<RecentEntryCard />);
 
+    expect(screen.getByText(/Showing 2 of up to/i)).toBeInTheDocument();
     expect(screen.getByText(/Triple Captain/i)).toBeInTheDocument();
     expect(screen.getByText(/Double Switch/i)).toBeInTheDocument();
     expect(

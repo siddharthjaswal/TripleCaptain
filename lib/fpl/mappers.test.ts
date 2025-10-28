@@ -139,8 +139,9 @@ describe("mapClassicLeagueSummaries", () => {
 
 describe("mapClassicLeagueStandings", () => {
   it("maps standings into DTO", () => {
-    const dto = mapClassicLeagueStandings(leagueStandings);
+    const dto = mapClassicLeagueStandings(leagueStandings, { gameweek: 10 });
     expect(dto.leagueName).toBe("Work League");
+    expect(dto.gameweek).toBe(10);
     expect(dto.entries[0]).toEqual({
       entryId: 987,
       entryName: "Test FC",
