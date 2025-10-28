@@ -104,13 +104,13 @@ export function mapClassicLeagueStandings(
 ): LeagueStandingDTO {
   const entries: LeagueTableEntryDTO[] = standings.standings.results.map(
     (result) => ({
-      entryId: result.entry,
+      entryId: result.entry ?? result.id ?? 0,
       rank: result.rank ?? null,
       lastRank: result.last_rank ?? null,
       entryName: result.entry_name ?? "—",
       playerName: result.player_name ?? "—",
-      points: result.points,
-      totalPoints: result.total,
+      points: (result.points ?? 0),
+      totalPoints: (result.total ?? 0),
     }),
   );
 

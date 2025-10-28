@@ -153,14 +153,14 @@ export const EventLiveSchema = z.strictObject({
 
 export const ClassicLeagueStandingResultSchema = z
   .object({
-    id: z.coerce.number(),
-    entry: z.coerce.number(),
-    entry_name: z.string().nullable(),
-    player_name: z.string().nullable(),
-    rank: z.coerce.number().nullable(),
-    last_rank: z.coerce.number().nullable(),
-    points: z.coerce.number(),
-    total: z.coerce.number(),
+    id: z.coerce.number().optional(),
+    entry: z.coerce.number().optional(),
+    entry_name: z.string().nullable().optional(),
+    player_name: z.string().nullable().optional(),
+    rank: z.coerce.number().nullable().optional(),
+    last_rank: z.coerce.number().nullable().optional(),
+    points: z.coerce.number().optional(),
+    total: z.coerce.number().optional(),
   })
   .passthrough();
 
