@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { DashboardNav } from "@/components/DashboardNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
+import { GameweekPitchCard } from "@/components/GameweekPitchCard";
 import { loadEntrySummary, parseEntryId } from "@/lib/fpl/service";
 import { ProfileCard } from "@/components/cards/ProfileCard";
 import { TotalsCard } from "@/components/cards/TotalsCard";
@@ -81,6 +82,7 @@ export default async function EntryPage({
           <TotalsCard totals={summary.totals} />
         </div>
         <LatestGwCard latest={summary.latest} />
+        <GameweekPitchCard latest={summary.latest} />
         <PersistLastEntry
           entryId={summary.profile.entryId}
           teamName={summary.profile.teamName}

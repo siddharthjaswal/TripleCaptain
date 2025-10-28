@@ -1,14 +1,17 @@
 import {
   ClassicLeagueStandingResultSchema,
+  type BootstrapElement,
   type ClassicLeagueStandings,
   type EntryCurrentHistory,
   type EntryHistory,
   type EntryPicks,
   type EntryProfile,
   type EntryProfileLeagueSnippet,
+  type EventLive,
 } from "./schemas";
 import type {
   LatestGwDTO,
+  LatestGwPlayerDTO,
   LeagueStandingDTO,
   LeagueSummaryDTO,
   LeagueTableEntryDTO,
@@ -44,8 +47,11 @@ export function mapLatestGameweek(params: {
   history: EntryHistory;
   picks?: EntryPicks | null;
   isLive: boolean;
+  liveData?: EventLive | null;
+  elements?: BootstrapElement[];
 }): LatestGwDTO {
-  const { entryId, currentEvent, history, picks, isLive } = params;
+  const { entryId, currentEvent, history, picks, isLive, liveData, elements } =
+    params;
   const historyRecord = findHistoryRecord(history.current, currentEvent);
 
   if (!historyRecord) {
@@ -60,6 +66,14 @@ export function mapLatestGameweek(params: {
     history.chips.find((chip) => chip.event === historyRecord.event)?.name ??
     null;
 
+  const players = picks
+    ? mapLatestGameweekPlayers({
+        picks,
+        liveData,
+        elements,
+      })
+    : [];
+
   return {
     entryId,
     event: historyRecord.event,
@@ -68,6 +82,7 @@ export function mapLatestGameweek(params: {
     pointsOnBench: benchPoints,
     chipUsed,
     isLive,
+    players,
   };
 }
 
@@ -81,6 +96,62 @@ function findHistoryRecord(
 
   const matched = history.find((item) => item.event === event);
   return matched ?? history[history.length - 1];
+}
+
+function mapLatestGameweekPlayers(params: {
+  picks: EntryPicks;
+  liveData?: EventLive | null;
+  elements?: BootstrapElement[];
+}): LatestGwPlayerDTO[] {
+  const { picks, liveData, elements } = params;
+  const liveLookup = new Map<number, number>();
+  liveData?.elements.forEach((entry) => {
+    liveLookup.set(entry.id, entry.stats.total_points ?? 0);
+  });
+
+  const elementLookup = new Map<number, BootstrapElement>();
+  elements?.forEach((element) => {
+    elementLookup.set(element.id, element);
+  });
+
+  return picks.picks
+    .slice()
+    .sort((a, b) => a.position - b.position)
+    .map((pick, index) => {
+      const playerInfo = elementLookup.get(pick.element);
+      const rawPoints = liveLookup.get(pick.element) ?? 0;
+      const positionCode = playerInfo?.element_type ?? 4;
+      const position = mapElementType(positionCode);
+      const isBench = pick.position > 11;
+      const multiplier = pick.multiplier ?? 1;
+      const appliedPoints = isBench ? rawPoints : rawPoints * multiplier;
+
+      return {
+        elementId: pick.element,
+        name: playerInfo?.web_name ?? `Player ${pick.element}`,
+        position,
+        slot: pick.position ?? index + 1,
+        isBench,
+        isCaptain: Boolean(pick.is_captain),
+        isViceCaptain: Boolean(pick.is_vice_captain),
+        multiplier,
+        points: appliedPoints,
+        rawPoints,
+      } satisfies LatestGwPlayerDTO;
+    });
+}
+
+function mapElementType(type: number): "GK" | "DEF" | "MID" | "FWD" {
+  switch (type) {
+    case 1:
+      return "GK";
+    case 2:
+      return "DEF";
+    case 3:
+      return "MID";
+    default:
+      return "FWD";
+  }
 }
 
 export function mapClassicLeagueSummaries(

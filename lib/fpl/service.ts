@@ -2,10 +2,11 @@ import { notFound } from "next/navigation";
 import {
   FplError,
   getBootstrap,
+  getClassicLeagueStandings,
   getEntryHistory,
   getEntryPicks,
   getEntryProfile,
-  getClassicLeagueStandings,
+  getEventLive,
 } from "./client";
 import type { LeaguesViewDTO, SummaryDTO } from "./dto";
 import {
@@ -62,9 +63,10 @@ export async function loadEntrySummary(
 
     const currentEvent = await resolveCurrentEvent(profile.current_event);
 
-    const [picks, bootstrap] = await Promise.all([
+    const [picks, bootstrap, liveData] = await Promise.all([
       getEntryPicks(entryId, currentEvent).catch(() => null),
       getBootstrap(),
+      getEventLive(currentEvent).catch(() => null),
     ]);
 
     const currentEventMeta = bootstrap.events.find(
@@ -81,6 +83,8 @@ export async function loadEntrySummary(
         history,
         picks: picks ?? undefined,
         isLive,
+        liveData: liveData ?? undefined,
+        elements: bootstrap.elements,
       }),
     };
   } catch (error) {

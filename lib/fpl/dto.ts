@@ -21,12 +21,26 @@ export type LatestGwDTO = {
   pointsOnBench: number;
   chipUsed: string | null;
   isLive: boolean;
+  players: LatestGwPlayerDTO[];
 };
 
 export type SummaryDTO = {
   profile: ProfileDTO;
   totals: TotalsDTO;
   latest: LatestGwDTO;
+};
+
+export type LatestGwPlayerDTO = {
+  elementId: number;
+  name: string;
+  position: "GK" | "DEF" | "MID" | "FWD";
+  slot: number;
+  isBench: boolean;
+  isCaptain: boolean;
+  isViceCaptain: boolean;
+  multiplier: number;
+  points: number;
+  rawPoints: number;
 };
 
 export type LeagueSummaryDTO = {

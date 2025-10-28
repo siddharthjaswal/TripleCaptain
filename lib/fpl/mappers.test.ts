@@ -9,8 +9,10 @@ import {
 import type {
   ClassicLeagueStandings,
   EntryHistory,
+  EntryPicks,
   EntryProfile,
   EntryProfileLeagueSnippet,
+  EventLive,
 } from "./schemas";
 
 const profile: EntryProfile = {
@@ -183,6 +185,7 @@ describe("mapLatestGameweek", () => {
       pointsOnBench: 7,
       chipUsed: null,
       isLive: false,
+      players: [],
     });
   });
 
@@ -195,30 +198,157 @@ describe("mapLatestGameweek", () => {
     });
 
     expect(dto.event).toBe(10);
+    expect(dto.players).toEqual([]);
   });
 
-  it("prefers chip info from picks when present", () => {
+  it("maps picks, chip info, and player statistics", () => {
     const dto = mapLatestGameweek({
       entryId: 1234,
       currentEvent: 10,
       history,
       isLive: false,
-      picks: {
-        active_chip: "triple_captain",
-        entry_history: {
-          event: 10,
-          points: 62,
-          total_points: 1987,
-          rank: 190_000,
-          event_transfers: 2,
-          event_transfers_cost: 4,
-          points_on_bench: 9,
-        },
-        picks: [],
-      },
+      picks: picksFixture,
+      liveData: liveFixture,
+      elements: bootstrapElements,
     });
 
     expect(dto.chipUsed).toBe("triple_captain");
     expect(dto.pointsOnBench).toBe(9);
+    expect(dto.players).toHaveLength(3);
+    const captain = dto.players.find((player) => player.isCaptain);
+    expect(captain?.name).toBe("Captain");
+    expect(captain?.points).toBe(15);
+    const benchPlayer = dto.players.find((player) => player.isBench);
+    expect(benchPlayer?.points).toBe(4);
   });
 });
+const bootstrapElements = [
+  {
+    id: 1,
+    web_name: "Keeper",
+    element_type: 1,
+    team: 1,
+  },
+  {
+    id: 2,
+    web_name: "Captain",
+    element_type: 4,
+    team: 2,
+  },
+  {
+    id: 3,
+    web_name: "Bench",
+    element_type: 3,
+    team: 3,
+  },
+];
+
+const picksFixture: EntryPicks = {
+  active_chip: "triple_captain",
+  entry_history: {
+    event: 10,
+    points: 62,
+    total_points: 1987,
+    rank: 190_000,
+    event_transfers: 2,
+    event_transfers_cost: 4,
+    points_on_bench: 9,
+  },
+  picks: [
+    {
+      element: 1,
+      position: 1,
+      multiplier: 1,
+      is_captain: false,
+      is_vice_captain: false,
+    },
+    {
+      element: 2,
+      position: 2,
+      multiplier: 3,
+      is_captain: true,
+      is_vice_captain: false,
+    },
+    {
+      element: 3,
+      position: 12,
+      multiplier: 0,
+      is_captain: false,
+      is_vice_captain: true,
+    },
+  ],
+};
+
+const liveFixture: EventLive = {
+  elements: [
+    {
+      id: 1,
+      stats: {
+        total_points: 2,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+    {
+      id: 2,
+      stats: {
+        total_points: 5,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+    {
+      id: 3,
+      stats: {
+        total_points: 4,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+  ],
+};
