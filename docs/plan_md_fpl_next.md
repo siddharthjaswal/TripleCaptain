@@ -6,18 +6,23 @@
 - Keep API error rate under 1% by validating and normalizing all upstream responses.
 - Maintain DX velocity via automated lint, test, and deploy workflows running under 5 minutes.
 
-## Status Update (2025-10-28)
+## Status Update (2025-10-29)
 
 - Gameweek dashboard now includes a pitch-style card showing the last completed XI with bench coverage and consistent number formatting.
-- FPL schemas and fetches accept the latest API shape (historic picks/live stats) while mapper tests cover bench-only squads and missing live data.
+- Player images integrated with professional fallback icons for missing photos.
+- Live match indicators show during active gameweeks for players currently playing (green pulsing dot).
+- Deadline countdown card displays time remaining until next gameweek deadline with real-time updates.
+- Dashboard terminology updated from "Entry" to "Manager" throughout the UI.
+- League page improvements: auto-sort by rank (ascending), display rank with league name, filter out empty/inactive leagues.
+- FPL schemas and fetches accept the latest API shape (historic picks/live stats, deadline timestamps, player photos).
 - Summary pipeline locks to the most recent finished gameweek to avoid empty pitch renders.
 - Bootstrap payload now relies on React caching to dodge Next.js’ 2 MB data-cache ceiling; follow-up needed for longer-term caching strategy.
 
 ### Outstanding Focus
 
-1. Enrich `GameweekPitchCard` visuals (pitch graphics, crests, player imagery).
-2. Persist manager naming from element data on `/leagues` views when available.
-3. Extend analytics instrumentation to capture EntryId submissions reliably across routes.
+1. Expand unit test coverage (M4): schemas, route handlers, service layer edge cases.
+2. Create comprehensive E2E tests with Playwright.
+3. Set up CI/CD pipeline with GitHub Actions.
 
 ## Milestones
 

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Triple Captain is a Fantasy Premier League companion app built with Next.js 16 (App Router) and React 19. Users enter an FPL entry ID to view server-rendered dashboards with profile details, gameweek metrics, pitch visualizations, and league standings. All data is fetched server-side from the public FPL API with aggressive caching.
+Triple Captain is a Fantasy Premier League companion app built with Next.js 16 (App Router) and React 19. Users enter an FPL entry ID to view server-rendered dashboards with profile details, gameweek metrics, pitch visualizations with player images, live match indicators, deadline countdown, and league standings. All data is fetched server-side from the public FPL API with aggressive caching.
 
 ## Essential Commands
 
