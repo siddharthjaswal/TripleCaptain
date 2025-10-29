@@ -238,6 +238,8 @@ export function mapFixtures(
       id: fixture.id,
       homeTeam: homeTeamData?.name ?? "Unknown",
       awayTeam: awayTeamData?.name ?? "Unknown",
+      homeTeamId: fixture.team_h,
+      awayTeamId: fixture.team_a,
       homeTeamBadge: homeTeamData ? `https://resources.premierleague.com/premierleague/badges/t${homeTeamData.code}.png` : "",
       awayTeamBadge: awayTeamData ? `https://resources.premierleague.com/premierleague/badges/t${awayTeamData.code}.png` : "",
       homeScore: fixture.team_h_score,

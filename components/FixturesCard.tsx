@@ -164,19 +164,23 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
   const homeColor = getScoreColor(fixture.homeScore, fixture.awayScore, true);
   const awayColor = getScoreColor(fixture.homeScore, fixture.awayScore, false);
 
+  // Separate players by team
+  const homePlayers = players.filter((p) => p.teamId === fixture.homeTeamId);
+  const awayPlayers = players.filter((p) => p.teamId === fixture.awayTeamId);
+
   return (
     <div className="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/60 overflow-hidden transition hover:border-[color:var(--accent)]/50">
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center justify-center gap-4 flex-1">
           <div className="flex items-center gap-2 flex-1 justify-end">
-            <span className="font-bold text-lg">
-              {fixture.homeTeam}
-            </span>
             <img
               src={fixture.homeTeamBadge}
               alt={fixture.homeTeam}
               className="h-8 w-8 object-contain"
             />
+            <span className="font-bold text-lg">
+              {fixture.homeTeam}
+            </span>
           </div>
           {showScore ? (
             <div className="flex items-center gap-2 font-bold tabular-nums">
@@ -194,14 +198,14 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
             </span>
           )}
           <div className="flex items-center gap-2 flex-1">
+            <span className="font-bold text-lg">
+              {fixture.awayTeam}
+            </span>
             <img
               src={fixture.awayTeamBadge}
               alt={fixture.awayTeam}
               className="h-8 w-8 object-contain"
             />
-            <span className="font-bold text-lg">
-              {fixture.awayTeam}
-            </span>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -219,23 +223,45 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
 
       {players.length > 0 && (
         <div className="border-t border-[color:var(--surface-border)] px-4 py-3 bg-[color:var(--surface-elevated)]/40">
-          <div className="flex flex-wrap gap-2 justify-center">
-            {players.map((player) => (
-              <div
-                key={player.elementId}
-                className="inline-flex items-center gap-2 rounded-full bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] px-3 py-1.5"
-              >
-                <span className="text-sm font-medium">{player.name}</span>
-                {(player.isCaptain || player.isViceCaptain) && (
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                    {player.isCaptain ? "C" : "V"}
+          <div className="flex gap-4">
+            {/* Home team players - left column */}
+            <div className="flex-1 flex flex-col gap-2">
+              {homePlayers.map((player) => (
+                <div
+                  key={player.elementId}
+                  className="inline-flex items-center gap-2 rounded-full bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] px-3 py-1.5"
+                >
+                  <span className="text-sm font-medium">{player.name}</span>
+                  {(player.isCaptain || player.isViceCaptain) && (
+                    <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                      {player.isCaptain ? "C" : "V"}
+                    </span>
+                  )}
+                  <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--accent)]/15 px-2 py-0.5 text-xs font-bold text-[color:var(--accent)] min-w-[24px]">
+                    {player.points}
                   </span>
-                )}
-                <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--accent)]/15 px-2 py-0.5 text-xs font-bold text-[color:var(--accent)] min-w-[24px]">
-                  {player.points}
-                </span>
-              </div>
-            ))}
+                </div>
+              ))}
+            </div>
+            {/* Away team players - right column */}
+            <div className="flex-1 flex flex-col gap-2">
+              {awayPlayers.map((player) => (
+                <div
+                  key={player.elementId}
+                  className="inline-flex items-center gap-2 rounded-full bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] px-3 py-1.5"
+                >
+                  <span className="text-sm font-medium">{player.name}</span>
+                  {(player.isCaptain || player.isViceCaptain) && (
+                    <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                      {player.isCaptain ? "C" : "V"}
+                    </span>
+                  )}
+                  <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--accent)]/15 px-2 py-0.5 text-xs font-bold text-[color:var(--accent)] min-w-[24px]">
+                    {player.points}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

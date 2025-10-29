@@ -354,6 +354,7 @@ export async function loadFixtures(
         const fixturePlayer: import("./dto").FixturePlayerDTO = {
           elementId: pick.element,
           name: playerInfo.web_name,
+          teamId: playerInfo.team,
           points: appliedPoints,
           isCaptain: Boolean(pick.is_captain),
           isViceCaptain: Boolean(pick.is_vice_captain),

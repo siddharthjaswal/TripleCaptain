@@ -96,6 +96,8 @@ export type FixtureDTO = {
   id: number;
   homeTeam: string;
   awayTeam: string;
+  homeTeamId: number;
+  awayTeamId: number;
   homeTeamBadge: string;
   awayTeamBadge: string;
   homeScore: number | null;
@@ -108,6 +110,7 @@ export type FixtureDTO = {
 export type FixturePlayerDTO = {
   elementId: number;
   name: string;
+  teamId: number;
   points: number;
   isCaptain: boolean;
   isViceCaptain: boolean;
