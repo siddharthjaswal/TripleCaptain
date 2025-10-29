@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import type { LatestGwDTO, LatestGwPlayerDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
-import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
+import { getPlayerPhotoUrl } from "@/lib/fpl/images";
 import Image from "next/image";
 
 const POSITION_ORDER: Array<LatestGwPlayerDTO["position"]> = [
@@ -63,6 +64,7 @@ export function GameweekPitchCard({ latest }: GameweekPitchCardProps) {
                 key={position}
                 position={position}
                 players={rowPlayers}
+                isLiveGameweek={latest.isLive}
               />
             );
           })}
@@ -74,7 +76,7 @@ export function GameweekPitchCard({ latest }: GameweekPitchCardProps) {
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
               {bench.map((player) => (
-                <PlayerChip key={player.elementId} player={player} compact />
+                <PlayerChip key={player.elementId} player={player} compact isLiveGameweek={latest.isLive} />
               ))}
             </div>
           </div>
@@ -87,9 +89,10 @@ export function GameweekPitchCard({ latest }: GameweekPitchCardProps) {
 type PitchRowProps = {
   position: LatestGwPlayerDTO["position"];
   players: LatestGwPlayerDTO[];
+  isLiveGameweek: boolean;
 };
 
-function PitchRow({ position, players }: PitchRowProps) {
+function PitchRow({ position, players, isLiveGameweek }: PitchRowProps) {
   return (
     <div className="tc-pitch-row">
       <span className="tc-pitch-row__label text-xs font-semibold uppercase tracking-wide">
@@ -97,7 +100,7 @@ function PitchRow({ position, players }: PitchRowProps) {
       </span>
       <div className="tc-pitch-row__players">
         {players.map((player) => (
-          <PlayerChip key={player.elementId} player={player} />
+          <PlayerChip key={player.elementId} player={player} isLiveGameweek={isLiveGameweek} />
         ))}
       </div>
     </div>
@@ -107,48 +110,70 @@ function PitchRow({ position, players }: PitchRowProps) {
 type PlayerChipProps = {
   player: LatestGwPlayerDTO;
   compact?: boolean;
+  isLiveGameweek: boolean;
 };
 
-function PlayerChip({ player, compact = false }: PlayerChipProps) {
+function PlayerChip({ player, compact = false, isLiveGameweek }: PlayerChipProps) {
   const badge = player.isCaptain ? "C" : player.isViceCaptain ? "V" : null;
   const multiplierLabel =
     player.multiplier > 1 ? `×${player.multiplier}` : null;
 
   const photoUrl = getPlayerPhotoUrl(player.photo);
-  const shirtUrl = getTeamShirtUrl(player.teamCode);
-  const imageUrl = photoUrl ?? shirtUrl;
+  const showLiveIndicator = isLiveGameweek && player.rawPoints > 0;
+  const [imageError, setImageError] = useState(false);
+
+  const showFallback = !photoUrl || imageError;
 
   return (
     <div
-      className={`tc-player-chip ${compact ? "tc-player-chip--compact" : ""}`}
+      className={`tc-player-chip-vertical ${compact ? "tc-player-chip-vertical--compact" : ""}`}
       aria-label={`${player.name}, ${player.position}, ${player.points} points`}
     >
-      {imageUrl && (
-        <div className="tc-player-chip__image">
+      <div className="tc-player-chip-vertical__image">
+        {!showFallback ? (
           <Image
-            src={imageUrl}
+            src={photoUrl}
             alt={player.name}
-            width={40}
-            height={40}
-            className="rounded-md object-cover"
+            width={compact ? 60 : 80}
+            height={compact ? 60 : 80}
+            className="rounded-lg object-cover"
             unoptimized
+            onError={() => setImageError(true)}
           />
-          {badge && (
-            <span className="tc-player-chip__badge" aria-label={badge === "C" ? "Captain" : "Vice Captain"}>
-              {badge}
-            </span>
-          )}
-        </div>
-      )}
-      <div className="tc-player-chip__info">
-        <p className="tc-player-chip__name">{player.name}</p>
-        <p className="tc-player-chip__meta">
+        ) : (
+          <div
+            className="flex items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-800"
+            style={{ width: compact ? '60px' : '80px', height: compact ? '60px' : '80px' }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className={`text-slate-400 ${compact ? 'h-8 w-8' : 'h-10 w-10'}`}
+            >
+              <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+            </svg>
+          </div>
+        )}
+        {badge && (
+          <span className="tc-player-chip-vertical__badge" aria-label={badge === "C" ? "Captain" : "Vice Captain"}>
+            {badge}
+          </span>
+        )}
+        {showLiveIndicator && (
+          <span className="tc-player-chip-vertical__live" aria-label="Playing">
+            <span className="tc-player-chip-vertical__live-dot" />
+          </span>
+        )}
+      </div>
+      <div className="tc-player-chip-vertical__info">
+        <p className="tc-player-chip-vertical__name">{player.name}</p>
+        <p className="tc-player-chip-vertical__position">
           {player.position}
-          {!imageUrl && badge ? ` · ${badge}` : ""}
-          {multiplierLabel ? ` · ${multiplierLabel}` : ""}
+          {multiplierLabel ? ` ${multiplierLabel}` : ""}
         </p>
       </div>
-      <p className="tc-player-chip__points">{player.points}</p>
+      <div className="tc-player-chip-vertical__points">{player.points}</div>
     </div>
   );
 }
