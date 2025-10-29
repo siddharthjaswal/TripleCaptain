@@ -46,20 +46,28 @@ export function LeagueSwitcher({
     <div className="flex flex-wrap gap-2">
       {leagues.map((league) => {
         const isActive = league.id === selectedLeagueId;
-        const displayName = `${league.name} #${league.entryRank}`;
         return (
           <button
             key={league.id}
             type="button"
             onClick={() => handleSelect(league.id)}
             disabled={isActive || isPending}
-            className={`tc-focus-visible rounded-full px-4 py-2 text-sm font-medium transition ${
+            className={`tc-focus-visible inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${
               isActive
                 ? "bg-[color:var(--accent)] text-[color:var(--accent-contrast)]"
                 : "border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/90 text-[color:var(--text-primary)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
             }`}
           >
-            {displayName}
+            <span>{league.name}</span>
+            <span
+              className={`inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-bold ${
+                isActive
+                  ? "bg-[color:var(--accent-contrast)]/20 text-[color:var(--accent-contrast)]"
+                  : "bg-[color:var(--accent)]/15 text-[color:var(--accent)]"
+              }`}
+            >
+              {league.entryRank}
+            </span>
           </button>
         );
       })}

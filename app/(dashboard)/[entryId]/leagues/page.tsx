@@ -135,7 +135,10 @@ export default async function EntryLeaguesPage({
         </section>
 
         {leaguesView.selectedLeague ? (
-          <LeagueTable league={leaguesView.selectedLeague} />
+          <LeagueTable
+            league={leaguesView.selectedLeague}
+            currentEntryId={leaguesView.entryId}
+          />
         ) : leaguesView.leagues.length > 0 ? (
           <ErrorBanner message="We couldn't load standings for this league right now. Try another league or refresh." />
         ) : null}
