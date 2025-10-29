@@ -121,7 +121,16 @@ export type FixturesViewDTO = {
   entryId: number;
   teamName: string;
   managerName: string;
+  currentEvent: number;
   event: number;
   fixtures: FixtureDTO[];
   playersByFixture: Map<number, FixturePlayerDTO[]>;
+};
+
+export type GameweekViewDTO = {
+  entryId: number;
+  teamName: string;
+  managerName: string;
+  currentEvent: number;
+  gameweek: LatestGwDTO;
 };

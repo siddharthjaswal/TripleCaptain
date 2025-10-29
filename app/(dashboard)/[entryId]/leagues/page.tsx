@@ -116,7 +116,11 @@ export default async function EntryLeaguesPage({
                 </div>
               </div>
             </div>
-            <DashboardNav entryId={leaguesView.entryId} active="leagues" />
+            <DashboardNav
+              entryId={leaguesView.entryId}
+              active="leagues"
+              currentEvent={leaguesView.currentEvent ?? undefined}
+            />
           </div>
         </header>
 

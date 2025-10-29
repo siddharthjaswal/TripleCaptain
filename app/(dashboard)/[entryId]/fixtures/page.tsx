@@ -103,7 +103,11 @@ export default async function EntryFixturesPage({
                 </div>
               </div>
             </div>
-            <DashboardNav entryId={fixturesView.entryId} active="fixtures" />
+            <DashboardNav
+              entryId={fixturesView.entryId}
+              active="fixtures"
+              currentEvent={fixturesView.currentEvent}
+            />
           </div>
         </header>
 

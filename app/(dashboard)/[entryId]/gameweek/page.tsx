@@ -2,55 +2,58 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DashboardNav } from "@/components/DashboardNav";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { GameweekCard } from "@/components/GameweekCard";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
-import { GameweekPitchCard } from "@/components/GameweekPitchCard";
-import { DeadlineCard } from "@/components/DeadlineCard";
-import { loadEntrySummary, parseEntryId } from "@/lib/fpl/service";
-import { ProfileCard } from "@/components/cards/ProfileCard";
-import { TotalsCard } from "@/components/cards/TotalsCard";
-import { LatestGwCard } from "@/components/cards/LatestGwCard";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { loadGameweek, parseEntryId } from "@/lib/fpl/service";
 
-type EntryPageParams = {
+type GameweekPageParams = {
   entryId: string;
+};
+
+type GameweekSearchParams = {
+  event?: string;
 };
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<EntryPageParams>;
+  params: Promise<GameweekPageParams>;
 }): Promise<Metadata> {
-  const { entryId: entryIdRaw } = await params;
-
+  const { entryId } = await params;
   try {
-    const entryId = parseEntryId(entryIdRaw);
-    const summary = await loadEntrySummary(entryId);
+    const parsedEntryId = parseEntryId(entryId);
+    const view = await loadGameweek(parsedEntryId);
     return {
-      title: `${summary.profile.teamName} | Triple Captain`,
-      description: `Manager dashboard for ${summary.profile.managerName}'s FPL team`,
+      title: `${view.teamName} | Gameweek ${view.gameweek.event} | Triple Captain`,
     };
   } catch {
     return {
-      title: `Manager ${entryIdRaw} | Triple Captain`,
+      title: `Manager ${entryId} | Gameweek | Triple Captain`,
     };
   }
 }
 
-export default async function EntryPage({
+export default async function GameweekPage({
   params,
+  searchParams,
 }: {
-  params: Promise<EntryPageParams>;
+  params: Promise<GameweekPageParams>;
+  searchParams?: Promise<GameweekSearchParams>;
 }) {
-  const { entryId: entryIdRaw } = await params;
-  const entryId = (() => {
-    try {
-      return parseEntryId(entryIdRaw);
-    } catch {
-      notFound();
-    }
-  })();
+  const { entryId } = await params;
+  const resolvedSearch = (await searchParams) ?? {};
 
-  const summary = await loadEntrySummary(entryId);
+  let parsedEntryId: number;
+  try {
+    parsedEntryId = parseEntryId(entryId);
+  } catch {
+    notFound();
+  }
+
+  const view = await loadGameweek(parsedEntryId, {
+    event: resolvedSearch.event ?? null,
+  });
 
   return (
     <main className="tc-surface min-h-dvh px-4 pb-16 pt-8">
@@ -92,36 +95,31 @@ export default async function EntryPage({
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold sm:text-3xl">
-                    {summary.profile.teamName}
+                    {view.teamName}
                   </h1>
                   <p className="text-sm tc-text-muted">
-                    {summary.profile.managerName}
+                    {view.managerName}
                   </p>
                 </div>
               </div>
             </div>
             <DashboardNav
-              entryId={summary.profile.entryId}
-              active="summary"
-              currentEvent={summary.totals.currentEvent}
+              entryId={view.entryId}
+              active="gameweek"
+              currentEvent={view.currentEvent}
             />
           </div>
         </header>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <ProfileCard profile={summary.profile} />
-          <TotalsCard totals={summary.totals} />
-        </div>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <LatestGwCard latest={summary.latest} />
-          {summary.nextDeadline && (
-            <DeadlineCard deadline={summary.nextDeadline} />
-          )}
-        </div>
-        <GameweekPitchCard latest={summary.latest} />
+
+        <GameweekCard
+          entryId={view.entryId}
+          gameweek={view.gameweek}
+        />
+
         <PersistLastEntry
-          entryId={summary.profile.entryId}
-          teamName={summary.profile.teamName}
-          managerName={summary.profile.managerName}
+          entryId={view.entryId}
+          teamName={view.teamName}
+          managerName={view.managerName}
         />
       </div>
     </main>

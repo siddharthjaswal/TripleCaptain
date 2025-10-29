@@ -1,23 +1,29 @@
 import Link from "next/link";
 
 const links = [
-  { slug: "summary", name: "Summary" },
-  { slug: "leagues", name: "Leagues" },
-  { slug: "fixtures", name: "Fixtures" },
+  { slug: "summary", name: "Summary", isDynamic: false },
+  { slug: "gameweek", name: "Gameweek", isDynamic: true },
+  { slug: "leagues", name: "Leagues", isDynamic: false },
+  { slug: "fixtures", name: "Fixtures", isDynamic: false },
 ] as const;
 
 type DashboardNavProps = {
   entryId: number;
   active: (typeof links)[number]["slug"];
+  currentEvent?: number;
 };
 
-export function DashboardNav({ entryId, active }: DashboardNavProps) {
+export function DashboardNav({ entryId, active, currentEvent }: DashboardNavProps) {
   return (
     <nav className="flex gap-2">
       {links.map((link) => {
         const href =
           link.slug === "summary" ? `/${entryId}` : `/${entryId}/${link.slug}`;
         const isActive = link.slug === active;
+        const displayName =
+          link.isDynamic && currentEvent
+            ? `Gameweek ${currentEvent}`
+            : link.name;
         return (
           <Link
             key={link.slug}
@@ -29,7 +35,7 @@ export function DashboardNav({ entryId, active }: DashboardNavProps) {
             }`}
             aria-current={isActive ? "page" : undefined}
           >
-            {link.name}
+            {displayName}
           </Link>
         );
       })}

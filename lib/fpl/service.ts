@@ -12,6 +12,7 @@ import {
 import type {
   FixturesViewDTO,
   GameweekDeadlineDTO,
+  GameweekViewDTO,
   LeaguesViewDTO,
   SummaryDTO,
 } from "./dto";
@@ -290,16 +291,17 @@ export async function loadFixtures(
       `${profile.player_first_name} ${profile.player_last_name}`.trim();
 
     // Determine which event to show
+    const currentEvent = await resolveCurrentEvent(profile.current_event);
     let event: number;
     if (options.event !== undefined && options.event !== null) {
       event = typeof options.event === "number"
         ? options.event
         : Number.parseInt(String(options.event), 10);
       if (Number.isNaN(event) || event <= 0) {
-        event = await resolveCurrentEvent(profile.current_event);
+        event = currentEvent;
       }
     } else {
-      event = await resolveCurrentEvent(profile.current_event);
+      event = currentEvent;
     }
 
     const fixtures = await getFixtures(event);
@@ -372,9 +374,81 @@ export async function loadFixtures(
       entryId,
       teamName,
       managerName,
+      currentEvent,
       event,
       fixtures: mappedFixtures,
       playersByFixture,
+    };
+  } catch (error) {
+    if (error instanceof FplError && error.status === 404) {
+      notFound();
+    }
+    throw error;
+  }
+}
+
+export async function loadGameweek(
+  entryIdInput: string | number,
+  options: { event?: string | number | null } = {},
+): Promise<GameweekViewDTO> {
+  const entryId =
+    typeof entryIdInput === "number"
+      ? entryIdInput
+      : parseEntryId(entryIdInput);
+
+  try {
+    const [profile, history, bootstrap] = await Promise.all([
+      getEntryProfile(entryId),
+      getEntryHistory(entryId),
+      getBootstrap(),
+    ]);
+
+    const teamName = profile.name;
+    const managerName =
+      `${profile.player_first_name} ${profile.player_last_name}`.trim();
+
+    // Determine which event to show
+    let event: number;
+    if (options.event !== undefined && options.event !== null) {
+      event = typeof options.event === "number"
+        ? options.event
+        : Number.parseInt(String(options.event), 10);
+      if (Number.isNaN(event) || event <= 0) {
+        event = await resolveCurrentEvent(profile.current_event);
+      }
+    } else {
+      const fallbackEvent = await resolveCurrentEvent(profile.current_event);
+      const latestHistoryEvent = resolveLatestHistoryEvent(history.current);
+      event = latestHistoryEvent ?? fallbackEvent;
+    }
+
+    const currentEvent = await resolveCurrentEvent(profile.current_event);
+    const historyRecord = resolveHistoryRecord(history.current, event);
+
+    const [picks, liveData] = await Promise.all([
+      getEntryPicks(entryId, event).catch(() => null),
+      getEventLive(event).catch(() => null),
+    ]);
+
+    const currentEventMeta = bootstrap.events.find((e) => e.id === event);
+    const isLive = Boolean(currentEventMeta?.is_current && !currentEventMeta?.finished);
+    const isFinished = currentEventMeta?.finished ?? true;
+
+    return {
+      entryId,
+      teamName,
+      managerName,
+      currentEvent,
+      gameweek: mapLatestGameweek({
+        entryId,
+        currentEvent: event,
+        history,
+        picks: picks ?? undefined,
+        isLive,
+        isFinished,
+        liveData: liveData ?? undefined,
+        elements: bootstrap.elements,
+      }),
     };
   } catch (error) {
     if (error instanceof FplError && error.status === 404) {
