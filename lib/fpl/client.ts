@@ -9,12 +9,14 @@ import {
   EntryPicksSchema,
   EntryProfileSchema,
   EventLiveSchema,
+  FixturesResponseSchema,
   type BootstrapStatic,
   type ClassicLeagueStandings,
   type EntryHistory,
   type EntryPicks,
   type EntryProfile,
   type EventLive,
+  type Fixture,
 } from "./schemas";
 
 const API_BASE = "https://fantasy.premierleague.com/api";
@@ -154,5 +156,14 @@ export async function getClassicLeagueStandings(
     path: `/leagues-classic/${leagueId}/standings/${pageParam}`,
     schema: ClassicLeagueStandingsSchema,
     revalidate: 600,
+  });
+}
+
+export async function getFixtures(event?: number): Promise<Fixture[]> {
+  const eventParam = event ? `?event=${event}` : "";
+  return fetchFromFpl({
+    path: `/fixtures/${eventParam}`,
+    schema: FixturesResponseSchema,
+    revalidate: 300,
   });
 }

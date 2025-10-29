@@ -14,9 +14,18 @@ export const BootstrapEventSchema = z
   })
   .passthrough();
 
+export const BootstrapTeamSchema = z
+  .object({
+    id: z.number(),
+    name: z.string(),
+    short_name: z.string(),
+  })
+  .passthrough();
+
 export const BootstrapStaticSchema = z
   .object({
     events: z.array(BootstrapEventSchema),
+    teams: z.array(BootstrapTeamSchema),
     total_players: z.number(),
     elements: z.array(
       z
@@ -221,6 +230,22 @@ export const ClassicLeagueStandingsSchema = z
   })
   .passthrough();
 
+export const FixtureSchema = z
+  .object({
+    id: z.number(),
+    event: z.number().nullable(),
+    team_h: z.number(),
+    team_a: z.number(),
+    team_h_score: z.number().nullable(),
+    team_a_score: z.number().nullable(),
+    kickoff_time: z.string().nullable(),
+    finished: z.boolean(),
+    started: z.boolean().optional(),
+  })
+  .passthrough();
+
+export const FixturesResponseSchema = z.array(FixtureSchema);
+
 export type BootstrapStatic = z.infer<typeof BootstrapStaticSchema>;
 export type BootstrapElement = BootstrapStatic["elements"][number];
 export type EntryProfile = z.infer<typeof EntryProfileSchema>;
@@ -231,3 +256,4 @@ export type EntryPicks = z.infer<typeof EntryPicksSchema>;
 export type ClassicLeagueStandings = z.infer<
   typeof ClassicLeagueStandingsSchema
 >;
+export type Fixture = z.infer<typeof FixtureSchema>;

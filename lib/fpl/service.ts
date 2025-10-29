@@ -7,12 +7,19 @@ import {
   getEntryPicks,
   getEntryProfile,
   getEventLive,
+  getFixtures,
 } from "./client";
-import type { GameweekDeadlineDTO, LeaguesViewDTO, SummaryDTO } from "./dto";
+import type {
+  FixturesViewDTO,
+  GameweekDeadlineDTO,
+  LeaguesViewDTO,
+  SummaryDTO,
+} from "./dto";
 import type { BootstrapStatic, EntryCurrentHistory } from "./schemas";
 import {
   mapClassicLeagueStandings,
   mapClassicLeagueSummaries,
+  mapFixtures,
   mapLatestGameweek,
   mapProfile,
   mapTotals,
@@ -263,4 +270,52 @@ function calculateNextDeadline(
     deadline: nextEvent.deadline_time,
     isBeforeDeadline,
   };
+}
+
+export async function loadFixtures(
+  entryIdInput: string | number,
+  options: { event?: string | number | null } = {},
+): Promise<FixturesViewDTO> {
+  const entryId =
+    typeof entryIdInput === "number"
+      ? entryIdInput
+      : parseEntryId(entryIdInput);
+
+  try {
+    const profile = await getEntryProfile(entryId);
+    const bootstrap = await getBootstrap();
+
+    const teamName = profile.name;
+    const managerName =
+      `${profile.player_first_name} ${profile.player_last_name}`.trim();
+
+    // Determine which event to show
+    let event: number;
+    if (options.event !== undefined && options.event !== null) {
+      event = typeof options.event === "number"
+        ? options.event
+        : Number.parseInt(String(options.event), 10);
+      if (Number.isNaN(event) || event <= 0) {
+        event = await resolveCurrentEvent(profile.current_event);
+      }
+    } else {
+      event = await resolveCurrentEvent(profile.current_event);
+    }
+
+    const fixtures = await getFixtures(event);
+    const mappedFixtures = mapFixtures(fixtures, bootstrap);
+
+    return {
+      entryId,
+      teamName,
+      managerName,
+      event,
+      fixtures: mappedFixtures,
+    };
+  } catch (error) {
+    if (error instanceof FplError && error.status === 404) {
+      notFound();
+    }
+    throw error;
+  }
 }

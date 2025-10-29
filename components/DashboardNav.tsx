@@ -3,6 +3,7 @@ import Link from "next/link";
 const links = [
   { slug: "summary", name: "Summary" },
   { slug: "leagues", name: "Leagues" },
+  { slug: "fixtures", name: "Fixtures" },
 ] as const;
 
 type DashboardNavProps = {

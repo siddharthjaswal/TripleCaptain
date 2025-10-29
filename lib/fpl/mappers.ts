@@ -1,6 +1,7 @@
 import {
   ClassicLeagueStandingResultSchema,
   type BootstrapElement,
+  type BootstrapStatic,
   type ClassicLeagueStandings,
   type EntryCurrentHistory,
   type EntryHistory,
@@ -8,8 +9,10 @@ import {
   type EntryProfile,
   type EntryProfileLeagueSnippet,
   type EventLive,
+  type Fixture,
 } from "./schemas";
 import type {
+  FixtureDTO,
   LatestGwDTO,
   LatestGwPlayerDTO,
   LeagueStandingDTO,
@@ -217,4 +220,24 @@ export function mapClassicLeagueStandings(
     gameweek: context.gameweek ?? null,
     entries,
   };
+}
+
+export function mapFixtures(
+  fixtures: Fixture[],
+  bootstrap: BootstrapStatic,
+): FixtureDTO[] {
+  const teamsMap = new Map(
+    bootstrap.teams.map((team) => [team.id, team.short_name]),
+  );
+
+  return fixtures.map((fixture) => ({
+    id: fixture.id,
+    homeTeam: teamsMap.get(fixture.team_h) ?? "Unknown",
+    awayTeam: teamsMap.get(fixture.team_a) ?? "Unknown",
+    homeScore: fixture.team_h_score,
+    awayScore: fixture.team_a_score,
+    kickoffTime: fixture.kickoff_time,
+    finished: fixture.finished,
+    started: fixture.started ?? false,
+  }));
 }

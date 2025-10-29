@@ -91,3 +91,22 @@ export type LeaguesViewDTO = {
   selectedLeagueId: number | null;
   selectedLeague: LeagueStandingDTO | null;
 };
+
+export type FixtureDTO = {
+  id: number;
+  homeTeam: string;
+  awayTeam: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  kickoffTime: string | null;
+  finished: boolean;
+  started: boolean;
+};
+
+export type FixturesViewDTO = {
+  entryId: number;
+  teamName: string;
+  managerName: string;
+  event: number;
+  fixtures: FixtureDTO[];
+};
