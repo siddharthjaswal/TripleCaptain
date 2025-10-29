@@ -46,10 +46,7 @@ export function LeagueSwitcher({
     <div className="flex flex-wrap gap-2">
       {leagues.map((league) => {
         const isActive = league.id === selectedLeagueId;
-        const displayName =
-          league.entryRank !== null
-            ? `${league.name} #${league.entryRank}`
-            : league.name;
+        const displayName = `${league.name} #${league.entryRank}`;
         return (
           <button
             key={league.id}
