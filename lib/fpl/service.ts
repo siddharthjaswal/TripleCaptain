@@ -162,6 +162,7 @@ export async function loadEntryLeagues(
       leagues,
       selectedLeagueId: null,
       selectedLeague: null,
+      leagueRace: null,
     };
   }
 
@@ -173,6 +174,46 @@ export async function loadEntryLeagues(
     const standings = await getClassicLeagueStandings(selectedLeagueId, {
       page: Number.isNaN(page) ? undefined : page,
     });
+
+    const selectedLeague = mapClassicLeagueStandings(standings, {
+      gameweek: currentEvent ?? undefined,
+    });
+
+    // Fetch race data only for page 1 (top 10 managers)
+    let leagueRace: import("./dto").LeagueRaceDTO | null = null;
+    if ((!page || page === 1) && selectedLeague.entries.length > 0) {
+      try {
+        const top10Entries = selectedLeague.entries.slice(0, 10);
+        const historyPromises = top10Entries.map((entry) =>
+          getEntryHistory(entry.entryId)
+            .then((history) => ({
+              entryId: entry.entryId,
+              entryName: entry.entryName,
+              playerName: entry.playerName,
+              history: history.current.map((h) => ({
+                event: h.event,
+                totalPoints: h.total_points,
+              })),
+            }))
+            .catch(() => null)
+        );
+
+        const histories = await Promise.all(historyPromises);
+        const validHistories = histories.filter((h): h is NonNullable<typeof h> => h !== null);
+
+        if (validHistories.length > 0) {
+          leagueRace = {
+            leagueId: selectedLeagueId,
+            leagueName: selectedLeague.leagueName,
+            entries: validHistories,
+          };
+        }
+      } catch {
+        // Silently fail if race data can't be loaded
+        leagueRace = null;
+      }
+    }
+
     return {
       entryId,
       teamName,
@@ -180,9 +221,8 @@ export async function loadEntryLeagues(
       currentEvent,
       leagues,
       selectedLeagueId,
-      selectedLeague: mapClassicLeagueStandings(standings, {
-        gameweek: currentEvent ?? undefined,
-      }),
+      selectedLeague,
+      leagueRace,
     };
   } catch (error) {
     if (error instanceof FplError && error.status === 404) {
@@ -194,6 +234,7 @@ export async function loadEntryLeagues(
         leagues,
         selectedLeagueId,
         selectedLeague: null,
+        leagueRace: null,
       };
     }
     throw error;

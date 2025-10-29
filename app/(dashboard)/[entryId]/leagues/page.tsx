@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { FplError } from "@/lib/fpl/client";
 import { DashboardNav } from "@/components/DashboardNav";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { LeagueRaceChart } from "@/components/LeagueRaceChart";
 import { LeagueSwitcher } from "@/components/LeagueSwitcher";
 import { LeagueTable } from "@/components/LeagueTable";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
@@ -137,6 +138,10 @@ export default async function EntryLeaguesPage({
             selectedLeagueId={leaguesView.selectedLeagueId}
           />
         </section>
+
+        {leaguesView.leagueRace && (
+          <LeagueRaceChart race={leaguesView.leagueRace} />
+        )}
 
         {leaguesView.selectedLeague ? (
           <LeagueTable

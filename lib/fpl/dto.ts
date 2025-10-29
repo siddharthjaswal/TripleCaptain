@@ -82,6 +82,22 @@ export type LeagueStandingDTO = {
   entries: LeagueTableEntryDTO[];
 };
 
+export type LeagueRaceEntryDTO = {
+  entryId: number;
+  entryName: string;
+  playerName: string;
+  history: Array<{
+    event: number;
+    totalPoints: number;
+  }>;
+};
+
+export type LeagueRaceDTO = {
+  leagueId: number;
+  leagueName: string;
+  entries: LeagueRaceEntryDTO[];
+};
+
 export type LeaguesViewDTO = {
   entryId: number;
   teamName: string;
@@ -90,6 +106,7 @@ export type LeaguesViewDTO = {
   leagues: LeagueSummaryDTO[];
   selectedLeagueId: number | null;
   selectedLeague: LeagueStandingDTO | null;
+  leagueRace: LeagueRaceDTO | null;
 };
 
 export type FixtureDTO = {
