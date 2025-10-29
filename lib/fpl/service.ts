@@ -119,7 +119,7 @@ export async function loadEntryLeagues(
 
   const profile = await getEntryProfile(entryId);
   const leagues = mapClassicLeagueSummaries(profile.leagues?.classic)
-    .filter((league) => league.entryRank !== null) // Ignore leagues with no rank (zero people or inactive)
+    .filter((league) => league.entryRank !== null && league.entryRank > 0) // Ignore leagues with no rank or zero rank (empty/inactive)
     .sort((a, b) => {
       // Sort by rank ascending (lower rank = smaller league, comes first)
       return a.entryRank! - b.entryRank!;
