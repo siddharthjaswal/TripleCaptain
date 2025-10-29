@@ -111,6 +111,7 @@ export default async function EntryFixturesPage({
           entryId={fixturesView.entryId}
           event={fixturesView.event}
           fixtures={fixturesView.fixtures}
+          playersByFixture={fixturesView.playersByFixture}
         />
 
         <PersistLastEntry

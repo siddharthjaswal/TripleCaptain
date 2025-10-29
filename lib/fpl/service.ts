@@ -305,12 +305,75 @@ export async function loadFixtures(
     const fixtures = await getFixtures(event);
     const mappedFixtures = mapFixtures(fixtures, bootstrap);
 
+    // Try to fetch picks and live data for this gameweek
+    let picks;
+    let liveData;
+    try {
+      picks = await getEntryPicks(entryId, event);
+    } catch {
+      picks = null;
+    }
+    try {
+      liveData = await getEventLive(event);
+    } catch {
+      liveData = null;
+    }
+
+    // Map players to fixtures
+    const playersByFixture = new Map<number, import("./dto").FixturePlayerDTO[]>();
+
+    if (picks) {
+      const picksList = picks.picks ?? [];
+
+      for (const pick of picksList) {
+        const playerInfo = bootstrap.elements.find((el) => el.id === pick.element);
+        if (!playerInfo) continue;
+
+        // Find the fixture this player's team is in
+        const fixture = fixtures.find(
+          (f) =>
+            (f.team_h === playerInfo.team || f.team_a === playerInfo.team) &&
+            f.event === event,
+        );
+
+        if (!fixture) continue;
+
+        // Get live points if available
+        let points = 0;
+        if (liveData) {
+          const liveStats = liveData.elements.find(
+            (el) => el.id === pick.element,
+          );
+          points = liveStats?.stats?.total_points ?? 0;
+        }
+
+        // Apply multiplier
+        const multiplier = pick.multiplier ?? 1;
+        const appliedPoints = points * multiplier;
+
+        const fixturePlayer: import("./dto").FixturePlayerDTO = {
+          elementId: pick.element,
+          name: playerInfo.web_name,
+          points: appliedPoints,
+          isCaptain: Boolean(pick.is_captain),
+          isViceCaptain: Boolean(pick.is_vice_captain),
+          multiplier,
+        };
+
+        if (!playersByFixture.has(fixture.id)) {
+          playersByFixture.set(fixture.id, []);
+        }
+        playersByFixture.get(fixture.id)!.push(fixturePlayer);
+      }
+    }
+
     return {
       entryId,
       teamName,
       managerName,
       event,
       fixtures: mappedFixtures,
+      playersByFixture,
     };
   } catch (error) {
     if (error instanceof FplError && error.status === 404) {

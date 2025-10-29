@@ -2,15 +2,16 @@
 
 import { useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import type { FixtureDTO } from "@/lib/fpl/dto";
+import type { FixtureDTO, FixturePlayerDTO } from "@/lib/fpl/dto";
 
 type FixturesCardProps = {
   entryId: number;
   event: number;
   fixtures: FixtureDTO[];
+  playersByFixture: Map<number, FixturePlayerDTO[]>;
 };
 
-export function FixturesCard({ entryId, event, fixtures }: FixturesCardProps) {
+export function FixturesCard({ entryId, event, fixtures, playersByFixture }: FixturesCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -109,7 +110,11 @@ export function FixturesCard({ entryId, event, fixtures }: FixturesCardProps) {
               </h3>
               <div className="space-y-2">
                 {fixturesByDate[dateKey].map((fixture) => (
-                  <FixtureRow key={fixture.id} fixture={fixture} />
+                  <FixtureRow
+                    key={fixture.id}
+                    fixture={fixture}
+                    players={playersByFixture.get(fixture.id) ?? []}
+                  />
                 ))}
               </div>
             </div>
@@ -122,9 +127,10 @@ export function FixturesCard({ entryId, event, fixtures }: FixturesCardProps) {
 
 type FixtureRowProps = {
   fixture: FixtureDTO;
+  players: FixturePlayerDTO[];
 };
 
-function FixtureRow({ fixture }: FixtureRowProps) {
+function FixtureRow({ fixture, players }: FixtureRowProps) {
   const getScoreColor = (
     homeScore: number | null,
     awayScore: number | null,
@@ -151,38 +157,65 @@ function FixtureRow({ fixture }: FixtureRowProps) {
   const awayColor = getScoreColor(fixture.homeScore, fixture.awayScore, false);
 
   return (
-    <div className="flex items-center justify-between rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/60 px-4 py-3 transition hover:border-[color:var(--accent)]/50">
-      <div className="flex items-center gap-3 flex-1 min-w-0">
-        <span className="font-medium truncate w-32 text-right">
-          {fixture.homeTeam}
-        </span>
-        {showScore ? (
-          <div className="flex items-center gap-2 font-bold tabular-nums">
-            <span className={`${homeColor} text-lg`}>
-              {fixture.homeScore ?? 0}
-            </span>
-            <span className="tc-text-muted">-</span>
-            <span className={`${awayColor} text-lg`}>
-              {fixture.awayScore ?? 0}
-            </span>
-          </div>
-        ) : (
-          <span className="tc-text-muted text-sm font-medium px-3">
-            {formatKickoffTime(fixture.kickoffTime)}
+    <div className="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/60 overflow-hidden transition hover:border-[color:var(--accent)]/50">
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-center gap-3 flex-1">
+          <span className="font-semibold text-base">
+            {fixture.homeTeam}
           </span>
-        )}
-        <span className="font-medium truncate w-32">
-          {fixture.awayTeam}
-        </span>
+          {showScore ? (
+            <div className="flex items-center gap-2 font-bold tabular-nums">
+              <span className={`${homeColor} text-xl`}>
+                {fixture.homeScore ?? 0}
+              </span>
+              <span className="tc-text-muted">-</span>
+              <span className={`${awayColor} text-xl`}>
+                {fixture.awayScore ?? 0}
+              </span>
+            </div>
+          ) : (
+            <span className="tc-text-muted text-sm font-medium px-3">
+              {formatKickoffTime(fixture.kickoffTime)}
+            </span>
+          )}
+          <span className="font-semibold text-base">
+            {fixture.awayTeam}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {fixture.finished && (
+            <span className="tc-chip shrink-0">FT</span>
+          )}
+          {fixture.started && !fixture.finished && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-400 shrink-0">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              LIVE
+            </span>
+          )}
+        </div>
       </div>
-      {fixture.finished && (
-        <span className="tc-chip ml-2 shrink-0">FT</span>
-      )}
-      {fixture.started && !fixture.finished && (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-400 ml-2 shrink-0">
-          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-          LIVE
-        </span>
+
+      {players.length > 0 && (
+        <div className="border-t border-[color:var(--surface-border)] px-4 py-3 bg-[color:var(--surface-elevated)]/40">
+          <div className="flex flex-wrap gap-2 justify-center">
+            {players.map((player) => (
+              <div
+                key={player.elementId}
+                className="inline-flex items-center gap-2 rounded-full bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] px-3 py-1.5"
+              >
+                <span className="text-sm font-medium">{player.name}</span>
+                {(player.isCaptain || player.isViceCaptain) && (
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                    {player.isCaptain ? "C" : "V"}
+                  </span>
+                )}
+                <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--accent)]/15 px-2 py-0.5 text-xs font-bold text-[color:var(--accent)] min-w-[24px]">
+                  {player.points}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

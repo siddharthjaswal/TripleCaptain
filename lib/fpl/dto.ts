@@ -103,10 +103,20 @@ export type FixtureDTO = {
   started: boolean;
 };
 
+export type FixturePlayerDTO = {
+  elementId: number;
+  name: string;
+  points: number;
+  isCaptain: boolean;
+  isViceCaptain: boolean;
+  multiplier: number;
+};
+
 export type FixturesViewDTO = {
   entryId: number;
   teamName: string;
   managerName: string;
   event: number;
   fixtures: FixtureDTO[];
+  playersByFixture: Map<number, FixturePlayerDTO[]>;
 };
