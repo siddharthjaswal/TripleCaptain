@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { LeagueRaceDTO } from "@/lib/fpl/dto";
 import {
   LineChart,
@@ -9,7 +9,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   type TooltipProps,
 } from "recharts";
@@ -89,6 +88,10 @@ function CustomTooltip({ active, payload, label, entryColors }: CustomTooltipPro
 }
 
 export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
+  const [visibleEntries, setVisibleEntries] = useState<Set<string>>(() => {
+    return new Set(race.entries.map((entry) => entry.entryName));
+  });
+
   const chartData = useMemo(() => {
     // Find all unique gameweeks
     const allEvents = new Set<number>();
@@ -118,6 +121,18 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
     });
     return colorMap;
   }, [race]);
+
+  const toggleEntry = (entryName: string) => {
+    setVisibleEntries((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(entryName)) {
+        newSet.delete(entryName);
+      } else {
+        newSet.add(entryName);
+      }
+      return newSet;
+    });
+  };
 
   if (!race.entries.length || !chartData.length) {
     return null;
@@ -151,12 +166,6 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
             tick={{ fill: "var(--text-primary)", fontSize: 12 }}
           />
           <Tooltip content={<CustomTooltip entryColors={entryColors} />} />
-          <Legend
-            wrapperStyle={{
-              paddingTop: "1rem",
-              fontSize: "0.75rem",
-            }}
-          />
           {race.entries.map((entry, index) => (
             <Line
               key={entry.entryId}
@@ -166,10 +175,38 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 4 }}
+              hide={!visibleEntries.has(entry.entryName)}
             />
           ))}
         </LineChart>
       </ResponsiveContainer>
+
+      <div className="mt-4 flex flex-wrap gap-2 justify-center border-t border-[color:var(--surface-border)] pt-4">
+        {race.entries.map((entry, index) => {
+          const color = CHART_COLORS[index % CHART_COLORS.length];
+          const isVisible = visibleEntries.has(entry.entryName);
+          return (
+            <button
+              key={entry.entryId}
+              type="button"
+              onClick={() => toggleEntry(entry.entryName)}
+              className={`tc-focus-visible inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                isVisible
+                  ? "bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] hover:border-[color:var(--accent)]"
+                  : "bg-[color:var(--surface-elevated)]/50 border border-[color:var(--surface-border)]/50 opacity-50"
+              }`}
+            >
+              <div
+                className="h-3 w-3 rounded-full"
+                style={{ backgroundColor: isVisible ? color : "var(--text-muted)" }}
+              />
+              <span className={isVisible ? "text-[color:var(--text-primary)]" : "text-[color:var(--text-muted)] line-through"}>
+                {entry.entryName}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </section>
   );
 }
