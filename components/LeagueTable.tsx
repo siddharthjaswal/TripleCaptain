@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import type { LeagueStandingDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
 
@@ -11,13 +11,14 @@ type LeagueTableProps = {
 
 export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const gameweekLabel = league.gameweek ? `GW ${league.gameweek}` : null;
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", newPage.toString());
-    router.push(`?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -71,7 +72,6 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
             {league.entries.map((entry) => {
               const delta = formatRankDelta(entry.rank, entry.lastRank);
               const isCurrentUser = entry.entryId === currentEntryId;
-              const medal = getMedalForRank(entry.rank);
               return (
                 <tr
                   key={entry.entryId}
@@ -81,11 +81,14 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                       : "hover:bg-[color:var(--surface-elevated)]/60"
                   }`}
                 >
-                  <td className="px-3 py-3 font-mono text-sm">
-                    <span className="inline-flex items-center gap-1.5">
-                      {medal && <span className="text-base">{medal}</span>}
-                      {entry.rank ? `#${formatNumber(entry.rank)}` : "—"}
-                    </span>
+                  <td className="px-3 py-3">
+                    {entry.rank ? (
+                      <span className="inline-flex h-7 min-w-[28px] items-center justify-center rounded-full bg-[color:var(--accent)]/15 px-2 text-xs font-bold text-[color:var(--accent)]">
+                        {formatNumber(entry.rank)}
+                      </span>
+                    ) : (
+                      <span className="text-sm tc-text-muted">—</span>
+                    )}
                   </td>
                   <td
                     className={`px-3 py-3 font-mono text-xs transition ${delta.className}`}
@@ -161,14 +164,6 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
       )}
     </section>
   );
-}
-
-function getMedalForRank(rank: number | null): string | null {
-  if (!rank) return null;
-  if (rank === 1) return "🥇";
-  if (rank === 2) return "🥈";
-  if (rank === 3) return "🥉";
-  return null;
 }
 
 function formatRankDelta(
