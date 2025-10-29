@@ -61,7 +61,7 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
   return (
     <section className="tc-card rounded-3xl p-6 shadow-lg">
       <header className="mb-6">
-        <h2 className="text-xl font-semibold">Top 10 Race</h2>
+        <h2 className="text-xl font-semibold">Top 5 Race</h2>
         <p className="tc-text-muted text-sm mt-1">
           Points progression over gameweeks
         </p>

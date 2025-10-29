@@ -179,11 +179,11 @@ export async function loadEntryLeagues(
       gameweek: currentEvent ?? undefined,
     });
 
-    // Fetch race data only for page 1 (top 10 managers)
+    // Fetch race data only for page 1 (top 5 managers)
     let leagueRace: import("./dto").LeagueRaceDTO | null = null;
     if ((!page || page === 1) && selectedLeague.entries.length > 0) {
       try {
-        const top10Entries = selectedLeague.entries.slice(0, 10);
+        const top10Entries = selectedLeague.entries.slice(0, 5);
         const historyPromises = top10Entries.map((entry) =>
           getEntryHistory(entry.entryId)
             .then((history) => ({

@@ -139,10 +139,6 @@ export default async function EntryLeaguesPage({
           />
         </section>
 
-        {leaguesView.leagueRace && (
-          <LeagueRaceChart race={leaguesView.leagueRace} />
-        )}
-
         {leaguesView.selectedLeague ? (
           <LeagueTable
             league={leaguesView.selectedLeague}
@@ -151,6 +147,10 @@ export default async function EntryLeaguesPage({
         ) : leaguesView.leagues.length > 0 ? (
           <ErrorBanner message="We couldn't load standings for this league right now. Try another league or refresh." />
         ) : null}
+
+        {leaguesView.leagueRace && (
+          <LeagueRaceChart race={leaguesView.leagueRace} />
+        )}
         <PersistLastEntry
           entryId={leaguesView.entryId}
           teamName={leaguesView.teamName}
