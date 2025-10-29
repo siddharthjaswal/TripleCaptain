@@ -2,6 +2,8 @@
 
 import type { LatestGwDTO, LatestGwPlayerDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
+import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
+import Image from "next/image";
 
 const POSITION_ORDER: Array<LatestGwPlayerDTO["position"]> = [
   "GK",
@@ -112,16 +114,37 @@ function PlayerChip({ player, compact = false }: PlayerChipProps) {
   const multiplierLabel =
     player.multiplier > 1 ? `×${player.multiplier}` : null;
 
+  const photoUrl = getPlayerPhotoUrl(player.photo);
+  const shirtUrl = getTeamShirtUrl(player.teamCode);
+  const imageUrl = photoUrl ?? shirtUrl;
+
   return (
     <div
       className={`tc-player-chip ${compact ? "tc-player-chip--compact" : ""}`}
       aria-label={`${player.name}, ${player.position}, ${player.points} points`}
     >
+      {imageUrl && (
+        <div className="tc-player-chip__image">
+          <Image
+            src={imageUrl}
+            alt={player.name}
+            width={40}
+            height={40}
+            className="rounded-md object-cover"
+            unoptimized
+          />
+          {badge && (
+            <span className="tc-player-chip__badge" aria-label={badge === "C" ? "Captain" : "Vice Captain"}>
+              {badge}
+            </span>
+          )}
+        </div>
+      )}
       <div className="tc-player-chip__info">
         <p className="tc-player-chip__name">{player.name}</p>
         <p className="tc-player-chip__meta">
           {player.position}
-          {badge ? ` · ${badge}` : ""}
+          {!imageUrl && badge ? ` · ${badge}` : ""}
           {multiplierLabel ? ` · ${multiplierLabel}` : ""}
         </p>
       </div>

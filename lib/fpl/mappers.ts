@@ -137,6 +137,9 @@ function mapLatestGameweekPlayers(params: {
         multiplier,
         points: appliedPoints,
         rawPoints,
+        photo: playerInfo?.photo ?? null,
+        teamId: playerInfo?.team ?? null,
+        teamCode: playerInfo?.team_code ?? null,
       } satisfies LatestGwPlayerDTO;
     });
 }

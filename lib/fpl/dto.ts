@@ -41,6 +41,9 @@ export type LatestGwPlayerDTO = {
   multiplier: number;
   points: number;
   rawPoints: number;
+  photo: string | null;
+  teamId: number | null;
+  teamCode: number | null;
 };
 
 export type LeagueSummaryDTO = {

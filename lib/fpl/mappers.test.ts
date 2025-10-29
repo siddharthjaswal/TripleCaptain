@@ -298,18 +298,24 @@ const benchElements = [
     web_name: "Bench One",
     element_type: 2,
     team: 1,
+    team_code: 3,
+    photo: "123456.jpg",
   },
   {
     id: 5,
     web_name: "Bench Two",
     element_type: 3,
     team: 1,
+    team_code: 3,
+    photo: "234567.jpg",
   },
   {
     id: 6,
     web_name: "Bench Three",
     element_type: 4,
     team: 1,
+    team_code: 3,
+    photo: "345678.jpg",
   },
 ];
 const bootstrapElements = [
@@ -318,18 +324,24 @@ const bootstrapElements = [
     web_name: "Keeper",
     element_type: 1,
     team: 1,
+    team_code: 3,
+    photo: "111111.jpg",
   },
   {
     id: 2,
     web_name: "Captain",
     element_type: 4,
     team: 2,
+    team_code: 6,
+    photo: "222222.jpg",
   },
   {
     id: 3,
     web_name: "Bench",
     element_type: 3,
     team: 3,
+    team_code: 1,
+    photo: "333333.jpg",
   },
 ];
 
