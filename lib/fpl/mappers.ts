@@ -227,17 +227,24 @@ export function mapFixtures(
   bootstrap: BootstrapStatic,
 ): FixtureDTO[] {
   const teamsMap = new Map(
-    bootstrap.teams.map((team) => [team.id, team.short_name]),
+    bootstrap.teams.map((team) => [team.id, { name: team.short_name, code: team.code }]),
   );
 
-  return fixtures.map((fixture) => ({
-    id: fixture.id,
-    homeTeam: teamsMap.get(fixture.team_h) ?? "Unknown",
-    awayTeam: teamsMap.get(fixture.team_a) ?? "Unknown",
-    homeScore: fixture.team_h_score,
-    awayScore: fixture.team_a_score,
-    kickoffTime: fixture.kickoff_time,
-    finished: fixture.finished,
-    started: fixture.started ?? false,
-  }));
+  return fixtures.map((fixture) => {
+    const homeTeamData = teamsMap.get(fixture.team_h);
+    const awayTeamData = teamsMap.get(fixture.team_a);
+
+    return {
+      id: fixture.id,
+      homeTeam: homeTeamData?.name ?? "Unknown",
+      awayTeam: awayTeamData?.name ?? "Unknown",
+      homeTeamBadge: homeTeamData ? `https://resources.premierleague.com/premierleague/badges/t${homeTeamData.code}.png` : "",
+      awayTeamBadge: awayTeamData ? `https://resources.premierleague.com/premierleague/badges/t${awayTeamData.code}.png` : "",
+      homeScore: fixture.team_h_score,
+      awayScore: fixture.team_a_score,
+      kickoffTime: fixture.kickoff_time,
+      finished: fixture.finished,
+      started: fixture.started ?? false,
+    };
+  });
 }

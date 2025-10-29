@@ -167,17 +167,24 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
   return (
     <div className="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/60 overflow-hidden transition hover:border-[color:var(--accent)]/50">
       <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center justify-center gap-3 flex-1">
-          <span className="font-semibold text-base">
-            {fixture.homeTeam}
-          </span>
+        <div className="flex items-center justify-center gap-4 flex-1">
+          <div className="flex items-center gap-2 flex-1 justify-end">
+            <span className="font-bold text-lg">
+              {fixture.homeTeam}
+            </span>
+            <img
+              src={fixture.homeTeamBadge}
+              alt={fixture.homeTeam}
+              className="h-8 w-8 object-contain"
+            />
+          </div>
           {showScore ? (
             <div className="flex items-center gap-2 font-bold tabular-nums">
-              <span className={`${homeColor} text-xl`}>
+              <span className={`${homeColor} text-base`}>
                 {fixture.homeScore ?? 0}
               </span>
               <span className="tc-text-muted">-</span>
-              <span className={`${awayColor} text-xl`}>
+              <span className={`${awayColor} text-base`}>
                 {fixture.awayScore ?? 0}
               </span>
             </div>
@@ -186,9 +193,16 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
               {formatKickoffTime(fixture.kickoffTime)}
             </span>
           )}
-          <span className="font-semibold text-base">
-            {fixture.awayTeam}
-          </span>
+          <div className="flex items-center gap-2 flex-1">
+            <img
+              src={fixture.awayTeamBadge}
+              alt={fixture.awayTeam}
+              className="h-8 w-8 object-contain"
+            />
+            <span className="font-bold text-lg">
+              {fixture.awayTeam}
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {fixture.finished && (

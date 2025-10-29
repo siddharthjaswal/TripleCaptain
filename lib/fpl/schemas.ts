@@ -19,6 +19,7 @@ export const BootstrapTeamSchema = z
     id: z.number(),
     name: z.string(),
     short_name: z.string(),
+    code: z.number(),
   })
   .passthrough();
 

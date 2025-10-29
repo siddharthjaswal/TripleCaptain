@@ -96,6 +96,8 @@ export type FixtureDTO = {
   id: number;
   homeTeam: string;
   awayTeam: string;
+  homeTeamBadge: string;
+  awayTeamBadge: string;
   homeScore: number | null;
   awayScore: number | null;
   kickoffTime: string | null;
