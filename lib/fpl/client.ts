@@ -149,9 +149,9 @@ export async function getClassicLeagueStandings(
   leagueId: number,
   options: { page?: number } = {},
 ): Promise<ClassicLeagueStandings> {
-  const search = options.page ? `?page=${options.page}` : "";
+  const pageParam = options.page && options.page > 1 ? `?page_new_entries=1&page_standings=${options.page}` : "";
   return fetchFromFpl({
-    path: `/leagues-classic/${leagueId}/standings/${search}`,
+    path: `/leagues-classic/${leagueId}/standings/${pageParam}`,
     schema: ClassicLeagueStandingsSchema,
     revalidate: 600,
   });
