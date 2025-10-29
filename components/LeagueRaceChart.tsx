@@ -11,7 +11,9 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  type TooltipProps,
 } from "recharts";
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
 type LeagueRaceChartProps = {
   race: LeagueRaceDTO;
@@ -30,6 +32,61 @@ const CHART_COLORS = [
   "#84cc16", // lime
   "#6366f1", // indigo
 ];
+
+type CustomTooltipProps = {
+  active?: boolean;
+  payload?: Array<{
+    name?: string;
+    value?: ValueType;
+    color?: string;
+  }>;
+  label?: string | number;
+  entryColors: Map<string, string>;
+};
+
+function CustomTooltip({ active, payload, label, entryColors }: CustomTooltipProps) {
+  if (!active || !payload || !payload.length) {
+    return null;
+  }
+
+  // Sort payload by value (points) in descending order
+  const sortedPayload = [...payload].sort((a, b) => {
+    const aValue = typeof a.value === "number" ? a.value : 0;
+    const bValue = typeof b.value === "number" ? b.value : 0;
+    return bValue - aValue;
+  });
+
+  return (
+    <div
+      className="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)] p-3 shadow-lg"
+      style={{
+        backgroundColor: "var(--surface-elevated)",
+      }}
+    >
+      <p className="mb-2 font-bold text-[color:var(--text-primary)]">
+        GW{label}
+      </p>
+      <div className="space-y-1">
+        {sortedPayload.map((entry, index) => (
+          <div key={index} className="flex items-center gap-2 text-sm">
+            <div
+              className="h-3 w-3 rounded-full"
+              style={{
+                backgroundColor: entryColors.get(String(entry.name)) || entry.color,
+              }}
+            />
+            <span className="flex-1 text-[color:var(--text-primary)]">
+              {entry.name}
+            </span>
+            <span className="font-mono font-semibold text-[color:var(--text-primary)]">
+              {entry.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
   const chartData = useMemo(() => {
@@ -54,6 +111,14 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
     });
   }, [race]);
 
+  const entryColors = useMemo(() => {
+    const colorMap = new Map<string, string>();
+    race.entries.forEach((entry, index) => {
+      colorMap.set(entry.entryName, CHART_COLORS[index % CHART_COLORS.length]);
+    });
+    return colorMap;
+  }, [race]);
+
   if (!race.entries.length || !chartData.length) {
     return null;
   }
@@ -76,32 +141,16 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
           />
           <XAxis
             dataKey="event"
-            label={{ value: "Gameweek", position: "insideBottom", offset: -5 }}
-            stroke="var(--text-muted)"
-            tick={{ fill: "var(--text-muted)", fontSize: 12 }}
+            label={{ value: "Gameweek", position: "insideBottom", offset: -5, fill: "var(--text-primary)" }}
+            stroke="var(--text-primary)"
+            tick={{ fill: "var(--text-primary)", fontSize: 12 }}
           />
           <YAxis
-            label={{ value: "Total Points", angle: -90, position: "insideLeft" }}
-            stroke="var(--text-muted)"
-            tick={{ fill: "var(--text-muted)", fontSize: 12 }}
+            label={{ value: "Total Points", angle: -90, position: "insideLeft", fill: "var(--text-primary)" }}
+            stroke="var(--text-primary)"
+            tick={{ fill: "var(--text-primary)", fontSize: 12 }}
           />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "var(--surface-elevated)",
-              border: "1px solid var(--surface-border)",
-              borderRadius: "0.75rem",
-              color: "var(--text-primary)",
-            }}
-            labelStyle={{
-              color: "var(--text-primary)",
-              fontWeight: "bold",
-              marginBottom: "0.5rem",
-            }}
-            itemStyle={{
-              color: "var(--text-primary)",
-              fontSize: "0.875rem",
-            }}
-          />
+          <Tooltip content={<CustomTooltip entryColors={entryColors} />} />
           <Legend
             wrapperStyle={{
               paddingTop: "1rem",
