@@ -14,15 +14,11 @@ export function LatestGwCard({ latest }: LatestGwCardProps) {
         </h2>
         <StatusPill isLive={latest.isLive} event={latest.event} />
       </div>
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Metric label="GW Points" value={formatNumber(latest.points)} />
         <Metric
           label="GW Rank"
           value={latest.rank ? `#${formatNumber(latest.rank)}` : "—"}
-        />
-        <Metric
-          label="Bench Points"
-          value={formatNumber(latest.pointsOnBench)}
         />
       </div>
       <div className="mt-6 text-sm tc-text-muted">

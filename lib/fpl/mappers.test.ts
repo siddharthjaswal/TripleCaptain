@@ -175,6 +175,7 @@ describe("mapLatestGameweek", () => {
       currentEvent: 10,
       history,
       isLive: false,
+      isFinished: true,
     });
 
     expect(dto).toEqual({
@@ -185,6 +186,7 @@ describe("mapLatestGameweek", () => {
       pointsOnBench: 7,
       chipUsed: null,
       isLive: false,
+      isFinished: true,
       players: [],
     });
   });
@@ -195,9 +197,11 @@ describe("mapLatestGameweek", () => {
       currentEvent: 11,
       history,
       isLive: true,
+      isFinished: false,
     });
 
     expect(dto.event).toBe(10);
+    expect(dto.isFinished).toBe(false);
     expect(dto.players).toEqual([]);
   });
 
@@ -207,6 +211,7 @@ describe("mapLatestGameweek", () => {
       currentEvent: 10,
       history,
       isLive: false,
+      isFinished: true,
       picks: picksFixture,
       liveData: liveFixture,
       elements: bootstrapElements,
@@ -228,6 +233,7 @@ describe("mapLatestGameweek", () => {
       currentEvent: 10,
       history,
       isLive: false,
+      isFinished: true,
       picks: benchOnlyPicks,
       liveData: liveFixture,
       elements: benchElements,
@@ -244,6 +250,7 @@ describe("mapLatestGameweek", () => {
       currentEvent: 10,
       history,
       isLive: true,
+      isFinished: false,
       picks: picksFixture,
       elements: bootstrapElements,
     });

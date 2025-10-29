@@ -8,8 +8,8 @@ import {
   getEntryProfile,
   getEventLive,
 } from "./client";
-import type { LeaguesViewDTO, SummaryDTO } from "./dto";
-import type { EntryCurrentHistory } from "./schemas";
+import type { GameweekDeadlineDTO, LeaguesViewDTO, SummaryDTO } from "./dto";
+import type { BootstrapStatic, EntryCurrentHistory } from "./schemas";
 import {
   mapClassicLeagueStandings,
   mapClassicLeagueSummaries,
@@ -77,7 +77,10 @@ export async function loadEntrySummary(
     const currentEventMeta = bootstrap.events.find(
       (event) => event.id === summaryEvent,
     );
-    const isLive = currentEventMeta?.is_current ?? false;
+    const isLive = Boolean(currentEventMeta?.is_current && !currentEventMeta?.finished);
+    const isFinished = currentEventMeta?.finished ?? true;
+
+    const nextDeadline = calculateNextDeadline(bootstrap.events);
 
     return {
       profile: mapProfile(profile),
@@ -88,9 +91,11 @@ export async function loadEntrySummary(
         history,
         picks: picks ?? undefined,
         isLive,
+        isFinished,
         liveData: liveData ?? undefined,
         elements: bootstrap.elements,
       }),
+      nextDeadline,
     };
   } catch (error) {
     if (error instanceof FplError && error.status === 404) {
@@ -231,4 +236,26 @@ function resolveHistoryRecord(
   }
 
   return history[history.length - 1];
+}
+
+function calculateNextDeadline(
+  events: BootstrapStatic["events"],
+): GameweekDeadlineDTO | null {
+  const now = new Date();
+
+  // Find the next gameweek that hasn't finished
+  const nextEvent = events.find((event) => !event.finished);
+
+  if (!nextEvent) {
+    return null;
+  }
+
+  const deadline = new Date(nextEvent.deadline_time);
+  const isBeforeDeadline = now < deadline;
+
+  return {
+    nextGameweek: nextEvent.id,
+    deadline: nextEvent.deadline_time,
+    isBeforeDeadline,
+  };
 }

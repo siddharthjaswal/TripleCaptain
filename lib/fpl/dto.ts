@@ -21,13 +21,21 @@ export type LatestGwDTO = {
   pointsOnBench: number;
   chipUsed: string | null;
   isLive: boolean;
+  isFinished: boolean;
   players: LatestGwPlayerDTO[];
+};
+
+export type GameweekDeadlineDTO = {
+  nextGameweek: number;
+  deadline: string;
+  isBeforeDeadline: boolean;
 };
 
 export type SummaryDTO = {
   profile: ProfileDTO;
   totals: TotalsDTO;
   latest: LatestGwDTO;
+  nextDeadline: GameweekDeadlineDTO | null;
 };
 
 export type LatestGwPlayerDTO = {

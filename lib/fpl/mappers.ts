@@ -47,11 +47,20 @@ export function mapLatestGameweek(params: {
   history: EntryHistory;
   picks?: EntryPicks | null;
   isLive: boolean;
+  isFinished: boolean;
   liveData?: EventLive | null;
   elements?: BootstrapElement[];
 }): LatestGwDTO {
-  const { entryId, currentEvent, history, picks, isLive, liveData, elements } =
-    params;
+  const {
+    entryId,
+    currentEvent,
+    history,
+    picks,
+    isLive,
+    isFinished,
+    liveData,
+    elements,
+  } = params;
   const historyRecord = findHistoryRecord(history.current, currentEvent);
 
   if (!historyRecord) {
@@ -82,6 +91,7 @@ export function mapLatestGameweek(params: {
     pointsOnBench: benchPoints,
     chipUsed,
     isLive,
+    isFinished,
     players,
   };
 }

@@ -5,6 +5,7 @@ import { DashboardNav } from "@/components/DashboardNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { GameweekPitchCard } from "@/components/GameweekPitchCard";
+import { DeadlineCard } from "@/components/DeadlineCard";
 import { loadEntrySummary, parseEntryId } from "@/lib/fpl/service";
 import { ProfileCard } from "@/components/cards/ProfileCard";
 import { TotalsCard } from "@/components/cards/TotalsCard";
@@ -106,7 +107,12 @@ export default async function EntryPage({
           <ProfileCard profile={summary.profile} />
           <TotalsCard totals={summary.totals} />
         </div>
-        <LatestGwCard latest={summary.latest} />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <LatestGwCard latest={summary.latest} />
+          {summary.nextDeadline && (
+            <DeadlineCard deadline={summary.nextDeadline} />
+          )}
+        </div>
         <GameweekPitchCard latest={summary.latest} />
         <PersistLastEntry
           entryId={summary.profile.entryId}
