@@ -1,5 +1,6 @@
 "use client";
 
+import { useTransition } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import type { LeagueStandingDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
@@ -13,12 +14,15 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
   const gameweekLabel = league.gameweek ? `GW ${league.gameweek}` : null;
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", newPage.toString());
-    router.push(`${pathname}?${params.toString()}`);
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
   };
 
   return (
@@ -123,7 +127,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
           <button
             type="button"
             onClick={() => handlePageChange(league.page - 1)}
-            disabled={league.page === 1}
+            disabled={league.page === 1 || isPending}
             className="tc-focus-visible inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 enabled:hover:bg-[color:var(--surface-elevated)]"
           >
             <svg
@@ -138,15 +142,15 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                 clipRule="evenodd"
               />
             </svg>
-            Previous
+            {isPending ? "Loading..." : "Previous"}
           </button>
           <button
             type="button"
             onClick={() => handlePageChange(league.page + 1)}
-            disabled={!league.hasNextPage}
+            disabled={!league.hasNextPage || isPending}
             className="tc-focus-visible inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 enabled:hover:bg-[color:var(--surface-elevated)]"
           >
-            Next
+            {isPending ? "Loading..." : "Next"}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
