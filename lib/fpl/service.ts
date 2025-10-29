@@ -118,7 +118,15 @@ export async function loadEntryLeagues(
       : parseEntryId(entryIdInput);
 
   const profile = await getEntryProfile(entryId);
-  const leagues = mapClassicLeagueSummaries(profile.leagues?.classic);
+  const leagues = mapClassicLeagueSummaries(profile.leagues?.classic).sort(
+    (a, b) => {
+      // Sort by rank ascending (lower rank = smaller league, comes first)
+      // Handle nulls - push them to the end
+      if (a.entryRank === null) return 1;
+      if (b.entryRank === null) return -1;
+      return a.entryRank - b.entryRank;
+    },
+  );
   const teamName = profile.name;
   const managerName =
     `${profile.player_first_name} ${profile.player_last_name}`.trim();

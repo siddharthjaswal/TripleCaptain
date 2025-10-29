@@ -46,6 +46,10 @@ export function LeagueSwitcher({
     <div className="flex flex-wrap gap-2">
       {leagues.map((league) => {
         const isActive = league.id === selectedLeagueId;
+        const displayName =
+          league.entryRank !== null
+            ? `${league.name} #${league.entryRank}`
+            : league.name;
         return (
           <button
             key={league.id}
@@ -58,7 +62,7 @@ export function LeagueSwitcher({
                 : "border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/90 text-[color:var(--text-primary)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
             }`}
           >
-            {league.name}
+            {displayName}
           </button>
         );
       })}
