@@ -26,7 +26,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
   };
 
   return (
-    <section className="tc-card rounded-3xl p-6 shadow-lg">
+    <section className="tc-card rounded-3xl p-6 shadow-lg relative">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex-1">
           <h2 className="text-xl font-semibold">{league.leagueName}</h2>
@@ -123,7 +123,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
         </table>
       </div>
       {(league.page > 1 || league.hasNextPage) && (
-        <div className="mt-6 flex items-center justify-between border-t border-[color:var(--surface-border)] pt-6">
+        <div className="mt-6 flex items-center justify-center gap-2 border-t border-[color:var(--surface-border)] pt-6">
           <button
             type="button"
             onClick={() => handlePageChange(league.page - 1)}
@@ -142,7 +142,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                 clipRule="evenodd"
               />
             </svg>
-            {isPending ? "Loading..." : "Previous"}
+            Previous
           </button>
           <button
             type="button"
@@ -150,7 +150,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
             disabled={!league.hasNextPage || isPending}
             className="tc-focus-visible inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 enabled:hover:bg-[color:var(--surface-elevated)]"
           >
-            {isPending ? "Loading..." : "Next"}
+            Next
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
@@ -164,6 +164,14 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
               />
             </svg>
           </button>
+        </div>
+      )}
+      {isPending && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[color:var(--surface-root)]/60 backdrop-blur-sm rounded-3xl">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[color:var(--surface-border)] border-t-[color:var(--accent)]" />
+            <p className="text-sm font-medium">Loading...</p>
+          </div>
         </div>
       )}
     </section>

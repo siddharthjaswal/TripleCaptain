@@ -49,7 +49,7 @@ export function FixturesCard({ entryId, event, fixtures, playersByFixture }: Fix
   });
 
   return (
-    <section className="tc-card rounded-3xl p-6 shadow-lg">
+    <section className="tc-card rounded-3xl p-6 shadow-lg relative">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold">Fixtures</h2>
@@ -121,6 +121,14 @@ export function FixturesCard({ entryId, event, fixtures, playersByFixture }: Fix
           ))
         )}
       </div>
+      {isPending && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[color:var(--surface-root)]/60 backdrop-blur-sm rounded-3xl">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[color:var(--surface-border)] border-t-[color:var(--accent)]" />
+            <p className="text-sm font-medium">Loading...</p>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
