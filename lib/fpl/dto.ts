@@ -151,3 +151,84 @@ export type GameweekViewDTO = {
   currentEvent: number;
   gameweek: LatestGwDTO;
 };
+
+// Predictions feature DTOs
+
+export type FixtureDifficultyDTO = {
+  opponent: string;
+  opponentShort: string;
+  difficulty: number; // 1-5 scale (1=easiest, 5=hardest)
+  isHome: boolean;
+};
+
+export type CaptainPickDTO = {
+  playerId: number;
+  playerName: string;
+  playerPhoto: string | null;
+  position: "GK" | "DEF" | "MID" | "FWD";
+  team: string;
+  expectedPoints: number;
+  form: number;
+  fixture: FixtureDifficultyDTO | null;
+  chanceOfPlaying: number | null; // 0-100 or null if no injury
+  reasoning: string;
+};
+
+export type PlayerPredictionDTO = {
+  playerId: number;
+  playerName: string;
+  playerPhoto: string | null;
+  position: "GK" | "DEF" | "MID" | "FWD";
+  expectedPoints: number;
+  fixture: FixtureDifficultyDTO | null;
+};
+
+export type PredictedXIDTO = {
+  formation: string; // e.g., "3-4-3"
+  totalPredictedPoints: number;
+  goalkeeper: PlayerPredictionDTO;
+  defenders: PlayerPredictionDTO[];
+  midfielders: PlayerPredictionDTO[];
+  forwards: PlayerPredictionDTO[];
+  bench: PlayerPredictionDTO[];
+  captain: number; // playerId of recommended captain
+};
+
+export type TransferPlayerOutDTO = {
+  playerId: number;
+  playerName: string;
+  playerPhoto: string | null;
+  position: "GK" | "DEF" | "MID" | "FWD";
+  cost: number; // in millions
+  expectedPoints: number;
+  form: number;
+  reasoning: string;
+};
+
+export type TransferPlayerInDTO = {
+  playerId: number;
+  playerName: string;
+  playerPhoto: string | null;
+  position: "GK" | "DEF" | "MID" | "FWD";
+  cost: number; // in millions
+  expectedPoints: number;
+  form: number;
+  upcomingFixtures: FixtureDifficultyDTO[];
+  selectedByPercent: number;
+  reasoning: string;
+};
+
+export type TransferSuggestionDTO = {
+  playerOut: TransferPlayerOutDTO;
+  playerIn: TransferPlayerInDTO;
+  netCost: number; // Positive = costs money, Negative = saves money
+};
+
+export type PredictionsDTO = {
+  nextGameweek: number;
+  captainPicks: CaptainPickDTO[];
+  predictedXI: PredictedXIDTO;
+  transferSuggestions: TransferSuggestionDTO[];
+  budgetAvailable: number; // Money in bank (in millions)
+  disclaimer: string;
+};

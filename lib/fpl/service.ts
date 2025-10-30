@@ -14,6 +14,7 @@ import type {
   GameweekDeadlineDTO,
   GameweekViewDTO,
   LeaguesViewDTO,
+  PredictionsDTO,
   SummaryDTO,
 } from "./dto";
 import type { BootstrapStatic, EntryCurrentHistory } from "./schemas";
@@ -25,6 +26,11 @@ import {
   mapProfile,
   mapTotals,
 } from "./mappers";
+import {
+  calculateBestXI,
+  calculateCaptainPicks,
+  calculateTransferSuggestions,
+} from "./predictions";
 
 export function parseEntryId(value: string | null): number {
   if (!value) {
@@ -490,6 +496,91 @@ export async function loadGameweek(
         liveData: liveData ?? undefined,
         elements: bootstrap.elements,
       }),
+    };
+  } catch (error) {
+    if (error instanceof FplError && error.status === 404) {
+      notFound();
+    }
+    throw error;
+  }
+}
+
+
+export async function loadPredictions(
+  entryIdInput: string | number,
+): Promise<PredictionsDTO> {
+  const entryId =
+    typeof entryIdInput === "number"
+      ? entryIdInput
+      : parseEntryId(entryIdInput);
+
+  try {
+    const [profile, history, bootstrap] = await Promise.all([
+      getEntryProfile(entryId),
+      getEntryHistory(entryId),
+      getBootstrap(),
+    ]);
+
+    // Determine next gameweek
+    const currentEvent = await resolveCurrentEvent(profile.current_event);
+    const nextEvent = bootstrap.events.find(
+      (event) => event.id > currentEvent && !event.finished,
+    );
+
+    if (!nextEvent) {
+      throw new Error("No upcoming gameweek found");
+    }
+
+    const nextGw = nextEvent.id;
+
+    // Get current picks (from most recent completed/current gameweek)
+    const currentPicks = await getEntryPicks(entryId, currentEvent);
+
+    // Get fixtures for next gameweek
+    const nextGwFixtures = await getFixtures(nextGw);
+
+    // Get fixtures for next 3 gameweeks (for transfer suggestions)
+    const upcomingFixturesPromises = [nextGw, nextGw + 1, nextGw + 2].map(
+      (gw) => getFixtures(gw).catch(() => []),
+    );
+    const upcomingFixturesArrays = await Promise.all(upcomingFixturesPromises);
+    const upcomingFixtures = upcomingFixturesArrays.flat();
+
+    // Get budget information
+    const latestHistory = history.current[history.current.length - 1];
+    const budget = {
+      value: latestHistory?.value ?? 0,
+      bank: latestHistory?.bank ?? 0,
+    };
+
+    // Calculate predictions
+    const captainPicks = calculateCaptainPicks(
+      currentPicks,
+      bootstrap,
+      nextGwFixtures,
+    );
+
+    const predictedXI = calculateBestXI(
+      currentPicks,
+      bootstrap,
+      nextGwFixtures,
+    );
+
+    const transferSuggestions = calculateTransferSuggestions(
+      currentPicks,
+      bootstrap,
+      upcomingFixtures,
+      budget,
+    );
+
+    return {
+      nextGameweek: nextGw,
+      captainPicks,
+      predictedXI,
+      transferSuggestions,
+      budgetAvailable: budget.bank / 10,
+      disclaimer:
+        "Predictions based on FPL's expected points algorithm. Actual performance may vary. Always check for late team news before the deadline.",
     };
   } catch (error) {
     if (error instanceof FplError && error.status === 404) {

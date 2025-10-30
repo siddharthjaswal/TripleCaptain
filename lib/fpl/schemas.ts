@@ -39,6 +39,16 @@ export const BootstrapStaticSchema = z
           team: z.number(),
           team_code: z.number().optional(),
           photo: z.string().optional(),
+          // Prediction fields
+          ep_next: z.string().optional(), // Expected points next GW
+          ep_this: z.string().optional(), // Expected points this GW
+          form: z.string().optional(), // Recent form score
+          now_cost: z.number().optional(), // Current price in 0.1m units
+          selected_by_percent: z.string().optional(), // Ownership percentage
+          points_per_game: z.string().optional(), // Average PPG
+          chance_of_playing_next_round: z.number().nullable().optional(), // Injury status
+          chance_of_playing_this_round: z.number().nullable().optional(),
+          minutes: z.number().optional(), // Total minutes played
         })
         .passthrough(),
     ),
@@ -239,6 +249,8 @@ export const FixtureSchema = z
     team_a: z.number(),
     team_h_score: z.number().nullable(),
     team_a_score: z.number().nullable(),
+    team_h_difficulty: z.number().optional(), // 1-5 difficulty rating
+    team_a_difficulty: z.number().optional(), // 1-5 difficulty rating
     kickoff_time: z.string().nullable(),
     finished: z.boolean(),
     started: z.boolean().optional(),
