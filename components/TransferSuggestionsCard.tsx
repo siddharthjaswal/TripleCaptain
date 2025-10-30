@@ -20,24 +20,26 @@ export function TransferSuggestionsCard({
 
   return (
     <section className="tc-card rounded-3xl p-6 shadow-lg">
-      <header className="mb-6">
-        <div className="flex items-center justify-between">
+      <header className="mb-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">Transfer Suggestions 🔄</h2>
             <p className="tc-text-muted text-sm mt-1">
-              Top {suggestions.length} recommended transfers
+              Top {suggestions.length} recommended transfers based on form and fixtures
             </p>
           </div>
-          <div className="text-right">
-            <p className="tc-text-muted text-xs">Budget Available</p>
-            <p className="font-bold text-lg text-[color:var(--accent)]">
-              £{budgetAvailable.toFixed(1)}m
-            </p>
+          <div className="flex items-center gap-2 rounded-xl bg-[color:var(--surface-elevated)] px-4 py-3 border border-[color:var(--surface-border)]">
+            <div className="text-right">
+              <p className="tc-text-muted text-xs font-medium uppercase tracking-wide">Budget Available</p>
+              <p className="font-bold text-2xl text-[color:var(--accent)]">
+                £{budgetAvailable.toFixed(1)}m
+              </p>
+            </div>
           </div>
         </div>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {suggestions.map((suggestion, index) => (
           <TransferSuggestionItem
             key={`${suggestion.playerOut.playerId}-${suggestion.playerIn.playerId}`}
@@ -59,23 +61,34 @@ function TransferSuggestionItem({
   suggestion,
   rank,
 }: TransferSuggestionItemProps) {
+  const rankColors = [
+    "from-yellow-500 to-yellow-600", // 1st - Gold
+    "from-gray-400 to-gray-500",     // 2nd - Silver
+    "from-orange-600 to-orange-700", // 3rd - Bronze
+  ];
+
   return (
-    <div className="tc-card rounded-2xl p-4 border border-[color:var(--surface-border)] hover:border-[color:var(--accent)] transition">
+    <div className="flex flex-col tc-card rounded-3xl p-6 border border-[color:var(--surface-border)] hover:border-[color:var(--accent)] transition shadow-sm hover:shadow-md">
       {/* Rank Badge */}
-      <div className="mb-4 flex items-center justify-between">
-        <span className="inline-flex items-center gap-2 text-xs font-semibold tc-text-muted">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)]">
-            {rank}
-          </span>
-          Transfer Suggestion
+      <div className="mb-6 flex items-center justify-between">
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br ${rankColors[rank - 1] || rankColors[2]} text-white font-bold text-lg shadow-md`}
+        >
+          {rank}
+        </div>
+        <span className="text-xs font-medium tc-text-muted uppercase tracking-wider">
+          Suggestion #{rank}
         </span>
       </div>
 
       {/* Player OUT */}
-      <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 p-3">
-        <div className="flex items-center gap-1 mb-2">
-          <span className="text-xs font-semibold text-red-600 dark:text-red-400">
-            ⬇️ OUT
+      <div className="mb-5 rounded-2xl bg-red-500/10 border-2 border-red-500/30 p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/20">
+            <span className="text-sm font-bold text-red-600 dark:text-red-400">⬇</span>
+          </div>
+          <span className="text-sm font-bold text-red-600 dark:text-red-400 uppercase tracking-wide">
+            Transfer Out
           </span>
         </div>
         <PlayerTransferInfo
@@ -89,14 +102,37 @@ function TransferSuggestionItem({
             form: suggestion.playerOut.form,
           }}
         />
-        <p className="text-xs tc-text-muted mt-2">{suggestion.playerOut.reasoning}</p>
+        <div className="mt-3 rounded-lg bg-red-500/10 px-3 py-2">
+          <p className="text-xs tc-text-muted leading-relaxed">{suggestion.playerOut.reasoning}</p>
+        </div>
+      </div>
+
+      {/* Transfer Arrow */}
+      <div className="flex justify-center -my-2 mb-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--accent)] text-[color:var(--accent-contrast)] shadow-lg">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="h-5 w-5"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 3a.75.75 0 0 1 .75.75v10.638l3.96-4.158a.75.75 0 1 1 1.08 1.04l-5.25 5.5a.75.75 0 0 1-1.08 0l-5.25-5.5a.75.75 0 1 1 1.08-1.04l3.96 4.158V3.75A.75.75 0 0 1 10 3Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </div>
       </div>
 
       {/* Player IN */}
-      <div className="mb-3 rounded-lg bg-green-500/10 border border-green-500/30 p-3">
-        <div className="flex items-center gap-1 mb-2">
-          <span className="text-xs font-semibold text-green-600 dark:text-green-400">
-            ⬆️ IN
+      <div className="mb-5 rounded-2xl bg-green-500/10 border-2 border-green-500/30 p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-green-500/20">
+            <span className="text-sm font-bold text-green-600 dark:text-green-400">⬆</span>
+          </div>
+          <span className="text-sm font-bold text-green-600 dark:text-green-400 uppercase tracking-wide">
+            Transfer In
           </span>
         </div>
         <PlayerTransferInfo
@@ -113,45 +149,58 @@ function TransferSuggestionItem({
 
         {/* Upcoming Fixtures */}
         {suggestion.playerIn.upcomingFixtures.length > 0 && (
-          <div className="mt-2 flex items-center gap-1">
-            {suggestion.playerIn.upcomingFixtures.map((fixture, i) => (
-              <div
-                key={i}
-                className={`flex-1 rounded px-2 py-1 text-center ${
-                  fixture.difficulty <= 2
-                    ? "bg-green-500/20 text-green-600 dark:text-green-400"
-                    : fixture.difficulty === 3
-                      ? "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400"
-                      : "bg-red-500/20 text-red-600 dark:text-red-400"
-                }`}
-              >
-                <p className="text-xs font-medium">
-                  {fixture.isHome ? "vs" : "@"} {fixture.opponentShort}
-                </p>
-              </div>
-            ))}
+          <div className="mt-3">
+            <p className="text-xs font-semibold tc-text-muted uppercase tracking-wide mb-2">Next 3 Fixtures</p>
+            <div className="flex items-center gap-2">
+              {suggestion.playerIn.upcomingFixtures.map((fixture, i) => (
+                <div
+                  key={i}
+                  className={`flex-1 rounded-lg px-2 py-2 text-center border ${
+                    fixture.difficulty <= 2
+                      ? "bg-green-500/20 border-green-500/40 text-green-700 dark:text-green-300"
+                      : fixture.difficulty === 3
+                        ? "bg-yellow-500/20 border-yellow-500/40 text-yellow-700 dark:text-yellow-300"
+                        : "bg-red-500/20 border-red-500/40 text-red-700 dark:text-red-300"
+                  }`}
+                >
+                  <p className="text-xs font-bold">
+                    {fixture.isHome ? "vs" : "@"}
+                  </p>
+                  <p className="text-xs font-semibold mt-0.5">
+                    {fixture.opponentShort}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
-        <p className="text-xs tc-text-muted mt-2">{suggestion.playerIn.reasoning}</p>
+        <div className="mt-3 rounded-lg bg-green-500/10 px-3 py-2">
+          <p className="text-xs tc-text-muted leading-relaxed">{suggestion.playerIn.reasoning}</p>
+        </div>
       </div>
 
-      {/* Net Cost */}
-      <div className="rounded-lg bg-[color:var(--surface-elevated)] p-2">
+      {/* Net Cost - Always at bottom */}
+      <div className="mt-auto rounded-xl bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-4">
         <div className="flex items-center justify-between">
-          <span className="text-xs tc-text-muted">Net Cost:</span>
-          <span
-            className={`text-sm font-bold ${
-              suggestion.netCost > 0
-                ? "text-red-600 dark:text-red-400"
-                : suggestion.netCost < 0
-                  ? "text-green-600 dark:text-green-400"
-                  : ""
-            }`}
-          >
-            {suggestion.netCost > 0 ? "-" : suggestion.netCost < 0 ? "+" : ""}£
-            {Math.abs(suggestion.netCost).toFixed(1)}m
-          </span>
+          <span className="text-sm font-semibold tc-text-muted">Net Cost</span>
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-xl font-bold ${
+                suggestion.netCost > 0
+                  ? "text-red-600 dark:text-red-400"
+                  : suggestion.netCost < 0
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-[color:var(--text-primary)]"
+              }`}
+            >
+              {suggestion.netCost > 0 ? "-" : suggestion.netCost < 0 ? "+" : ""}£
+              {Math.abs(suggestion.netCost).toFixed(1)}m
+            </span>
+            {suggestion.netCost === 0 && (
+              <span className="text-xs tc-text-muted">(Free)</span>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -177,49 +226,61 @@ function PlayerTransferInfo({ player }: PlayerTransferInfoProps) {
   const showFallback = !photoUrl || imageError;
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Player Photo */}
-      {!showFallback ? (
-        <Image
-          src={photoUrl}
-          alt={player.playerName}
-          width={40}
-          height={40}
-          className="rounded-lg object-cover"
-          unoptimized
-          onError={() => setImageError(true)}
-        />
-      ) : (
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-800">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="h-5 w-5 text-slate-400"
-          >
-            <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
-          </svg>
-        </div>
-      )}
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-3">
+        {/* Player Photo */}
+        {!showFallback ? (
+          <Image
+            src={photoUrl}
+            alt={player.playerName}
+            width={56}
+            height={56}
+            className="rounded-xl object-cover border-2 border-white/20"
+            unoptimized
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-white/20">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="h-7 w-7 text-slate-400"
+            >
+              <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+            </svg>
+          </div>
+        )}
 
-      {/* Player Info */}
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-sm truncate">{player.playerName}</p>
-        <div className="flex items-center gap-2 text-xs tc-text-muted">
-          <span>{player.position}</span>
-          <span>•</span>
-          <span>£{player.cost.toFixed(1)}m</span>
+        {/* Player Info */}
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-base truncate text-[color:var(--text-primary)]">
+            {player.playerName}
+          </p>
+          <div className="flex items-center gap-2 text-sm tc-text-muted mt-1">
+            <span className="font-medium">{player.position}</span>
+            <span>•</span>
+            <span className="font-semibold text-[color:var(--accent)]">
+              £{player.cost.toFixed(1)}m
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="text-right">
-        <p className="text-xs tc-text-muted">EP</p>
-        <p className="font-bold text-sm">{player.expectedPoints.toFixed(1)}</p>
-      </div>
-      <div className="text-right">
-        <p className="text-xs tc-text-muted">Form</p>
-        <p className="font-bold text-sm">{player.form.toFixed(1)}</p>
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-lg bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-2.5 text-center">
+          <p className="text-xs font-medium tc-text-muted uppercase tracking-wide">Expected Pts</p>
+          <p className="font-bold text-lg mt-0.5 text-[color:var(--text-primary)]">
+            {player.expectedPoints.toFixed(1)}
+          </p>
+        </div>
+        <div className="rounded-lg bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-2.5 text-center">
+          <p className="text-xs font-medium tc-text-muted uppercase tracking-wide">Form</p>
+          <p className="font-bold text-lg mt-0.5 text-[color:var(--text-primary)]">
+            {player.form.toFixed(1)}
+          </p>
+        </div>
       </div>
     </div>
   );
