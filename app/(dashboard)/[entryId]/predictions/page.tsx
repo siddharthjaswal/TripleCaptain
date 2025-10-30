@@ -6,6 +6,7 @@ import { DashboardNav } from "@/components/DashboardNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CaptainPicksCard } from "@/components/CaptainPicksCard";
 import { PredictedXICard } from "@/components/PredictedXICard";
+import { TransferSuggestionsCard } from "@/components/TransferSuggestionsCard";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { loadPredictions, parseEntryId } from "@/lib/fpl/service";
 
@@ -189,6 +190,12 @@ export default async function PredictionsPage({
 
         {/* Predicted Best XI */}
         <PredictedXICard predicted={predictions.predictedXI} />
+
+        {/* Transfer Suggestions */}
+        <TransferSuggestionsCard
+          suggestions={predictions.transferSuggestions}
+          budgetAvailable={predictions.budgetAvailable}
+        />
 
         <PersistLastEntry
           entryId={parsedEntryId}
