@@ -29,6 +29,9 @@ import {
 import {
   calculateBestXI,
   calculateCaptainPicks,
+  calculateChipRecommendations,
+  calculateDifferentialPicks,
+  calculateFixtureAnalysis,
   calculateTransferSuggestions,
 } from "./predictions";
 
@@ -546,6 +549,13 @@ export async function loadPredictions(
     const upcomingFixturesArrays = await Promise.all(upcomingFixturesPromises);
     const upcomingFixtures = upcomingFixturesArrays.flat();
 
+    // Get fixtures for next 5 gameweeks (for fixture analysis)
+    const fixtureAnalysisPromises = [nextGw, nextGw + 1, nextGw + 2, nextGw + 3, nextGw + 4].map(
+      (gw) => getFixtures(gw).catch(() => []),
+    );
+    const fixtureAnalysisArrays = await Promise.all(fixtureAnalysisPromises);
+    const allFixtures = fixtureAnalysisArrays.flat();
+
     // Get budget information
     const latestHistory = history.current[history.current.length - 1];
     const budget = {
@@ -573,12 +583,39 @@ export async function loadPredictions(
       budget,
     );
 
+    // Calculate V3 features
+    const chipRecommendations = calculateChipRecommendations(
+      currentPicks,
+      bootstrap,
+      nextGwFixtures,
+      nextGw,
+    );
+
+    const currentSquadIds = new Set(currentPicks.picks.map((p) => p.element));
+    const budgetAvailable = budget.bank / 10;
+    const differentialPicks = calculateDifferentialPicks(
+      bootstrap,
+      nextGwFixtures,
+      upcomingFixtures,
+      currentSquadIds,
+      budgetAvailable + 15, // Add some budget headroom for transfer flexibility
+    );
+
+    const fixtureAnalysis = calculateFixtureAnalysis(
+      bootstrap,
+      allFixtures,
+      nextGw,
+    );
+
     return {
       nextGameweek: nextGw,
       captainPicks,
       predictedXI,
       transferSuggestions,
-      budgetAvailable: budget.bank / 10,
+      chipRecommendations,
+      differentialPicks,
+      fixtureAnalysis,
+      budgetAvailable,
       disclaimer:
         "Predictions based on FPL's expected points algorithm. Actual performance may vary. Always check for late team news before the deadline.",
     };

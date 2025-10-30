@@ -224,11 +224,59 @@ export type TransferSuggestionDTO = {
   netCost: number; // Positive = costs money, Negative = saves money
 };
 
+export type ChipRecommendationDTO = {
+  chipName: "Triple Captain" | "Bench Boost" | "Free Hit" | "Wildcard";
+  recommend: boolean;
+  reasoning: string;
+  bestGameweek?: number;
+  potentialPoints?: number;
+};
+
+export type DifferentialPickDTO = {
+  playerId: number;
+  playerName: string;
+  playerPhoto: string | null;
+  position: "GK" | "DEF" | "MID" | "FWD";
+  team: string;
+  cost: number;
+  expectedPoints: number;
+  form: number;
+  ownership: number; // selected_by_percent
+  fixture: FixtureDifficultyDTO | null;
+  upcomingFixtures: FixtureDifficultyDTO[];
+  reasoning: string;
+  upsideScore: number; // ep_next / ownership ratio
+};
+
+export type TeamFixtureRunDTO = {
+  teamId: number;
+  teamName: string;
+  teamShort: string;
+  fixtures: Array<{
+    gameweek: number;
+    opponent: string;
+    opponentShort: string;
+    difficulty: number;
+    isHome: boolean;
+  }>;
+  averageDifficulty: number;
+  recommendation: "target" | "avoid" | "neutral";
+};
+
+export type FixtureAnalysisDTO = {
+  bestFixtureRuns: TeamFixtureRunDTO[]; // Teams with easiest fixtures
+  worstFixtureRuns: TeamFixtureRunDTO[]; // Teams with hardest fixtures
+  gameweeksAnalyzed: number; // How many GWs ahead we analyzed
+};
+
 export type PredictionsDTO = {
   nextGameweek: number;
   captainPicks: CaptainPickDTO[];
   predictedXI: PredictedXIDTO;
   transferSuggestions: TransferSuggestionDTO[];
+  chipRecommendations: ChipRecommendationDTO[];
+  differentialPicks: DifferentialPickDTO[];
+  fixtureAnalysis: FixtureAnalysisDTO;
   budgetAvailable: number; // Money in bank (in millions)
   disclaimer: string;
 };

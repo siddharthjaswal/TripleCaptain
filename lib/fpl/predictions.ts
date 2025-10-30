@@ -1,8 +1,12 @@
 import type {
   CaptainPickDTO,
+  ChipRecommendationDTO,
+  DifferentialPickDTO,
+  FixtureAnalysisDTO,
   FixtureDifficultyDTO,
   PlayerPredictionDTO,
   PredictedXIDTO,
+  TeamFixtureRunDTO,
   TransferSuggestionDTO,
 } from "./dto";
 import type {
@@ -543,4 +547,282 @@ function getPositionLabel(
     default:
       return "MID";
   }
+}
+
+
+/**
+ * Calculate chip recommendations
+ */
+export function calculateChipRecommendations(
+  currentPicks: EntryPicks,
+  bootstrap: BootstrapStatic,
+  nextGwFixtures: Fixture[],
+  nextGw: number,
+): ChipRecommendationDTO[] {
+  const recommendations: ChipRecommendationDTO[] = [];
+
+  // Get captain picks to evaluate Triple Captain
+  const captainPicks = calculateCaptainPicks(currentPicks, bootstrap, nextGwFixtures);
+
+  // Triple Captain
+  if (captainPicks.length > 0) {
+    const bestCaptain = captainPicks[0];
+    const shouldRecommend =
+      bestCaptain.expectedPoints >= 8 &&
+      bestCaptain.fixture !== null &&
+      bestCaptain.fixture.difficulty <= 2;
+
+    recommendations.push({
+      chipName: "Triple Captain",
+      recommend: shouldRecommend,
+      reasoning: shouldRecommend
+        ? `${bestCaptain.playerName} has high expected points (${bestCaptain.expectedPoints.toFixed(1)}) against an easy opponent. Great time to use Triple Captain!`
+        : `Wait for a premium captain with 8+ expected points and an easy fixture.`,
+      bestGameweek: shouldRecommend ? nextGw : undefined,
+      potentialPoints: shouldRecommend ? bestCaptain.expectedPoints * 3 : undefined,
+    });
+  }
+
+  // Bench Boost
+  const benchPlayers = currentPicks.picks.slice(11, 15);
+  let benchExpectedPoints = 0;
+
+  for (const pick of benchPlayers) {
+    const player = bootstrap.elements.find((el) => el.id === pick.element);
+    if (player) {
+      benchExpectedPoints += Number.parseFloat(player.ep_next ?? "0");
+    }
+  }
+
+  const shouldRecommendBB = benchExpectedPoints >= 12;
+
+  recommendations.push({
+    chipName: "Bench Boost",
+    recommend: shouldRecommendBB,
+    reasoning: shouldRecommendBB
+      ? `Your bench has strong predicted points (${benchExpectedPoints.toFixed(1)}). Good gameweek to use Bench Boost!`
+      : `Wait for a double gameweek or when your bench has 12+ combined expected points.`,
+    bestGameweek: shouldRecommendBB ? nextGw : undefined,
+    potentialPoints: shouldRecommendBB ? benchExpectedPoints : undefined,
+  });
+
+  // Free Hit
+  // Count how many players have low chance of playing
+  let unavailablePlayers = 0;
+  for (const pick of currentPicks.picks) {
+    const player = bootstrap.elements.find((el) => el.id === pick.element);
+    if (player) {
+      const chanceOfPlaying = player.chance_of_playing_next_round ?? null;
+      if (chanceOfPlaying !== null && chanceOfPlaying < 75) {
+        unavailablePlayers++;
+      }
+    }
+  }
+
+  const shouldRecommendFH = unavailablePlayers >= 5;
+
+  recommendations.push({
+    chipName: "Free Hit",
+    recommend: shouldRecommendFH,
+    reasoning: shouldRecommendFH
+      ? `You have ${unavailablePlayers} players with injury concerns. Consider Free Hit to field a full team.`
+      : `Save for blank gameweeks when many teams don't play, or when 5+ players are unavailable.`,
+  });
+
+  return recommendations;
+}
+
+/**
+ * Calculate differential picks (low ownership, high upside)
+ */
+export function calculateDifferentialPicks(
+  bootstrap: BootstrapStatic,
+  nextGwFixtures: Fixture[],
+  upcomingFixtures: Fixture[], // Next 3 GWs
+  currentSquadIds: Set<number>,
+  budget: number,
+): DifferentialPickDTO[] {
+  const teamShortNameMap = new Map(
+    bootstrap.teams.map((team) => [team.id, team.short_name]),
+  );
+
+  const differentials = bootstrap.elements
+    .filter((player) => {
+      // Not in current squad
+      if (currentSquadIds.has(player.id)) return false;
+
+      const ownership = Number.parseFloat(player.selected_by_percent ?? "0");
+      const epNext = Number.parseFloat(player.ep_next ?? "0");
+      const form = Number.parseFloat(player.form ?? "0");
+      const cost = player.now_cost ? player.now_cost / 10 : 999;
+
+      // Differential criteria
+      if (ownership >= 10) return false; // Must be below 10% ownership
+      if (epNext < 5) return false; // Must have decent expected points
+      if (form < 4) return false; // Must have some form
+      if (cost > budget) return false; // Must be affordable
+
+      return true;
+    })
+    .map((player) => {
+      const ownership = Number.parseFloat(player.selected_by_percent ?? "0");
+      const epNext = Number.parseFloat(player.ep_next ?? "0");
+      const form = Number.parseFloat(player.form ?? "0");
+      const cost = player.now_cost ? player.now_cost / 10 : 0;
+
+      // Find next fixture
+      const nextFixture = nextGwFixtures.find(
+        (f) => f.team_h === player.team || f.team_a === player.team,
+      );
+
+      let fixtureDifficulty: FixtureDifficultyDTO | null = null;
+      if (nextFixture) {
+        const isHome = nextFixture.team_h === player.team;
+        const opponentId = isHome ? nextFixture.team_a : nextFixture.team_h;
+        const difficulty = isHome
+          ? (nextFixture.team_h_difficulty ?? 3)
+          : (nextFixture.team_a_difficulty ?? 3);
+
+        fixtureDifficulty = {
+          opponent: teamShortNameMap.get(opponentId) ?? "Unknown",
+          opponentShort: teamShortNameMap.get(opponentId) ?? "???",
+          difficulty,
+          isHome,
+        };
+      }
+
+      // Get next 3 fixtures
+      const playerUpcomingFixtures = upcomingFixtures
+        .filter(
+          (f) =>
+            (f.team_h === player.team || f.team_a === player.team) && f.event !== null,
+        )
+        .sort((a, b) => (a.event ?? 0) - (b.event ?? 0))
+        .slice(0, 3)
+        .map((f) => {
+          const isHome = f.team_h === player.team;
+          const opponentId = isHome ? f.team_a : f.team_h;
+          const difficulty = isHome
+            ? (f.team_h_difficulty ?? 3)
+            : (f.team_a_difficulty ?? 3);
+
+          return {
+            opponent: teamShortNameMap.get(opponentId) ?? "Unknown",
+            opponentShort: teamShortNameMap.get(opponentId) ?? "???",
+            difficulty,
+            isHome,
+          };
+        });
+
+      // Calculate upside score (higher is better)
+      const upsideScore = ownership > 0 ? epNext / ownership : epNext * 10;
+
+      const reasons: string[] = [];
+      if (epNext >= 6) reasons.push(`High expected points (${epNext.toFixed(1)})`);
+      if (ownership < 5) reasons.push(`Very low ownership (${ownership.toFixed(1)}%)`);
+      if (form >= 6) reasons.push("Excellent form");
+
+      const avgDifficulty =
+        playerUpcomingFixtures.reduce((sum, f) => sum + f.difficulty, 0) /
+        (playerUpcomingFixtures.length || 1);
+      if (avgDifficulty <= 2.5) reasons.push("Great fixtures ahead");
+
+      return {
+        playerId: player.id,
+        playerName: player.web_name,
+        playerPhoto: player.photo ?? null,
+        position: getPositionLabel(player.element_type),
+        team: teamShortNameMap.get(player.team) ?? "Unknown",
+        cost,
+        expectedPoints: epNext,
+        form,
+        ownership,
+        fixture: fixtureDifficulty,
+        upcomingFixtures: playerUpcomingFixtures,
+        reasoning: reasons.join(" • ") || "Solid differential option",
+        upsideScore,
+      };
+    })
+    .sort((a, b) => b.upsideScore - a.upsideScore)
+    .slice(0, 5); // Top 5 differentials
+
+  return differentials;
+}
+
+/**
+ * Calculate long-term fixture analysis (next 5 GWs)
+ */
+export function calculateFixtureAnalysis(
+  bootstrap: BootstrapStatic,
+  fixtures: Fixture[], // Next 5+ GWs of fixtures
+  nextGw: number,
+): FixtureAnalysisDTO {
+  const teamNameMap = new Map(
+    bootstrap.teams.map((team) => [team.id, team.name]),
+  );
+  const teamShortNameMap = new Map(
+    bootstrap.teams.map((team) => [team.id, team.short_name]),
+  );
+
+  // Analyze next 5 gameweeks
+  const gameweeksToAnalyze = 5;
+  const targetGws = Array.from({ length: gameweeksToAnalyze }, (_, i) => nextGw + i);
+
+  // Build fixture run for each team
+  const teamFixtureRuns: TeamFixtureRunDTO[] = bootstrap.teams.map((team) => {
+    const teamFixtures = fixtures
+      .filter(
+        (f) =>
+          (f.team_h === team.id || f.team_a === team.id) &&
+          f.event !== null &&
+          targetGws.includes(f.event),
+      )
+      .sort((a, b) => (a.event ?? 0) - (b.event ?? 0))
+      .map((f) => {
+        const isHome = f.team_h === team.id;
+        const opponentId = isHome ? f.team_a : f.team_h;
+        const difficulty = isHome
+          ? (f.team_h_difficulty ?? 3)
+          : (f.team_a_difficulty ?? 3);
+
+        return {
+          gameweek: f.event ?? nextGw,
+          opponent: teamNameMap.get(opponentId) ?? "Unknown",
+          opponentShort: teamShortNameMap.get(opponentId) ?? "???",
+          difficulty,
+          isHome,
+        };
+      });
+
+    const averageDifficulty =
+      teamFixtures.reduce((sum, f) => sum + f.difficulty, 0) /
+      (teamFixtures.length || 1);
+
+    let recommendation: "target" | "avoid" | "neutral" = "neutral";
+    if (averageDifficulty <= 2.2) recommendation = "target";
+    else if (averageDifficulty >= 3.8) recommendation = "avoid";
+
+    return {
+      teamId: team.id,
+      teamName: team.name,
+      teamShort: team.short_name,
+      fixtures: teamFixtures,
+      averageDifficulty,
+      recommendation,
+    };
+  });
+
+  // Sort by difficulty
+  const sortedTeams = [...teamFixtureRuns].sort(
+    (a, b) => a.averageDifficulty - b.averageDifficulty,
+  );
+
+  return {
+    bestFixtureRuns: sortedTeams.filter((t) => t.recommendation === "target").slice(0, 5),
+    worstFixtureRuns: sortedTeams
+      .filter((t) => t.recommendation === "avoid")
+      .reverse()
+      .slice(0, 5),
+    gameweeksAnalyzed: gameweeksToAnalyze,
+  };
 }

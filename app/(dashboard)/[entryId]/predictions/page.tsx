@@ -7,6 +7,9 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { CaptainPicksCard } from "@/components/CaptainPicksCard";
 import { PredictedXICard } from "@/components/PredictedXICard";
 import { TransferSuggestionsCard } from "@/components/TransferSuggestionsCard";
+import { ChipRecommendationsCard } from "@/components/ChipRecommendationsCard";
+import { DifferentialPicksCard } from "@/components/DifferentialPicksCard";
+import { FixtureAnalysisCard } from "@/components/FixtureAnalysisCard";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { loadPredictions, parseEntryId } from "@/lib/fpl/service";
 
@@ -196,6 +199,18 @@ export default async function PredictionsPage({
           suggestions={predictions.transferSuggestions}
           budgetAvailable={predictions.budgetAvailable}
         />
+
+        {/* Chip Recommendations */}
+        <ChipRecommendationsCard
+          recommendations={predictions.chipRecommendations}
+          nextGameweek={predictions.nextGameweek}
+        />
+
+        {/* Differential Picks */}
+        <DifferentialPicksCard differentials={predictions.differentialPicks} />
+
+        {/* Fixture Analysis */}
+        <FixtureAnalysisCard analysis={predictions.fixtureAnalysis} />
 
         <PersistLastEntry
           entryId={parsedEntryId}

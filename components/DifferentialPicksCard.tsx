@@ -1,0 +1,217 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import type { DifferentialPickDTO } from "@/lib/fpl/dto";
+import { getPlayerPhotoUrl } from "@/lib/fpl/images";
+
+type DifferentialPicksCardProps = {
+  differentials: DifferentialPickDTO[];
+};
+
+export function DifferentialPicksCard({
+  differentials,
+}: DifferentialPicksCardProps) {
+  if (differentials.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="tc-card rounded-3xl p-6 shadow-lg">
+      <header className="mb-8">
+        <h2 className="text-xl font-semibold">Differential Picks 💎</h2>
+        <p className="tc-text-muted text-sm mt-1">
+          Low-ownership, high-upside players to gain an edge over your rivals
+        </p>
+      </header>
+
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {differentials.map((diff, index) => (
+          <DifferentialPickItem
+            key={diff.playerId}
+            differential={diff}
+            rank={index + 1}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+type DifferentialPickItemProps = {
+  differential: DifferentialPickDTO;
+  rank: number;
+};
+
+function DifferentialPickItem({
+  differential,
+  rank,
+}: DifferentialPickItemProps) {
+  const photoUrl = getPlayerPhotoUrl(differential.playerPhoto);
+  const [imageError, setImageError] = useState(false);
+
+  const showFallback = !photoUrl || imageError;
+
+  const rankColors = [
+    "from-yellow-500 to-yellow-600", // 1st - Gold
+    "from-gray-400 to-gray-500",     // 2nd - Silver
+    "from-orange-600 to-orange-700", // 3rd - Bronze
+    "from-blue-500 to-blue-600",     // 4th - Blue
+    "from-purple-500 to-purple-600", // 5th - Purple
+  ];
+
+  return (
+    <div className="flex flex-col tc-card rounded-3xl p-6 border border-[color:var(--surface-border)] hover:border-[color:var(--accent)] transition shadow-sm hover:shadow-md">
+      {/* Rank Badge */}
+      <div className="mb-6 flex items-center justify-between">
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br ${rankColors[rank - 1] || rankColors[4]} text-white font-bold text-lg shadow-md`}
+        >
+          {rank}
+        </div>
+        <div className="text-right">
+          <p className="text-xs font-medium tc-text-muted uppercase tracking-wide">
+            Ownership
+          </p>
+          <p className="font-bold text-lg text-[color:var(--accent)]">
+            {differential.ownership.toFixed(1)}%
+          </p>
+        </div>
+      </div>
+
+      {/* Player Info */}
+      <div className="mb-5">
+        <div className="flex items-center gap-3 mb-4">
+          {/* Player Photo */}
+          {!showFallback ? (
+            <Image
+              src={photoUrl}
+              alt={differential.playerName}
+              width={64}
+              height={64}
+              className="rounded-xl object-cover border-2 border-white/20"
+              unoptimized
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-white/20">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="h-8 w-8 text-slate-400"
+              >
+                <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+              </svg>
+            </div>
+          )}
+
+          {/* Player Details */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-base truncate text-[color:var(--text-primary)]">
+              {differential.playerName}
+            </h3>
+            <div className="flex items-center gap-2 text-sm tc-text-muted mt-1">
+              <span className="font-medium">{differential.position}</span>
+              <span>•</span>
+              <span className="font-semibold">{differential.team}</span>
+            </div>
+            <div className="text-sm font-semibold text-[color:var(--accent)] mt-1">
+              £{differential.cost.toFixed(1)}m
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="rounded-lg bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-2.5 text-center">
+            <p className="text-xs font-medium tc-text-muted uppercase tracking-wide">
+              Expected
+            </p>
+            <p className="font-bold text-base mt-0.5 text-[color:var(--text-primary)]">
+              {differential.expectedPoints.toFixed(1)}
+            </p>
+          </div>
+          <div className="rounded-lg bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-2.5 text-center">
+            <p className="text-xs font-medium tc-text-muted uppercase tracking-wide">
+              Form
+            </p>
+            <p className="font-bold text-base mt-0.5 text-[color:var(--text-primary)]">
+              {differential.form.toFixed(1)}
+            </p>
+          </div>
+          <div className="rounded-lg bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-2.5 text-center">
+            <p className="text-xs font-medium tc-text-muted uppercase tracking-wide">
+              Upside
+            </p>
+            <p className="font-bold text-base mt-0.5 text-[color:var(--text-primary)]">
+              {differential.upsideScore.toFixed(1)}
+            </p>
+          </div>
+        </div>
+
+        {/* Next Fixture */}
+        {differential.fixture && (
+          <div className="mb-4">
+            <p className="text-xs font-semibold tc-text-muted uppercase tracking-wide mb-2">
+              Next Fixture
+            </p>
+            <div
+              className={`rounded-lg px-3 py-2 text-center border ${
+                differential.fixture.difficulty <= 2
+                  ? "bg-green-500/20 border-green-500/40 text-green-700 dark:text-green-300"
+                  : differential.fixture.difficulty === 3
+                    ? "bg-yellow-500/20 border-yellow-500/40 text-yellow-700 dark:text-yellow-300"
+                    : "bg-red-500/20 border-red-500/40 text-red-700 dark:text-red-300"
+              }`}
+            >
+              <p className="text-xs font-bold">
+                {differential.fixture.isHome ? "vs" : "@"}
+              </p>
+              <p className="text-sm font-semibold mt-0.5">
+                {differential.fixture.opponentShort}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Upcoming Fixtures */}
+        {differential.upcomingFixtures.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs font-semibold tc-text-muted uppercase tracking-wide mb-2">
+              Upcoming Fixtures
+            </p>
+            <div className="flex items-center gap-2">
+              {differential.upcomingFixtures.slice(0, 3).map((fixture, i) => (
+                <div
+                  key={i}
+                  className={`flex-1 rounded-lg px-2 py-1.5 text-center border ${
+                    fixture.difficulty <= 2
+                      ? "bg-green-500/20 border-green-500/40 text-green-700 dark:text-green-300"
+                      : fixture.difficulty === 3
+                        ? "bg-yellow-500/20 border-yellow-500/40 text-yellow-700 dark:text-yellow-300"
+                        : "bg-red-500/20 border-red-500/40 text-red-700 dark:text-red-300"
+                  }`}
+                >
+                  <p className="text-xs font-bold">
+                    {fixture.isHome ? "vs" : "@"}
+                  </p>
+                  <p className="text-xs font-semibold mt-0.5">
+                    {fixture.opponentShort}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Reasoning */}
+        <div className="rounded-xl bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-4">
+          <p className="text-xs tc-text-muted leading-relaxed">
+            {differential.reasoning}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
