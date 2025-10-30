@@ -4,11 +4,14 @@ Fantasy Premier League companion built with Next.js App Router. Managers can ent
 
 ## Current Features
 
-- Manager lookup with persisted recent selections and dark/light theme toggle.
-- Summary dashboard with profile/totals cards, live-aware gameweek metrics, and deadline countdown.
-- Gameweek Pitch Card with player images, live match indicators, captain badges, and professional fallback icons.
-- League standings view with rank-sorted display, rank labels, and pagination support.
-- Local analytics hooks (Vercel Analytics) plus accessibility-conscious UI primitives.
+- **Manager lookup** with persisted recent selections and dark/light theme toggle
+- **Summary dashboard** with profile/totals cards, live-aware gameweek metrics, and deadline countdown
+- **Gameweek Pitch Card** with player images, live match indicators, captain badges, and professional fallback icons
+- **Dedicated Gameweek page** with navigation between gameweeks and full pitch visualization
+- **League standings view** with rank-sorted display, smart filtering (prioritizes small/private leagues), and pagination support
+- **League race chart** showing top 5 managers' points progression with interactive team toggles
+- **Fixtures page** with team badges, player points display, and gameweek navigation
+- Local analytics hooks (Vercel Analytics) plus accessibility-conscious UI primitives
 
 ## Tech Stack
 

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Triple Captain is a Fantasy Premier League companion app built with Next.js 16 (App Router) and React 19. Users enter an FPL entry ID to view server-rendered dashboards with profile details, gameweek metrics, pitch visualizations with player images, live match indicators, deadline countdown, and league standings. All data is fetched server-side from the public FPL API with aggressive caching.
+Triple Captain is a Fantasy Premier League companion app built with Next.js 16 (App Router) and React 19. Users enter an FPL entry ID to view server-rendered dashboards with profile details, gameweek metrics, pitch visualizations with player images, live match indicators, deadline countdown, league standings with race charts, and fixtures with team badges. The app features a dedicated Gameweek page with navigation, smart league filtering, and interactive data visualizations. All data is fetched server-side from the public FPL API with aggressive caching.
 
 ## Essential Commands
 
@@ -76,7 +76,9 @@ The FPL client respects `FPL_DEBUG_LOGS=true` environment variable for detailed 
 
 2. **Service Layer** (`lib/fpl/service.ts`):
    - `loadEntrySummary(entryId)`: Composes profile + totals + latest gameweek with picks + live data
-   - `loadEntryLeagues(entryId, options)`: Fetches league standings with pagination support
+   - `loadEntryLeagues(entryId, options)`: Fetches league standings with pagination and top 5 race data
+   - `loadGameweek(entryId, options)`: Loads specific gameweek data with navigation support
+   - `loadFixtures(entryId, options)`: Fetches fixtures with team badges and player points
    - Handles gameweek resolution logic (current vs. latest completed)
    - Manages error boundaries (404s → `notFound()`, others propagate)
 
@@ -98,11 +100,15 @@ app/
 ├── (dashboard)/
 │   └── [entryId]/
 │       ├── page.tsx                   # Summary dashboard (profile + totals + gameweek pitch)
+│       ├── gameweek/
+│       │   └── page.tsx               # Dedicated gameweek page with navigation
 │       ├── leagues/
-│       │   ├── page.tsx               # League standings with pagination
+│       │   ├── page.tsx               # League standings with race chart and pagination
 │       │   ├── loading.tsx            # Streaming skeleton
 │       │   ├── error.tsx              # Error boundary
 │       │   └── not-found.tsx          # 404 fallback
+│       ├── fixtures/
+│       │   └── page.tsx               # Fixtures with team badges and player points
 │       ├── loading.tsx                # Summary loading state
 │       ├── error.tsx                  # Summary error boundary
 │       └── not-found.tsx              # Entry not found
@@ -149,6 +155,10 @@ Client components use these utilities:
 - **`lib/fpl/schemas.ts`**: Zod schemas for all FPL API responses
 - **`lib/storage.ts`**: Client-side localStorage utilities
 - **`components/GameweekPitchCard.tsx`**: Complex pitch visualization component
+- **`components/GameweekCard.tsx`**: Gameweek page with navigation controls
+- **`components/FixturesCard.tsx`**: Fixtures display with team badges and player points
+- **`components/LeagueRaceChart.tsx`**: Interactive race chart using recharts
+- **`components/LeagueSwitcher.tsx`**: Smart league filter with toggle for large leagues
 - **`docs/architecture_md_fpl_next.md`**: Detailed architecture documentation
 - **`docs/plan_md_fpl_next.md`**: Milestone tracking and delivery roadmap
 
