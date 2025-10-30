@@ -3,6 +3,7 @@ import Link from "next/link";
 const links = [
   { slug: "summary", name: "Summary", isDynamic: false },
   { slug: "gameweek", name: "Gameweek", isDynamic: true },
+  { slug: "predictions", name: "Predictions", isDynamic: false },
   { slug: "leagues", name: "Leagues", isDynamic: false },
   { slug: "fixtures", name: "Fixtures", isDynamic: false },
 ] as const;
