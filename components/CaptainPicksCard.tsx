@@ -66,7 +66,7 @@ function CaptainPickItem({ pick, rank }: CaptainPickItemProps) {
                 unoptimized
               />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-800">
+              <div className="flex items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-800" style={{ width: '40px', height: '40px' }}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"

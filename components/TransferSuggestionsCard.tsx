@@ -251,7 +251,7 @@ function PlayerTransferInfo({ player }: PlayerTransferInfoProps) {
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-white/20">
+          <div className="flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-white/20" style={{ width: '56px', height: '56px' }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"

@@ -94,7 +94,7 @@ function DifferentialPickItem({
               onError={() => setImageError(true)}
             />
           ) : (
-            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-white/20">
+            <div className="flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-white/20" style={{ width: '64px', height: '64px' }}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
