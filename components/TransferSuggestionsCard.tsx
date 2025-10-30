@@ -102,8 +102,8 @@ function TransferSuggestionItem({
             form: suggestion.playerOut.form,
           }}
         />
-        <div className="mt-3 rounded-lg bg-red-500/10 px-3 py-2">
-          <p className="text-xs tc-text-muted leading-relaxed">{suggestion.playerOut.reasoning}</p>
+        <div className="mt-3 rounded-lg bg-red-500/10 px-3 py-2 h-16 flex items-center justify-center">
+          <p className="text-xs tc-text-muted leading-relaxed text-center">{suggestion.playerOut.reasoning}</p>
         </div>
       </div>
 
@@ -163,10 +163,21 @@ function TransferSuggestionItem({
                         : "bg-red-500/20 border-red-500/40 text-red-700 dark:text-red-300"
                   }`}
                 >
-                  <p className="text-xs font-bold">
-                    {fixture.isHome ? "vs" : "@"}
-                  </p>
-                  <p className="text-xs font-semibold mt-0.5">
+                  <div className="flex items-center justify-center gap-1 mb-0.5">
+                    {fixture.isHome ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                        <path fillRule="evenodd" d="M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6H3a1 1 0 0 1-.707-1.707l7-7Z" clipRule="evenodd" />
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                        <path fillRule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 0 0 2.273 1.765 11.842 11.842 0 0 0 .976.544l.062.029.018.008.006.003ZM10 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    <p className="text-xs font-bold">
+                      {fixture.isHome ? "HOME" : "AWAY"}
+                    </p>
+                  </div>
+                  <p className="text-xs font-semibold">
                     {fixture.opponentShort}
                   </p>
                 </div>
@@ -175,8 +186,8 @@ function TransferSuggestionItem({
           </div>
         )}
 
-        <div className="mt-3 rounded-lg bg-green-500/10 px-3 py-2">
-          <p className="text-xs tc-text-muted leading-relaxed">{suggestion.playerIn.reasoning}</p>
+        <div className="mt-3 rounded-lg bg-green-500/10 px-3 py-2 h-16 flex items-center justify-center">
+          <p className="text-xs tc-text-muted leading-relaxed text-center">{suggestion.playerIn.reasoning}</p>
         </div>
       </div>
 
