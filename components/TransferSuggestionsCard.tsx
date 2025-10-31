@@ -15,7 +15,38 @@ export function TransferSuggestionsCard({
   budgetAvailable,
 }: TransferSuggestionsCardProps) {
   if (suggestions.length === 0) {
-    return null;
+    return (
+      <section className="tc-card rounded-3xl p-6 shadow-lg">
+        <header className="mb-6">
+          <h2 className="text-xl font-semibold">Transfer Suggestions 🔄</h2>
+          <p className="tc-text-muted text-sm mt-1">
+            Recommended transfers based on form and fixtures
+          </p>
+        </header>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--surface-elevated)]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="h-8 w-8 tc-text-muted"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold mb-2">Your Squad Looks Good!</h3>
+          <p className="tc-text-muted max-w-md">
+            No transfer suggestions at the moment. Your current squad appears well-optimized for the upcoming gameweeks.
+          </p>
+        </div>
+      </section>
+    );
   }
 
   return (

@@ -13,7 +13,38 @@ export function DifferentialPicksCard({
   differentials,
 }: DifferentialPicksCardProps) {
   if (differentials.length === 0) {
-    return null;
+    return (
+      <section className="tc-card rounded-3xl p-6 shadow-lg">
+        <header className="mb-6">
+          <h2 className="text-xl font-semibold">Differential Picks 💎</h2>
+          <p className="tc-text-muted text-sm mt-1">
+            Low-ownership, high-upside players to gain an edge over your rivals
+          </p>
+        </header>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--surface-elevated)]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="h-8 w-8 tc-text-muted"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold mb-2">No Differentials Found</h3>
+          <p className="tc-text-muted max-w-md">
+            No affordable differential picks available at the moment. All low-ownership players either don't meet the criteria or are outside your budget.
+          </p>
+        </div>
+      </section>
+    );
   }
 
   return (
