@@ -127,15 +127,15 @@ export default function Home() {
       {/* Premier League Teams */}
       <section className="w-full max-w-6xl mt-20 mb-12">
         <div className="flex flex-wrap items-center justify-center gap-6">
-          {/* Current Premier League teams only */}
-          {[1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 18, 19, 20].map((teamId) => (
+          {/* Premier League teams - using team codes for badge URLs */}
+          {[3, 7, 90, 91, 94, 36, 8, 31, 11, 54, 2, 14, 43, 1, 4, 17, 56, 6, 21, 39].map((teamCode, index) => (
             <div
-              key={teamId}
+              key={teamCode}
               className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 opacity-60 hover:opacity-100 transition-opacity"
             >
               <img
-                src={`https://resources.premierleague.com/premierleague/badges/t${teamId}.png`}
-                alt={`Team ${teamId}`}
+                src={`https://resources.premierleague.com/premierleague/badges/t${teamCode}.png`}
+                alt={`Premier League Team ${index + 1}`}
                 className="w-full h-full object-contain"
                 loading="lazy"
               />
