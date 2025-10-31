@@ -40,19 +40,27 @@ function applyTheme(theme: ThemeMode) {
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<ThemeMode>(() => {
+  const [theme, setTheme] = useState<ThemeMode>("dark");
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    // Read actual theme after mount
     if (typeof document !== "undefined") {
       const current = document.documentElement.dataset.theme;
       if (current === "light" || current === "dark") {
-        return current;
+        setTheme(current);
+        return;
       }
     }
-    return getPreferredTheme();
-  });
+    setTheme(getPreferredTheme());
+  }, []);
 
   useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
+    if (isClient) {
+      applyTheme(theme);
+    }
+  }, [theme, isClient]);
 
   const nextTheme: ThemeMode = theme === "dark" ? "light" : "dark";
 
