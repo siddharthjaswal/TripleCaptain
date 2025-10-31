@@ -826,17 +826,15 @@ export function calculateFixtureAnalysis(
     };
   });
 
-  // Sort by difficulty
+  // Sort by difficulty (ascending - easiest first)
   const sortedTeams = [...teamFixtureRuns].sort(
     (a, b) => a.averageDifficulty - b.averageDifficulty,
   );
 
+  // Always show top 5 best and bottom 5 worst, regardless of thresholds
   return {
-    bestFixtureRuns: sortedTeams.filter((t) => t.recommendation === "target").slice(0, 5),
-    worstFixtureRuns: sortedTeams
-      .filter((t) => t.recommendation === "avoid")
-      .reverse()
-      .slice(0, 5),
+    bestFixtureRuns: sortedTeams.slice(0, 5),
+    worstFixtureRuns: sortedTeams.slice(-5).reverse(),
     gameweeksAnalyzed: gameweeksToAnalyze,
   };
 }
