@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   LAST_ENTRY_STORAGE_KEY,
@@ -11,7 +11,13 @@ import {
 export function RecentEntryCard() {
   const [recentEntries, setRecentEntries] = useState<
     Array<StoredEntryProfile & { ageLabel: string }>
-  >(() => readRecent());
+  >([]);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    setRecentEntries(readRecent());
+  }, []);
 
   const handleClear = () => {
     try {
@@ -24,7 +30,7 @@ export function RecentEntryCard() {
     setRecentEntries([]);
   };
 
-  if (recentEntries.length === 0) {
+  if (!isClient || recentEntries.length === 0) {
     return null;
   }
 
