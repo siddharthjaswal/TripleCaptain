@@ -10,9 +10,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  type TooltipProps,
 } from "recharts";
-import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
 type LeagueRaceChartProps = {
   race: LeagueRaceDTO;

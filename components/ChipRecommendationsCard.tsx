@@ -4,12 +4,10 @@ import type { ChipRecommendationDTO } from "@/lib/fpl/dto";
 
 type ChipRecommendationsCardProps = {
   recommendations: ChipRecommendationDTO[];
-  nextGameweek: number;
 };
 
 export function ChipRecommendationsCard({
   recommendations,
-  nextGameweek,
 }: ChipRecommendationsCardProps) {
   if (recommendations.length === 0) {
     return null;
@@ -29,7 +27,6 @@ export function ChipRecommendationsCard({
           <ChipRecommendationItem
             key={rec.chipName}
             recommendation={rec}
-            nextGameweek={nextGameweek}
           />
         ))}
       </div>
@@ -39,12 +36,10 @@ export function ChipRecommendationsCard({
 
 type ChipRecommendationItemProps = {
   recommendation: ChipRecommendationDTO;
-  nextGameweek: number;
 };
 
 function ChipRecommendationItem({
   recommendation,
-  nextGameweek,
 }: ChipRecommendationItemProps) {
   const chipEmojis: Record<string, string> = {
     "Triple Captain": "3️⃣",

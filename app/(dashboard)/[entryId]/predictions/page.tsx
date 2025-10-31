@@ -203,7 +203,6 @@ export default async function PredictionsPage({
         {/* Chip Recommendations */}
         <ChipRecommendationsCard
           recommendations={predictions.chipRecommendations}
-          nextGameweek={predictions.nextGameweek}
         />
 
         {/* Differential Picks */}

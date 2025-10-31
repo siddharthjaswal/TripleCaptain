@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,11 +10,15 @@ type DeadlineCardProps = {
 
 export function DeadlineCard({ deadline }: DeadlineCardProps) {
   const [timeRemaining, setTimeRemaining] = useState<string>("");
+  // Check if we're on client-side (avoids hydration mismatch)
   const [isClient, setIsClient] = useState(false);
 
+  // Mount effect to mark client-side rendering (intentional for SSR hydration)
   useEffect(() => {
     setIsClient(true);
+  }, []);
 
+  useEffect(() => {
     const calculateTimeRemaining = () => {
       const now = new Date();
       const deadlineDate = new Date(deadline.deadline);

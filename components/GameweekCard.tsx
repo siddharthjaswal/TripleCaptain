@@ -5,14 +5,13 @@ import { useRouter, usePathname } from "next/navigation";
 import type { LatestGwDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
 import { GameweekPitchCard } from "./GameweekPitchCard";
-import { LatestGwCard } from "./cards/LatestGwCard";
 
 type GameweekCardProps = {
   entryId: number;
   gameweek: LatestGwDTO;
 };
 
-export function GameweekCard({ entryId, gameweek }: GameweekCardProps) {
+export function GameweekCard({ entryId: _entryId, gameweek }: GameweekCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();

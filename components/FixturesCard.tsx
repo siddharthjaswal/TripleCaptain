@@ -11,7 +11,7 @@ type FixturesCardProps = {
   playersByFixture: Map<number, FixturePlayerDTO[]>;
 };
 
-export function FixturesCard({ entryId, event, fixtures, playersByFixture }: FixturesCardProps) {
+export function FixturesCard({ entryId: _entryId, event, fixtures, playersByFixture }: FixturesCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
