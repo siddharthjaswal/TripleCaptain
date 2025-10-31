@@ -99,13 +99,19 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
             key={i}
             className={`rounded-lg p-2 text-center border-2 ${
               fixture.difficulty <= 2
-                ? "bg-green-100 border-green-400 dark:bg-green-500/20 dark:border-green-500/40"
+                ? "bg-green-200 border-green-500 dark:bg-green-500/20 dark:border-green-500/40"
                 : fixture.difficulty === 3
-                  ? "bg-yellow-100 border-yellow-400 dark:bg-yellow-500/20 dark:border-yellow-500/40"
-                  : "bg-red-100 border-red-400 dark:bg-red-500/20 dark:border-red-500/40"
+                  ? "bg-amber-200 border-amber-500 dark:bg-yellow-500/20 dark:border-yellow-500/40"
+                  : "bg-red-200 border-red-500 dark:bg-red-500/20 dark:border-red-500/40"
             }`}
           >
-            <p className="text-xs font-bold tc-text-muted mb-1">
+            <p className={`text-xs font-bold mb-1 ${
+              fixture.difficulty <= 2
+                ? "text-green-900 dark:text-green-300"
+                : fixture.difficulty === 3
+                  ? "text-amber-900 dark:text-yellow-300"
+                  : "text-red-900 dark:text-red-300"
+            }`}>
               GW{fixture.gameweek}
             </p>
             <div className="flex items-center justify-center gap-0.5 mb-1">
@@ -116,10 +122,10 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
                   fill="currentColor"
                   className={`w-2.5 h-2.5 ${
                     fixture.difficulty <= 2
-                      ? "text-green-700 dark:text-green-300"
+                      ? "text-green-800 dark:text-green-300"
                       : fixture.difficulty === 3
-                        ? "text-yellow-700 dark:text-yellow-300"
-                        : "text-red-700 dark:text-red-300"
+                        ? "text-amber-800 dark:text-yellow-300"
+                        : "text-red-800 dark:text-red-300"
                   }`}
                 >
                   <path
@@ -135,10 +141,10 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
                   fill="currentColor"
                   className={`w-2.5 h-2.5 ${
                     fixture.difficulty <= 2
-                      ? "text-green-700 dark:text-green-300"
+                      ? "text-green-800 dark:text-green-300"
                       : fixture.difficulty === 3
-                        ? "text-yellow-700 dark:text-yellow-300"
-                        : "text-red-700 dark:text-red-300"
+                        ? "text-amber-800 dark:text-yellow-300"
+                        : "text-red-800 dark:text-red-300"
                   }`}
                 >
                   <path
@@ -151,10 +157,10 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
               <p
                 className={`text-[10px] font-bold leading-none ${
                   fixture.difficulty <= 2
-                    ? "text-green-700 dark:text-green-300"
+                    ? "text-green-800 dark:text-green-300"
                     : fixture.difficulty === 3
-                      ? "text-yellow-700 dark:text-yellow-300"
-                      : "text-red-700 dark:text-red-300"
+                      ? "text-amber-800 dark:text-yellow-300"
+                      : "text-red-800 dark:text-red-300"
                 }`}
               >
                 {fixture.isHome ? "H" : "A"}
@@ -163,10 +169,10 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
             <p
               className={`text-xs font-semibold ${
                 fixture.difficulty <= 2
-                  ? "text-green-700 dark:text-green-300"
+                  ? "text-green-900 dark:text-green-300"
                   : fixture.difficulty === 3
-                    ? "text-yellow-700 dark:text-yellow-300"
-                    : "text-red-700 dark:text-red-300"
+                    ? "text-amber-900 dark:text-yellow-300"
+                    : "text-red-900 dark:text-red-300"
               }`}
             >
               {fixture.opponentShort}
