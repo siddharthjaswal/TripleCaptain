@@ -11,6 +11,8 @@ export type TotalsDTO = {
   currentEvent: number;
   totalPoints: number;
   overallRank: number | null;
+  previousRank: number | null;
+  rankChange: number | null; // Negative = improved (rank went down), Positive = worsened (rank went up)
 };
 
 export type LatestGwDTO = {

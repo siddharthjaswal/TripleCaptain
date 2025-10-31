@@ -101,7 +101,7 @@ export async function loadEntrySummary(
 
     return {
       profile: mapProfile(profile),
-      totals: mapTotals(profile, summaryEvent),
+      totals: mapTotals(profile, summaryEvent, history),
       latest: mapLatestGameweek({
         entryId,
         currentEvent: summaryEvent,

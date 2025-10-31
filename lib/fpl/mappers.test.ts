@@ -157,13 +157,47 @@ describe("mapClassicLeagueStandings", () => {
 });
 
 describe("mapTotals", () => {
-  it("maps totals with current event", () => {
-    const dto = mapTotals(profile, 10);
+  it("maps totals with current event and rank change", () => {
+    const dto = mapTotals(profile, 10, history);
     expect(dto).toEqual({
       entryId: 1234,
       currentEvent: 10,
       totalPoints: 1987,
       overallRank: 125_000,
+      previousRank: 110_000,
+      rankChange: 15_000, // Worsened (rank increased)
+    });
+  });
+
+  it("handles missing previous rank", () => {
+    const historyWithoutPrevious: EntryHistory = {
+      current: [
+        {
+          event: 10,
+          points: 62,
+          total_points: 1987,
+          rank: 190_000,
+          rank_sort: 190_000,
+          overall_rank: 125_000,
+          event_transfers: 2,
+          event_transfers_cost: 4,
+          value: 1031,
+          bank: 12,
+          points_on_bench: 7,
+        },
+      ],
+      chips: [],
+      past: [],
+    };
+
+    const dto = mapTotals(profile, 10, historyWithoutPrevious);
+    expect(dto).toEqual({
+      entryId: 1234,
+      currentEvent: 10,
+      totalPoints: 1987,
+      overallRank: 125_000,
+      previousRank: null,
+      rankChange: null,
     });
   });
 });

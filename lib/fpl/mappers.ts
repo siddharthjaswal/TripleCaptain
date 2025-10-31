@@ -35,12 +35,29 @@ export function mapProfile(entry: EntryProfile): ProfileDTO {
 export function mapTotals(
   entry: EntryProfile,
   currentEvent: number,
+  history: EntryHistory,
 ): TotalsDTO {
+  const currentRank = entry.summary_overall_rank;
+
+  // Find previous gameweek's rank (currentEvent - 1)
+  const previousEventHistory = history.current.find(
+    (h) => h.event === currentEvent - 1
+  );
+  const previousRank = previousEventHistory?.overall_rank ?? null;
+
+  // Calculate rank change (negative = improved, positive = worsened)
+  let rankChange: number | null = null;
+  if (currentRank !== null && previousRank !== null) {
+    rankChange = currentRank - previousRank;
+  }
+
   return {
     entryId: entry.id,
     currentEvent,
     totalPoints: entry.summary_overall_points,
-    overallRank: entry.summary_overall_rank,
+    overallRank: currentRank,
+    previousRank,
+    rankChange,
   };
 }
 
