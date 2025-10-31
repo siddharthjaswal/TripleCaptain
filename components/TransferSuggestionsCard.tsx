@@ -186,12 +186,12 @@ function TransferSuggestionItem({
               {suggestion.playerIn.upcomingFixtures.map((fixture, i) => (
                 <div
                   key={i}
-                  className={`flex-1 rounded-lg px-2 py-2 text-center border ${
+                  className={`flex-1 rounded-lg px-2 py-2 text-center border-2 ${
                     fixture.difficulty <= 2
-                      ? "bg-green-500/20 border-green-500/40 text-green-700 dark:text-green-300"
+                      ? "bg-green-100 border-green-400 text-green-800 dark:bg-green-500/20 dark:border-green-500/40 dark:text-green-300"
                       : fixture.difficulty === 3
-                        ? "bg-yellow-500/20 border-yellow-500/40 text-yellow-700 dark:text-yellow-300"
-                        : "bg-red-500/20 border-red-500/40 text-red-700 dark:text-red-300"
+                        ? "bg-yellow-100 border-yellow-400 text-yellow-800 dark:bg-yellow-500/20 dark:border-yellow-500/40 dark:text-yellow-300"
+                        : "bg-red-100 border-red-400 text-red-800 dark:bg-red-500/20 dark:border-red-500/40 dark:text-red-300"
                   }`}
                 >
                   <div className="flex items-center justify-center gap-1 mb-0.5">

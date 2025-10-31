@@ -97,12 +97,12 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
         {team.fixtures.map((fixture, i) => (
           <div
             key={i}
-            className={`rounded-lg p-2 text-center border ${
+            className={`rounded-lg p-2 text-center border-2 ${
               fixture.difficulty <= 2
-                ? "bg-green-500/20 border-green-500/40"
+                ? "bg-green-100 border-green-400 dark:bg-green-500/20 dark:border-green-500/40"
                 : fixture.difficulty === 3
-                  ? "bg-yellow-500/20 border-yellow-500/40"
-                  : "bg-red-500/20 border-red-500/40"
+                  ? "bg-yellow-100 border-yellow-400 dark:bg-yellow-500/20 dark:border-yellow-500/40"
+                  : "bg-red-100 border-red-400 dark:bg-red-500/20 dark:border-red-500/40"
             }`}
           >
             <p className="text-xs font-bold tc-text-muted mb-1">
