@@ -107,10 +107,10 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
           >
             <p className={`text-xs font-bold mb-1 ${
               fixture.difficulty <= 2
-                ? "text-green-900 dark:text-green-300"
+                ? "text-green-950 dark:text-green-300"
                 : fixture.difficulty === 3
-                  ? "text-amber-900 dark:text-yellow-300"
-                  : "text-red-900 dark:text-red-300"
+                  ? "text-amber-950 dark:text-yellow-300"
+                  : "text-red-950 dark:text-red-300"
             }`}>
               GW{fixture.gameweek}
             </p>
@@ -122,10 +122,10 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
                   fill="currentColor"
                   className={`w-2.5 h-2.5 ${
                     fixture.difficulty <= 2
-                      ? "text-green-800 dark:text-green-300"
+                      ? "text-green-950 dark:text-green-300"
                       : fixture.difficulty === 3
-                        ? "text-amber-800 dark:text-yellow-300"
-                        : "text-red-800 dark:text-red-300"
+                        ? "text-amber-950 dark:text-yellow-300"
+                        : "text-red-950 dark:text-red-300"
                   }`}
                 >
                   <path
@@ -141,10 +141,10 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
                   fill="currentColor"
                   className={`w-2.5 h-2.5 ${
                     fixture.difficulty <= 2
-                      ? "text-green-800 dark:text-green-300"
+                      ? "text-green-950 dark:text-green-300"
                       : fixture.difficulty === 3
-                        ? "text-amber-800 dark:text-yellow-300"
-                        : "text-red-800 dark:text-red-300"
+                        ? "text-amber-950 dark:text-yellow-300"
+                        : "text-red-950 dark:text-red-300"
                   }`}
                 >
                   <path
@@ -157,10 +157,10 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
               <p
                 className={`text-[10px] font-bold leading-none ${
                   fixture.difficulty <= 2
-                    ? "text-green-800 dark:text-green-300"
+                    ? "text-green-950 dark:text-green-300"
                     : fixture.difficulty === 3
-                      ? "text-amber-800 dark:text-yellow-300"
-                      : "text-red-800 dark:text-red-300"
+                      ? "text-amber-950 dark:text-yellow-300"
+                      : "text-red-950 dark:text-red-300"
                 }`}
               >
                 {fixture.isHome ? "H" : "A"}
@@ -169,10 +169,10 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
             <p
               className={`text-xs font-semibold ${
                 fixture.difficulty <= 2
-                  ? "text-green-900 dark:text-green-300"
+                  ? "text-green-950 dark:text-green-300"
                   : fixture.difficulty === 3
-                    ? "text-amber-900 dark:text-yellow-300"
-                    : "text-red-900 dark:text-red-300"
+                    ? "text-amber-950 dark:text-yellow-300"
+                    : "text-red-950 dark:text-red-300"
               }`}
             >
               {fixture.opponentShort}

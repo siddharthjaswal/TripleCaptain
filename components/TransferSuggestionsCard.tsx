@@ -188,10 +188,10 @@ function TransferSuggestionItem({
                   key={i}
                   className={`flex-1 rounded-lg px-2 py-2 text-center border-2 ${
                     fixture.difficulty <= 2
-                      ? "bg-green-200 border-green-500 text-green-900 dark:bg-green-500/20 dark:border-green-500/40 dark:text-green-300"
+                      ? "bg-green-200 border-green-500 text-green-950 dark:bg-green-500/20 dark:border-green-500/40 dark:text-green-300"
                       : fixture.difficulty === 3
-                        ? "bg-amber-200 border-amber-500 text-amber-900 dark:bg-yellow-500/20 dark:border-yellow-500/40 dark:text-yellow-300"
-                        : "bg-red-200 border-red-500 text-red-900 dark:bg-red-500/20 dark:border-red-500/40 dark:text-red-300"
+                        ? "bg-amber-200 border-amber-500 text-amber-950 dark:bg-yellow-500/20 dark:border-yellow-500/40 dark:text-yellow-300"
+                        : "bg-red-200 border-red-500 text-red-950 dark:bg-red-500/20 dark:border-red-500/40 dark:text-red-300"
                   }`}
                 >
                   <div className="flex items-center justify-center gap-1 mb-0.5">
