@@ -3,50 +3,50 @@
 :root {
   color-scheme: light dark;
 
-  /* Surface Colors - Light Theme */
+  /* Surface Colors - Light Theme (Stadium) */
   --surface-root: #f1f5f9;
-  --surface-elevated: #ffffff;
-  --surface-hover: #f8fafc;
-  --surface-border: #e2e8f0;
-  --surface-border-strong: #cbd5e1;
-  --surface-input: #ffffff;
+  --surface-elevated: #f8fafc;
+  --surface-hover: #e2e8f0;
+  --surface-border: #cbd5e1;
+  --surface-border-strong: #94a3b8;
+  --surface-input: #f8fafc;
 
   /* Text Colors - Light Theme */
   --text-primary: #0f172a;
-  --text-secondary: #64748b;
+  --text-secondary: #475569;
   --text-tertiary: #94a3b8;
   --text-inverse: #ffffff;
 
-  /* Accent Colors - Light Theme */
+  /* Accent Colors - Light Theme (Sky Blue) */
   --accent: #0ea5e9;
   --accent-hover: #0284c7;
   --accent-contrast: #ffffff;
 
   /* Semantic Colors - Light Theme */
-  --success: #10b981;
-  --success-bg: #d1fae5;
-  --success-border: #6ee7b7;
-  --success-text: #065f46;
+  --success: #16a34a;
+  --success-bg: #dcfce7;
+  --success-border: #16a34a;
+  --success-text: #14532d;
 
   --warning: #f59e0b;
   --warning-bg: #fef3c7;
-  --warning-border: #fcd34d;
-  --warning-text: #92400e;
+  --warning-border: #f59e0b;
+  --warning-text: #78350f;
 
-  --error: #ef4444;
+  --error: #dc2626;
   --error-bg: #fee2e2;
-  --error-border: #fca5a5;
-  --error-text: #991b1b;
+  --error-border: #dc2626;
+  --error-text: #7f1d1d;
 
-  --info: #3b82f6;
+  --info: #2563eb;
   --info-bg: #dbeafe;
-  --info-border: #93c5fd;
+  --info-border: #2563eb;
   --info-text: #1e3a8a;
 
   /* Gradients & Special - Light Theme */
-  --hero-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
-  --hero-chip-color: rgba(14, 165, 233, 0.12);
-  --chip-text: #0369a1;
+  --hero-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
+  --hero-chip-color: rgba(14, 165, 233, 0.1);
+  --chip-text: #075985;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -56,7 +56,7 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  /* Surface Colors - Dark Theme */
+  /* Surface Colors - Dark Theme (Night Stadium) */
   --surface-root: #0f172a;
   --surface-elevated: #1e293b;
   --surface-hover: #334155;
@@ -70,40 +70,40 @@
   --text-tertiary: #94a3b8;
   --text-inverse: #0f172a;
 
-  /* Accent Colors - Dark Theme */
+  /* Accent Colors - Dark Theme (Sky Blue) */
   --accent: #38bdf8;
   --accent-hover: #0ea5e9;
-  --accent-contrast: #0f172a;
+  --accent-contrast: #ffffff;
 
   /* Semantic Colors - Dark Theme */
-  --success: #10b981;
-  --success-bg: #064e3b;
-  --success-border: #065f46;
-  --success-text: #6ee7b7;
+  --success: #22c55e;
+  --success-bg: #14532d;
+  --success-border: #166534;
+  --success-text: #86efac;
 
-  --warning: #f59e0b;
+  --warning: #fbbf24;
   --warning-bg: #78350f;
-  --warning-border: #92400e;
-  --warning-text: #fcd34d;
+  --warning-border: #b45309;
+  --warning-text: #fef3c7;
 
   --error: #ef4444;
   --error-bg: #7f1d1d;
   --error-border: #991b1b;
-  --error-text: #fca5a5;
+  --error-text: #fecaca;
 
   --info: #3b82f6;
   --info-bg: #1e3a8a;
   --info-border: #1e40af;
-  --info-text: #93c5fd;
+  --info-text: #bfdbfe;
 
   /* Gradients & Special - Dark Theme */
-  --hero-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  --hero-gradient: linear-gradient(135deg, #0f172a 0%, #082f49 50%, #0c4a6e 100%);
   --hero-chip-color: rgba(56, 189, 248, 0.15);
-  --chip-text: #7dd3fc;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  --chip-text: #bae6fd;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
 }
 
 [data-theme="light"] {
