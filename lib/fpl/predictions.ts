@@ -17,6 +17,14 @@ import type {
 
 /**
  * Calculate top 3 captain picks from the user's current squad
+ *
+ * Algorithm:
+ * 1. Analyzes starting XI only (first 11 picks)
+ * 2. Scores each player based on: ep_next + fixture_bonus + form_bonus - injury_penalty
+ * 3. Fixture bonus: +2 for easy (difficulty ≤2), +1 for medium (=3), 0 for hard (≥4)
+ * 4. Form bonus: +1 for excellent form (≥6)
+ * 5. Injury penalty: -5 if <100% chance to play
+ * 6. Returns top 3 sorted by score
  */
 export function calculateCaptainPicks(
   currentPicks: EntryPicks,
@@ -126,6 +134,13 @@ export function calculateCaptainPicks(
 
 /**
  * Calculate the predicted best XI from user's squad
+ *
+ * Algorithm:
+ * 1. Maps all 15 players with their expected points for next gameweek
+ * 2. Tests 7 valid formations: 3-5-2, 3-4-3, 4-4-2, 4-3-3, 4-5-1, 5-4-1, 5-3-2
+ * 3. For each formation, selects highest ep_next players per position
+ * 4. Returns formation with highest total predicted points
+ * 5. Recommends highest-scoring starting player as captain
  */
 export function calculateBestXI(
   currentPicks: EntryPicks,
