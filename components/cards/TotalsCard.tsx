@@ -58,49 +58,47 @@ function KpiWithChange({ label, value, rankChange }: KpiWithChangeProps) {
   return (
     <div className="rounded-2xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/90 px-4 py-5">
       <p className="tc-text-muted text-xs uppercase tracking-wide">{label}</p>
-      <div className="mt-2 flex items-center gap-2">
-        <p className="text-2xl font-semibold">{value}</p>
-        {hasChange && (
-          <div
-            className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${
-              isImprovement
-                ? "bg-green-500/10 text-green-700 dark:text-green-400"
-                : isWorsened
-                  ? "bg-red-500/10 text-red-700 dark:text-red-400"
-                  : ""
-            }`}
-          >
-            {isImprovement ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-3 h-3"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 17a.75.75 0 01-.75-.75V5.612L5.29 9.77a.75.75 0 01-1.08-1.04l5.25-5.5a.75.75 0 011.08 0l5.25 5.5a.75.75 0 11-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0110 17z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-3 h-3"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )}
-            <span>{formatNumber(Math.abs(rankChange))}</span>
-          </div>
-        )}
-      </div>
+      <p className="mt-2 text-2xl font-semibold">{value}</p>
+      {hasChange && (
+        <div
+          className={`mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+            isImprovement
+              ? "bg-green-500/10 text-green-700 dark:text-green-400"
+              : isWorsened
+                ? "bg-red-500/10 text-red-700 dark:text-red-400"
+                : ""
+          }`}
+        >
+          {isImprovement ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-2.5 h-2.5"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 17a.75.75 0 01-.75-.75V5.612L5.29 9.77a.75.75 0 01-1.08-1.04l5.25-5.5a.75.75 0 011.08 0l5.25 5.5a.75.75 0 11-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0110 17z"
+                clipRule="evenodd"
+              />
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-2.5 h-2.5"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
+          <span>{formatNumber(Math.abs(rankChange))}</span>
+        </div>
+      )}
     </div>
   );
 }
