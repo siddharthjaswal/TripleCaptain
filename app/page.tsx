@@ -124,6 +124,24 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Premier League Teams */}
+      <section className="w-full max-w-6xl mt-20 mb-12">
+        <div className="flex flex-wrap items-center justify-center gap-6">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((teamId) => (
+            <div
+              key={teamId}
+              className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 opacity-60 hover:opacity-100 transition-opacity"
+            >
+              <img
+                src={`https://resources.premierleague.com/premierleague/badges/t${teamId}.png`}
+                alt={`Team ${teamId}`}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Tech Stack */}
       <footer className="flex flex-wrap items-center justify-center gap-3 text-sm tc-text-muted mt-auto pt-12">
         <span className="tc-chip">Next.js 16</span>
