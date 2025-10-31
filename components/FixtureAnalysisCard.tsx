@@ -99,10 +99,10 @@ function TeamFixtureRun({ team, type }: TeamFixtureRunProps) {
             key={i}
             className={`rounded-lg p-2 text-center border-2 ${
               fixture.difficulty <= 2
-                ? "bg-green-200 border-green-500 dark:bg-green-500/20 dark:border-green-500/40"
+                ? "bg-green-50 border-green-600 dark:bg-green-500/20 dark:border-green-500/40"
                 : fixture.difficulty === 3
-                  ? "bg-amber-200 border-amber-500 dark:bg-yellow-500/20 dark:border-yellow-500/40"
-                  : "bg-red-200 border-red-500 dark:bg-red-500/20 dark:border-red-500/40"
+                  ? "bg-amber-50 border-amber-600 dark:bg-yellow-500/20 dark:border-yellow-500/40"
+                  : "bg-red-50 border-red-600 dark:bg-red-500/20 dark:border-red-500/40"
             }`}
           >
             <p className={`text-xs font-bold mb-1 ${
