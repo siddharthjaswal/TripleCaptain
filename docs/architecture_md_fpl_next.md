@@ -2,12 +2,14 @@
 
 ## Overview
 
-A lightweight Fantasy Premier League (FPL) companion built with **Next.js (App Router)** and **TypeScript** that fetches a user’s FPL data by ID and displays:
+A lightweight Fantasy Premier League (FPL) companion built with **Next.js (App Router)** and **TypeScript** that fetches a user's FPL data by ID and displays:
 
 - Profile (team name, player name)
 - Total points and overall rank
-- Latest gameweek score
-- League standings (Classic + optional H2H)
+- Latest gameweek score with interactive pitch visualization
+- Dedicated gameweek browser with Previous/Next navigation
+- League standings with smart filtering and interactive race chart for top 5 managers
+- Premier League fixtures with player performance tracking
 
 No user authentication is required initially—users paste their FPL **entry ID**. All data is fetched from the public FPL API via server-side route handlers with caching.
 
@@ -20,10 +22,11 @@ No user authentication is required initially—users paste their FPL **entry ID*
 
 ## Tech Stack
 
-- **Next.js 14+ (App Router)**, **TypeScript**
+- **Next.js 16 (App Router)**, **React 19**, **TypeScript**
 - **Route Handlers** for API proxy and server-only data fetching
 - **React Server Components (RSC)** + **Client Components** where interactivity is needed
-- **Tailwind CSS** (+ optional shadcn/ui)
+- **Tailwind CSS** for styling with CSS custom properties for theming
+- **Recharts** for interactive data visualization
 - **Zod** for runtime validation of FPL responses
 - **Vitest** + **Testing Library**; **Playwright** for E2E
 - **ESLint** + **Prettier**
@@ -32,11 +35,12 @@ No user authentication is required initially—users paste their FPL **entry ID*
 
 We consume only read endpoints:
 
-- `GET https://fantasy.premierleague.com/api/bootstrap-static/` (game + players meta)
+- `GET https://fantasy.premierleague.com/api/bootstrap-static/` (game + players + teams meta)
 - `GET https://fantasy.premierleague.com/api/entry/{entryId}/` (profile)
 - `GET https://fantasy.premierleague.com/api/entry/{entryId}/history/` (past + current totals)
 - `GET https://fantasy.premierleague.com/api/entry/{entryId}/event/{gw}/picks/` (team picks for gw)
 - `GET https://fantasy.premierleague.com/api/event/{gw}/live/` (points breakdown in gw)
+- `GET https://fantasy.premierleague.com/api/fixtures/?event={gw}` (Premier League fixtures for gw)
 - `GET https://fantasy.premierleague.com/api/leagues-classic/{leagueId}/standings/` (classic league)
 - `GET https://fantasy.premierleague.com/api/leagues-h2h/{leagueId}/standings/` (H2H league)
 
@@ -65,10 +69,12 @@ Route Handlers (/api/fpl/*)
 ```
 app/
   layout.tsx
-  page.tsx                          # Landing: asks for Entry ID
+  page.tsx                          # Landing: asks for Entry ID + recent entries
   (dashboard)/
-    [entryId]/page.tsx              # SSR/RSC page rendering profile + latest GW + totals
-    [entryId]/leagues/page.tsx      # SSR/RSC page rendering classic league standings
+    [entryId]/page.tsx              # SSR/RSC summary page: profile + totals + latest GW + pitch card
+    [entryId]/gameweek/page.tsx     # SSR/RSC gameweek page with Previous/Next navigation
+    [entryId]/leagues/page.tsx      # SSR/RSC league standings + top 5 race chart
+    [entryId]/fixtures/page.tsx     # SSR/RSC fixtures with team badges + player points
   api/
     fpl/
       profile/route.ts              # ?entryId=
@@ -77,29 +83,48 @@ app/
       leagues/route.ts              # ?leagueId= & type=classic|h2h
 lib/
   fpl/
-    client.ts                       # server-only fetch wrappers
+    client.ts                       # server-only fetch wrappers + React cache()
+    service.ts                      # business logic orchestration layer
     mappers.ts                      # map raw FPL -> DTOs
     schemas.ts                      # Zod schemas for validation
+    dto.ts                          # TypeScript DTO types
   cache.ts                          # helpers for revalidate + keys
   utils.ts
 components/
-  EntryIdForm.tsx (client)
-  ProfileCard.tsx (server)
-  LatestGwCard.tsx (server)
-  TotalsCard.tsx (server)
-  LeagueTable.tsx (server)
+  EntryIdForm.tsx (client)          # Entry ID input with validation
+  ProfileCard.tsx (server)          # Manager profile display
+  LatestGwCard.tsx (server)         # Latest gameweek metrics
+  TotalsCard.tsx (server)           # Total points and rank
+  GameweekPitchCard.tsx (client)    # Interactive pitch visualization with player images
+  GameweekCard.tsx (client)         # Gameweek navigation with Previous/Next
+  LeagueTable.tsx (server)          # League standings table
+  LeagueRaceChart.tsx (client)      # Top 5 race chart with recharts + interactive toggles
+  LeagueSwitcher.tsx (client)       # League dropdown selector
+  FixturesCard.tsx (server)         # Fixture display with team badges + player columns
+  DashboardNav.tsx (client)         # Dashboard navigation tabs
+  ThemeToggle.tsx (client)          # Dark/light mode toggle
+  DeadlineCard.tsx (client)         # Countdown to next deadline
+  RecentEntries.tsx (client)        # Recent entry history
+  PersistLastEntry.tsx (client)     # localStorage persistence
 styles/
-  globals.css
+  globals.css                       # CSS custom properties for theming
 ```
 
 ## Data Flow & DTOs
 
-- **Route handlers** call FPL endpoints with `fetch` (server-only). Responses validated via **Zod**.
-- Data is mapped into typed DTOs consumed by RSC components:
+- **Service layer** (`lib/fpl/service.ts`) orchestrates data fetching and composition via server-only client
+- **FPL client** (`lib/fpl/client.ts`) wraps API calls with React `cache()` and `fetch` revalidation
+- Responses validated via **Zod** schemas and mapped to typed DTOs:
   - `ProfileDTO`: teamName, playerName, overallPoints, overallRank
-  - `LatestGwDTO`: gwNumber, gwPoints, gwRank, benchPoints (optional)
-  - `TotalsDTO`: totalPoints, overallRank
-  - `LeagueStandingDTO`: leagueName, entries: { rank, entryName, playerName, totalPoints }
+  - `TotalsDTO`: totalPoints, overallRank, transfersMade, etc.
+  - `LatestGwDTO`: event, points, rank, starting XI + bench with player details, chips, live indicators
+  - `GameweekViewDTO`: entryId, teamName, managerName, currentEvent, gameweek
+  - `LeaguesViewDTO`: entryId, leagues list, selectedLeague, leagueRace
+  - `LeagueStandingDTO`: leagueName, entries with rank/points, pagination, gameweek context
+  - `LeagueRaceDTO`: top 5 entries with history (event, totalPoints) for chart visualization
+  - `FixturesViewDTO`: entryId, event, fixtures with team badges/scores, playersByFixture map
+  - `FixtureDTO`: match details with team IDs, badges, scores, kickoff time
+  - `FixturePlayerDTO`: player details with team association for column layout
 
 ## Caching Strategy
 
@@ -151,6 +176,6 @@ styles/
 
 - Multiple saved entry IDs (requires DB: SQLite/Prisma)
 - Compare vs friends or past seasons
-- Per-player breakdown for latest GW
-- Simple theming / dark mode
+- Per-player breakdown with detailed statistics
 - PWA installable shell
+- Push notifications for deadline reminders

@@ -9,8 +9,10 @@ import {
 import type {
   ClassicLeagueStandings,
   EntryHistory,
+  EntryPicks,
   EntryProfile,
   EntryProfileLeagueSnippet,
+  EventLive,
 } from "./schemas";
 
 const profile: EntryProfile = {
@@ -155,13 +157,47 @@ describe("mapClassicLeagueStandings", () => {
 });
 
 describe("mapTotals", () => {
-  it("maps totals with current event", () => {
-    const dto = mapTotals(profile, 10);
+  it("maps totals with current event and rank change", () => {
+    const dto = mapTotals(profile, 10, history);
     expect(dto).toEqual({
       entryId: 1234,
       currentEvent: 10,
       totalPoints: 1987,
       overallRank: 125_000,
+      previousRank: 110_000,
+      rankChange: 15_000, // Worsened (rank increased)
+    });
+  });
+
+  it("handles missing previous rank", () => {
+    const historyWithoutPrevious: EntryHistory = {
+      current: [
+        {
+          event: 10,
+          points: 62,
+          total_points: 1987,
+          rank: 190_000,
+          rank_sort: 190_000,
+          overall_rank: 125_000,
+          event_transfers: 2,
+          event_transfers_cost: 4,
+          value: 1031,
+          bank: 12,
+          points_on_bench: 7,
+        },
+      ],
+      chips: [],
+      past: [],
+    };
+
+    const dto = mapTotals(profile, 10, historyWithoutPrevious);
+    expect(dto).toEqual({
+      entryId: 1234,
+      currentEvent: 10,
+      totalPoints: 1987,
+      overallRank: 125_000,
+      previousRank: null,
+      rankChange: null,
     });
   });
 });
@@ -173,6 +209,7 @@ describe("mapLatestGameweek", () => {
       currentEvent: 10,
       history,
       isLive: false,
+      isFinished: true,
     });
 
     expect(dto).toEqual({
@@ -183,6 +220,8 @@ describe("mapLatestGameweek", () => {
       pointsOnBench: 7,
       chipUsed: null,
       isLive: false,
+      isFinished: true,
+      players: [],
     });
   });
 
@@ -192,33 +231,336 @@ describe("mapLatestGameweek", () => {
       currentEvent: 11,
       history,
       isLive: true,
+      isFinished: false,
     });
 
     expect(dto.event).toBe(10);
+    expect(dto.isFinished).toBe(false);
+    expect(dto.players).toEqual([]);
   });
 
-  it("prefers chip info from picks when present", () => {
+  it("maps picks, chip info, and player statistics", () => {
     const dto = mapLatestGameweek({
       entryId: 1234,
       currentEvent: 10,
       history,
       isLive: false,
-      picks: {
-        active_chip: "triple_captain",
-        entry_history: {
-          event: 10,
-          points: 62,
-          total_points: 1987,
-          rank: 190_000,
-          event_transfers: 2,
-          event_transfers_cost: 4,
-          points_on_bench: 9,
-        },
-        picks: [],
-      },
+      isFinished: true,
+      picks: picksFixture,
+      liveData: liveFixture,
+      elements: bootstrapElements,
     });
 
     expect(dto.chipUsed).toBe("triple_captain");
     expect(dto.pointsOnBench).toBe(9);
+    expect(dto.players).toHaveLength(3);
+    const captain = dto.players.find((player) => player.isCaptain);
+    expect(captain?.name).toBe("Captain");
+    expect(captain?.points).toBe(15);
+    const benchPlayer = dto.players.find((player) => player.isBench);
+    expect(benchPlayer?.points).toBe(4);
+  });
+
+  it("returns bench picks when squad has no starters", () => {
+    const dto = mapLatestGameweek({
+      entryId: 1234,
+      currentEvent: 10,
+      history,
+      isLive: false,
+      isFinished: true,
+      picks: benchOnlyPicks,
+      liveData: liveFixture,
+      elements: benchElements,
+    });
+
+    expect(dto.players).toHaveLength(3);
+    expect(dto.players.every((player) => player.isBench)).toBe(true);
+    expect(dto.players.map((player) => player.points)).toEqual([6, 3, 1]);
+  });
+
+  it("defaults player points to zero when live stats are missing", () => {
+    const dto = mapLatestGameweek({
+      entryId: 1234,
+      currentEvent: 10,
+      history,
+      isLive: true,
+      isFinished: false,
+      picks: picksFixture,
+      elements: bootstrapElements,
+    });
+
+    expect(dto.players).toHaveLength(3);
+    dto.players.forEach((player) => {
+      expect(player.points).toBe(0);
+      expect(player.rawPoints).toBe(0);
+    });
   });
 });
+
+const benchOnlyPicks: EntryPicks = {
+  active_chip: null,
+  entry_history: {
+    event: 10,
+    points: 0,
+    total_points: 1950,
+    rank: 200_000,
+    event_transfers: 0,
+    event_transfers_cost: 0,
+    points_on_bench: 10,
+  },
+  picks: [
+    {
+      element: 4,
+      position: 12,
+      multiplier: 0,
+      is_captain: false,
+      is_vice_captain: false,
+    },
+    {
+      element: 5,
+      position: 13,
+      multiplier: 0,
+      is_captain: false,
+      is_vice_captain: false,
+    },
+    {
+      element: 6,
+      position: 14,
+      multiplier: 0,
+      is_captain: false,
+      is_vice_captain: false,
+    },
+  ],
+};
+
+const benchElements = [
+  {
+    id: 4,
+    web_name: "Bench One",
+    element_type: 2,
+    team: 1,
+    team_code: 3,
+    photo: "123456.jpg",
+  },
+  {
+    id: 5,
+    web_name: "Bench Two",
+    element_type: 3,
+    team: 1,
+    team_code: 3,
+    photo: "234567.jpg",
+  },
+  {
+    id: 6,
+    web_name: "Bench Three",
+    element_type: 4,
+    team: 1,
+    team_code: 3,
+    photo: "345678.jpg",
+  },
+];
+const bootstrapElements = [
+  {
+    id: 1,
+    web_name: "Keeper",
+    element_type: 1,
+    team: 1,
+    team_code: 3,
+    photo: "111111.jpg",
+  },
+  {
+    id: 2,
+    web_name: "Captain",
+    element_type: 4,
+    team: 2,
+    team_code: 6,
+    photo: "222222.jpg",
+  },
+  {
+    id: 3,
+    web_name: "Bench",
+    element_type: 3,
+    team: 3,
+    team_code: 1,
+    photo: "333333.jpg",
+  },
+];
+
+const picksFixture: EntryPicks = {
+  active_chip: "triple_captain",
+  entry_history: {
+    event: 10,
+    points: 62,
+    total_points: 1987,
+    rank: 190_000,
+    event_transfers: 2,
+    event_transfers_cost: 4,
+    points_on_bench: 9,
+  },
+  picks: [
+    {
+      element: 1,
+      position: 1,
+      multiplier: 1,
+      is_captain: false,
+      is_vice_captain: false,
+    },
+    {
+      element: 2,
+      position: 2,
+      multiplier: 3,
+      is_captain: true,
+      is_vice_captain: false,
+    },
+    {
+      element: 3,
+      position: 12,
+      multiplier: 0,
+      is_captain: false,
+      is_vice_captain: true,
+    },
+  ],
+};
+
+const liveFixture: EventLive = {
+  elements: [
+    {
+      id: 1,
+      stats: {
+        total_points: 2,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+    {
+      id: 2,
+      stats: {
+        total_points: 5,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+    {
+      id: 3,
+      stats: {
+        total_points: 4,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+    {
+      id: 4,
+      stats: {
+        total_points: 6,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+    {
+      id: 5,
+      stats: {
+        total_points: 3,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+    {
+      id: 6,
+      stats: {
+        total_points: 1,
+        minutes: null,
+        goals_scored: null,
+        assists: null,
+        clean_sheets: null,
+        goals_conceded: null,
+        own_goals: null,
+        penalties_saved: null,
+        penalties_missed: null,
+        yellow_cards: null,
+        red_cards: null,
+        saves: null,
+        bonus: null,
+        bps: null,
+        influence: null,
+        creativity: null,
+        threat: null,
+        ict_index: "0",
+      },
+    },
+  ],
+};

@@ -6,6 +6,27 @@
 - Keep API error rate under 1% by validating and normalizing all upstream responses.
 - Maintain DX velocity via automated lint, test, and deploy workflows running under 5 minutes.
 
+## Status Update (2025-10-29)
+
+- Gameweek dashboard now includes a pitch-style card showing the last completed XI with bench coverage and consistent number formatting.
+- Player images integrated with professional fallback icons for missing photos.
+- Live match indicators show during active gameweeks for players currently playing (green pulsing dot).
+- Deadline countdown card displays time remaining until next gameweek deadline with real-time updates.
+- Dashboard terminology updated from "Entry" to "Manager" throughout the UI.
+- **Dedicated Gameweek page** (`/[entryId]/gameweek`) with Previous/Next navigation for browsing all gameweeks with loading states.
+- **League page enhancements**: auto-sort by rank (ascending), display rank with league name, filter out empty/inactive leagues, smart filtering prioritizing small/private leagues (<100 members) with "+N More" toggle.
+- **Top 5 race chart** on league page showing points progression with interactive team toggles using recharts, custom tooltips with sorted entries and GW labels.
+- **Fixtures page** (`/[entryId]/fixtures`) with Premier League team badges, match scores/kickoff times, player points organized by team columns, and gameweek navigation.
+- FPL schemas and fetches accept the latest API shape (historic picks/live stats, deadline timestamps, player photos, team codes, fixture data).
+- Summary pipeline locks to the most recent finished gameweek to avoid empty pitch renders.
+- Bootstrap payload now relies on React caching to dodge Next.js' 2 MB data-cache ceiling; follow-up needed for longer-term caching strategy.
+
+### Outstanding Focus
+
+1. Expand unit test coverage (M4): schemas, route handlers, service layer edge cases.
+2. Create comprehensive E2E tests with Playwright.
+3. Set up CI/CD pipeline with GitHub Actions.
+
 ## Milestones
 
 ### M0 — Project Bootstrap (0.5 day, blocker for all other milestones)
@@ -35,14 +56,19 @@
 - [x] Implement `GET /api/fpl/leagues?type=classic|h2h&leagueId=` with reusable cache keys + guards against pagination loops.
 - [x] Build `/[entryId]/leagues/page.tsx` RSC + `LeagueTable` component, handling >50-entry pagination and empty states.
 - [x] Wire navigation between summary and leagues pages; ensure consistent breadcrumbs/tab UI.
+- [x] Add smart league filtering (prioritize small/private leagues) and Top 5 race chart with interactive visualization.
 
 ### M3 — Polish & UX (0.5–0.75 day)
 
 - **Deliverables:** Production-ready look and feel.
-- [ ] Introduce skeleton UIs for all major cards and table rows, respecting streaming boundaries.
-- [ ] Finalize responsive layout (mobile-first) and implement dark mode toggle with CSS variables.
-- [ ] Run accessibility pass (labels, ARIA roles, focus states, reduced motion) and capture follow-ups.
-- [ ] Instrument basic analytics (page view + entry submission) with chosen provider (e.g., Vercel Analytics).
+- [x] Introduce skeleton UIs for all major cards and table rows, respecting streaming boundaries.
+- [x] Finalize responsive layout (mobile-first) and implement dark mode toggle with CSS variables.
+- [x] Run accessibility pass (labels, ARIA roles, focus states, reduced motion) and capture follow-ups.
+- [x] Instrument basic analytics (page view + entry submission) with chosen provider (e.g., Vercel Analytics).
+- [x] Add live-compatible "Gameweek Pitch Card" with bench state, captain badges, and locale-aware number formatting.
+- [x] Create dedicated Gameweek page with navigation between gameweeks.
+- [x] Build Fixtures page showing matches with team badges and player performance.
+- [x] Add interactive race chart for league standings with recharts integration.
 
 ### M4 — Testing & CI (0.5 day, parallelizable after M1)
 
@@ -74,10 +100,12 @@
 
 ### Pages & Components
 
-- [ ] `/` Landing with EntryIdForm (client) and friendly invalid ID copy.
-- [ ] `/[entryId]` Summary page (RSC) rendering ProfileCard, TotalsCard, LatestGwCard, plus GW metadata chip.
-- [ ] `/[entryId]/leagues` League page (RSC) with LeagueTable, pagination controls, empty placeholders.
-- [ ] Shared UI: Card, Table, Skeleton, ErrorBanner, Tabs/Navigation, Analytics boundary component.
+- [x] `/` Landing with EntryIdForm (client) and friendly invalid ID copy.
+- [x] `/[entryId]` Summary page (RSC) rendering ProfileCard, TotalsCard, LatestGwCard, plus GW metadata chip.
+- [x] `/[entryId]/gameweek` Dedicated gameweek page with navigation controls.
+- [x] `/[entryId]/leagues` League page (RSC) with LeagueTable, race chart, pagination controls, empty placeholders.
+- [x] `/[entryId]/fixtures` Fixtures page with team badges and player points.
+- [x] Shared UI: Card, Table, Skeleton, ErrorBanner, Tabs/Navigation, Analytics boundary component.
 
 ### Caching & Performance
 
@@ -97,17 +125,19 @@
 ### Testing
 
 - [ ] Unit: schemas reject shape mismatch; ensure helpful error messages.
-- [ ] Unit: mappers convert representative fixtures including edge cases (bench boost, triple captain).
+- [ ] Unit: mappers convert representative fixtures including edge cases (bench boost, triple captain). _(Latest GW mapper now covers bench-only squads and missing live stats — expand to other DTOs.)_
 - [ ] Route handler tests with mocked fetch/error permutations and cache behaviour assertions.
 - [ ] E2E flows (Playwright) covering mobile + desktop snapshots and accessibility checks.
 - [ ] Smoke deploy validation script hitting `/api/fpl/*` endpoints before promotion.
 
 ## Definition of Done
 
-- [ ] User can enter FPL entry ID and see: profile, total points, overall rank
-- [ ] Latest gameweek points shown for the current/most recent GW
-- [ ] League table visible for at least one classic league
-- [ ] All data fetched server-side with caching and friendly errors
+- [x] User can enter FPL entry ID and see: profile, total points, overall rank
+- [x] Latest gameweek points shown for the current/most recent GW
+- [x] Dedicated gameweek page with navigation
+- [x] League table visible for at least one classic league with race chart
+- [x] Fixtures page showing matches and player performance
+- [x] All data fetched server-side with caching and friendly errors
 - [ ] CI green; deploy on Vercel
 - [ ] Observability hooks (logging + analytics) enabled or documented with toggles
 

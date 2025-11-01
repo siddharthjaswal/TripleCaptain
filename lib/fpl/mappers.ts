@@ -1,14 +1,20 @@
 import {
   ClassicLeagueStandingResultSchema,
+  type BootstrapElement,
+  type BootstrapStatic,
   type ClassicLeagueStandings,
   type EntryCurrentHistory,
   type EntryHistory,
   type EntryPicks,
   type EntryProfile,
   type EntryProfileLeagueSnippet,
+  type EventLive,
+  type Fixture,
 } from "./schemas";
 import type {
+  FixtureDTO,
   LatestGwDTO,
+  LatestGwPlayerDTO,
   LeagueStandingDTO,
   LeagueSummaryDTO,
   LeagueTableEntryDTO,
@@ -29,12 +35,29 @@ export function mapProfile(entry: EntryProfile): ProfileDTO {
 export function mapTotals(
   entry: EntryProfile,
   currentEvent: number,
+  history: EntryHistory,
 ): TotalsDTO {
+  const currentRank = entry.summary_overall_rank;
+
+  // Find previous gameweek's rank (currentEvent - 1)
+  const previousEventHistory = history.current.find(
+    (h) => h.event === currentEvent - 1
+  );
+  const previousRank = previousEventHistory?.overall_rank ?? null;
+
+  // Calculate rank change (negative = improved, positive = worsened)
+  let rankChange: number | null = null;
+  if (currentRank !== null && previousRank !== null) {
+    rankChange = currentRank - previousRank;
+  }
+
   return {
     entryId: entry.id,
     currentEvent,
     totalPoints: entry.summary_overall_points,
-    overallRank: entry.summary_overall_rank,
+    overallRank: currentRank,
+    previousRank,
+    rankChange,
   };
 }
 
@@ -44,8 +67,20 @@ export function mapLatestGameweek(params: {
   history: EntryHistory;
   picks?: EntryPicks | null;
   isLive: boolean;
+  isFinished: boolean;
+  liveData?: EventLive | null;
+  elements?: BootstrapElement[];
 }): LatestGwDTO {
-  const { entryId, currentEvent, history, picks, isLive } = params;
+  const {
+    entryId,
+    currentEvent,
+    history,
+    picks,
+    isLive,
+    isFinished,
+    liveData,
+    elements,
+  } = params;
   const historyRecord = findHistoryRecord(history.current, currentEvent);
 
   if (!historyRecord) {
@@ -60,6 +95,14 @@ export function mapLatestGameweek(params: {
     history.chips.find((chip) => chip.event === historyRecord.event)?.name ??
     null;
 
+  const players = picks
+    ? mapLatestGameweekPlayers({
+        picks,
+        liveData,
+        elements,
+      })
+    : [];
+
   return {
     entryId,
     event: historyRecord.event,
@@ -68,6 +111,8 @@ export function mapLatestGameweek(params: {
     pointsOnBench: benchPoints,
     chipUsed,
     isLive,
+    isFinished,
+    players,
   };
 }
 
@@ -81,6 +126,65 @@ function findHistoryRecord(
 
   const matched = history.find((item) => item.event === event);
   return matched ?? history[history.length - 1];
+}
+
+function mapLatestGameweekPlayers(params: {
+  picks: EntryPicks;
+  liveData?: EventLive | null;
+  elements?: BootstrapElement[];
+}): LatestGwPlayerDTO[] {
+  const { picks, liveData, elements } = params;
+  const liveLookup = new Map<number, number>();
+  liveData?.elements.forEach((entry) => {
+    liveLookup.set(entry.id, entry.stats.total_points ?? 0);
+  });
+
+  const elementLookup = new Map<number, BootstrapElement>();
+  elements?.forEach((element) => {
+    elementLookup.set(element.id, element);
+  });
+
+  return picks.picks
+    .slice()
+    .sort((a, b) => a.position - b.position)
+    .map((pick, index) => {
+      const playerInfo = elementLookup.get(pick.element);
+      const rawPoints = liveLookup.get(pick.element) ?? 0;
+      const positionCode = playerInfo?.element_type ?? 4;
+      const position = mapElementType(positionCode);
+      const isBench = pick.position > 11;
+      const multiplier = pick.multiplier ?? 1;
+      const appliedPoints = isBench ? rawPoints : rawPoints * multiplier;
+
+      return {
+        elementId: pick.element,
+        name: playerInfo?.web_name ?? `Player ${pick.element}`,
+        position,
+        slot: pick.position ?? index + 1,
+        isBench,
+        isCaptain: Boolean(pick.is_captain),
+        isViceCaptain: Boolean(pick.is_vice_captain),
+        multiplier,
+        points: appliedPoints,
+        rawPoints,
+        photo: playerInfo?.photo ?? null,
+        teamId: playerInfo?.team ?? null,
+        teamCode: playerInfo?.team_code ?? null,
+      } satisfies LatestGwPlayerDTO;
+    });
+}
+
+function mapElementType(type: number): "GK" | "DEF" | "MID" | "FWD" {
+  switch (type) {
+    case 1:
+      return "GK";
+    case 2:
+      return "DEF";
+    case 3:
+      return "MID";
+    default:
+      return "FWD";
+  }
 }
 
 export function mapClassicLeagueSummaries(
@@ -133,4 +237,33 @@ export function mapClassicLeagueStandings(
     gameweek: context.gameweek ?? null,
     entries,
   };
+}
+
+export function mapFixtures(
+  fixtures: Fixture[],
+  bootstrap: BootstrapStatic,
+): FixtureDTO[] {
+  const teamsMap = new Map(
+    bootstrap.teams.map((team) => [team.id, { name: team.short_name, code: team.code }]),
+  );
+
+  return fixtures.map((fixture) => {
+    const homeTeamData = teamsMap.get(fixture.team_h);
+    const awayTeamData = teamsMap.get(fixture.team_a);
+
+    return {
+      id: fixture.id,
+      homeTeam: homeTeamData?.name ?? "Unknown",
+      awayTeam: awayTeamData?.name ?? "Unknown",
+      homeTeamId: fixture.team_h,
+      awayTeamId: fixture.team_a,
+      homeTeamBadge: homeTeamData ? `https://resources.premierleague.com/premierleague/badges/t${homeTeamData.code}.png` : "",
+      awayTeamBadge: awayTeamData ? `https://resources.premierleague.com/premierleague/badges/t${awayTeamData.code}.png` : "",
+      homeScore: fixture.team_h_score,
+      awayScore: fixture.team_a_score,
+      kickoffTime: fixture.kickoff_time,
+      finished: fixture.finished,
+      started: fixture.started ?? false,
+    };
+  });
 }

@@ -1,6 +1,24 @@
 # Triple Captain
 
-Fantasy Premier League companion built with Next.js App Router. The goal is to provide a fast, server-rendered dashboard where managers can enter their FPL entry ID and immediately see profile details, latest gameweek performance, and league standings.
+Fantasy Premier League companion built with Next.js App Router. Managers can enter an FPL entry ID to fetch a server-rendered dashboard featuring profile details, totals, latest gameweek metrics, and a pitch-style card that visualises the most recent XI alongside bench points and captain badges.
+
+## Current Features
+
+- **Manager lookup** with persisted recent selections and dark/light theme toggle
+- **Summary dashboard** with profile/totals cards, live-aware gameweek metrics, and deadline countdown
+- **Gameweek Pitch Card** with player images, live match indicators, captain badges, and professional fallback icons
+- **Dedicated Gameweek page** with navigation between gameweeks and full pitch visualization
+- **League standings view** with rank-sorted display, smart filtering (prioritizes small/private leagues), and pagination support
+- **League race chart** showing top 5 managers' points progression with interactive team toggles
+- **Fixtures page** with team badges, player points display, and gameweek navigation, with clear home/away indicators
+- **AI-Powered Predictions** (New!) - Comprehensive next gameweek insights:
+  - **Captain Picks**: Top 3 recommendations based on expected points, form, fixtures, and injury status
+  - **Predicted Best XI**: Formation optimizer analyzing 7 formations with expected points totals
+  - **Transfer Suggestions**: Budget-aware player swaps with fixture analysis for next 3 gameweeks
+  - **Chip Strategy**: Timing advice for Triple Captain, Bench Boost, and Free Hit based on team state
+  - **Differential Picks**: Low-ownership (<10%) high-upside players to gain rank advantage
+  - **Fixture Analysis**: 5-gameweek fixture difficulty ratings for all teams (target/avoid recommendations)
+- Local analytics hooks (Vercel Analytics) plus accessibility-conscious UI primitives
 
 ## Tech Stack
 
@@ -38,7 +56,7 @@ pnpm exec playwright install
 pnpm test:e2e
 ```
 
-The landing page currently provides a project hero while the core flows are under construction. Be sure to keep the README in sync as milestones progress.
+To surface FPL API logs while developing, prefix commands with `FPL_DEBUG_LOGS=true pnpm dev`.
 
 ## Deployment
 

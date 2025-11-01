@@ -9,12 +9,14 @@ import {
   EntryPicksSchema,
   EntryProfileSchema,
   EventLiveSchema,
+  FixturesResponseSchema,
   type BootstrapStatic,
   type ClassicLeagueStandings,
   type EntryHistory,
   type EntryPicks,
   type EntryProfile,
   type EventLive,
+  type Fixture,
 } from "./schemas";
 
 const API_BASE = "https://fantasy.premierleague.com/api";
@@ -58,9 +60,12 @@ async function fetchFromFpl<T>({
         "triple-captain-app/0.1 (+https://github.com/siddharthjaswal/TripleCaptain)",
       Accept: "application/json",
     },
-    next: {
-      revalidate,
-    },
+    next:
+      typeof revalidate === "number"
+        ? {
+            revalidate,
+          }
+        : undefined,
   });
 
   if (!response.ok) {
@@ -103,7 +108,7 @@ export const getBootstrap = cache(async (): Promise<BootstrapStatic> => {
   return fetchFromFpl({
     path: "/bootstrap-static/",
     schema: BootstrapStaticSchema,
-    revalidate: 3600,
+    revalidate: undefined,
   });
 });
 
@@ -146,10 +151,19 @@ export async function getClassicLeagueStandings(
   leagueId: number,
   options: { page?: number } = {},
 ): Promise<ClassicLeagueStandings> {
-  const search = options.page ? `?page=${options.page}` : "";
+  const pageParam = options.page && options.page > 1 ? `?page_new_entries=1&page_standings=${options.page}` : "";
   return fetchFromFpl({
-    path: `/leagues-classic/${leagueId}/standings/${search}`,
+    path: `/leagues-classic/${leagueId}/standings/${pageParam}`,
     schema: ClassicLeagueStandingsSchema,
     revalidate: 600,
+  });
+}
+
+export async function getFixtures(event?: number): Promise<Fixture[]> {
+  const eventParam = event ? `?event=${event}` : "";
+  return fetchFromFpl({
+    path: `/fixtures/${eventParam}`,
+    schema: FixturesResponseSchema,
+    revalidate: 300,
   });
 }
