@@ -170,59 +170,58 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
 
   return (
     <div className="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/60 overflow-hidden transition hover:border-[color:var(--accent)]/50">
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center justify-center gap-4 flex-1">
-          <div className="flex items-center gap-2 flex-1 justify-end">
-            <img
-              src={fixture.homeTeamBadge}
-              alt={fixture.homeTeam}
-              className="h-8 w-8 object-contain"
-            />
-            <span className="font-bold text-lg">
-              {fixture.homeTeam}
+      <div className="flex items-center justify-between px-4 py-3 gap-4">
+        {/* Home Team: Name + Crest + Score */}
+        <div className="flex items-center gap-2 flex-1 justify-end">
+          <span className="font-bold text-base truncate">
+            {fixture.homeTeam}
+          </span>
+          <img
+            src={fixture.homeTeamBadge}
+            alt={fixture.homeTeam}
+            className="h-7 w-7 object-contain shrink-0"
+          />
+          {showScore && (
+            <span className={`${homeColor} text-lg font-bold tabular-nums min-w-[24px] text-right`}>
+              {fixture.homeScore ?? 0}
             </span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            {showScore ? (
-              <div className="flex items-center gap-2 font-bold tabular-nums">
-                <span className={`${homeColor} text-base`}>
-                  {fixture.homeScore ?? 0}
-                </span>
-                <span className="tc-text-muted">-</span>
-                <span className={`${awayColor} text-base`}>
-                  {fixture.awayScore ?? 0}
-                </span>
-              </div>
-            ) : (
-              <span className="tc-text-muted text-sm font-medium">vs</span>
-            )}
-            {fixture.kickoffTime && (
-              <span className="tc-text-muted text-[10px] font-medium">
-                {formatKickoffTime(fixture.kickoffTime)}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2 flex-1">
-            <span className="font-bold text-lg">
-              {fixture.awayTeam}
-            </span>
-            <img
-              src={fixture.awayTeamBadge}
-              alt={fixture.awayTeam}
-              className="h-8 w-8 object-contain"
-            />
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {fixture.finished && (
-            <span className="tc-chip shrink-0">FT</span>
           )}
-          {fixture.started && !fixture.finished && (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-400 shrink-0">
+        </div>
+
+        {/* Divider */}
+        <span className="tc-text-muted font-medium shrink-0">-</span>
+
+        {/* Away Team: Score + Crest + Name */}
+        <div className="flex items-center gap-2 flex-1">
+          {showScore && (
+            <span className={`${awayColor} text-lg font-bold tabular-nums min-w-[24px]`}>
+              {fixture.awayScore ?? 0}
+            </span>
+          )}
+          <img
+            src={fixture.awayTeamBadge}
+            alt={fixture.awayTeam}
+            className="h-7 w-7 object-contain shrink-0"
+          />
+          <span className="font-bold text-base truncate">
+            {fixture.awayTeam}
+          </span>
+        </div>
+
+        {/* Status/Time on right */}
+        <div className="flex items-center gap-2 shrink-0">
+          {fixture.finished ? (
+            <span className="tc-chip">FT</span>
+          ) : fixture.started ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-400">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               LIVE
             </span>
-          )}
+          ) : fixture.kickoffTime ? (
+            <span className="tc-text-muted text-sm font-medium">
+              {formatKickoffTime(fixture.kickoffTime)}
+            </span>
+          ) : null}
         </div>
       </div>
 
