@@ -6,10 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ toLower(github.repository) }}
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,6 +16,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Normalize image name
+        id: image
+        run: echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v3
@@ -80,7 +80,7 @@ jobs:
             cd /home/deploy/triple-captain
 
             # Pull new image
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            docker pull ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:latest
 
             # Stop old container
             docker stop triple-captain || true
@@ -92,7 +92,7 @@ jobs:
               --restart unless-stopped \
               -p 3000:3000 \
               --env-file .env.production \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+              ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:latest
 
             # Wait for app to start
             sleep 5
