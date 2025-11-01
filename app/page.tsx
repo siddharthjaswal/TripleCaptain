@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { EntryIdForm } from "@/components/EntryIdForm";
 import { RecentEntryCard } from "@/components/RecentEntryCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -36,7 +37,7 @@ export default function Home() {
       <div className="w-full max-w-6xl mb-20">
         <div className="flex flex-col gap-6">
           <div className="text-center">
-            <h2 className="text-3xl font-bold mb-2">What You'll Get</h2>
+            <h2 className="text-3xl font-bold mb-2">What You&rsquo;ll Get</h2>
             <p className="tc-text-muted text-sm">
               Everything you need to dominate your FPL leagues
             </p>
@@ -119,7 +120,7 @@ export default function Home() {
           <FeatureCard
             icon="📈"
             title="League Race Chart"
-            description="Visualize top managers' points progression over time"
+            description="Visualize top managers&rsquo; points progression over time"
           />
         </div>
       </section>
@@ -133,9 +134,11 @@ export default function Home() {
               key={teamCode}
               className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 opacity-60 hover:opacity-100 transition-opacity"
             >
-              <img
+              <Image
                 src={`https://resources.premierleague.com/premierleague/badges/t${teamCode}.png`}
                 alt={`Premier League Team ${index + 1}`}
+                width={56}
+                height={56}
                 className="w-full h-full object-contain"
                 loading="lazy"
               />

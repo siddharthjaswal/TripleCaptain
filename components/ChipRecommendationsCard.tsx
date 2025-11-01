@@ -37,7 +37,7 @@ export function ChipRecommendationsCard({
           </div>
           <h3 className="text-lg font-semibold mb-2">All Chips Used!</h3>
           <p className="tc-text-muted max-w-md">
-            You've already used all your chips this season. Great job strategizing!
+            You&rsquo;ve already used all your chips this season. Great job strategizing!
           </p>
         </div>
       </section>

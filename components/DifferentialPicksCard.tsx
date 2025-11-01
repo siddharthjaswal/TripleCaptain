@@ -40,7 +40,7 @@ export function DifferentialPicksCard({
           </div>
           <h3 className="text-lg font-semibold mb-2">No Differentials Found</h3>
           <p className="tc-text-muted max-w-md">
-            No affordable differential picks available at the moment. All low-ownership players either don't meet the criteria or are outside your budget.
+            No affordable differential picks available at the moment. All low-ownership players either don&rsquo;t meet the criteria or are outside your budget.
           </p>
         </div>
       </section>

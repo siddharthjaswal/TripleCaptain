@@ -473,7 +473,6 @@ export async function loadGameweek(
     }
 
     const currentEvent = await resolveCurrentEvent(profile.current_event);
-    const _historyRecord = resolveHistoryRecord(history.current, event);
 
     const [picks, liveData] = await Promise.all([
       getEntryPicks(entryId, event).catch(() => null),

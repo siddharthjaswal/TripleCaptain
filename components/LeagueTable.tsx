@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import type { LeagueStandingDTO } from "@/lib/fpl/dto";
+import type { LeagueStandingDTO, LatestGwDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
 import { useLeagueTeamPicks } from "@/hooks/useLeagueTeamPicks";
 import { TeamPitchModal } from "./TeamPitchModal";
@@ -19,12 +19,12 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
   const [isPending, startTransition] = useTransition();
   const [selectedTeam, setSelectedTeam] = useState<{
     teamName: string;
-    teamPicks: any;
+    teamPicks: LatestGwDTO;
   } | null>(null);
   const gameweekLabel = league.gameweek ? `GW ${league.gameweek}` : null;
 
   // Fetch team picks for small leagues (< 20 members)
-  const { entries: enrichedEntries, isLoading: isLoadingPicks } = useLeagueTeamPicks(
+  const { entries: enrichedEntries } = useLeagueTeamPicks(
     league.entries,
     league.gameweek,
     league.entries.length < 20

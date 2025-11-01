@@ -111,10 +111,7 @@ export default async function GameweekPage({
           </div>
         </header>
 
-        <GameweekCard
-          entryId={view.entryId}
-          gameweek={view.gameweek}
-        />
+        <GameweekCard gameweek={view.gameweek} />
 
         <PersistLastEntry
           entryId={view.entryId}

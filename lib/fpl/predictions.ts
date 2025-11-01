@@ -129,7 +129,10 @@ export function calculateCaptainPicks(
     .sort((a, b) => b.score - a.score);
 
   // Return top 3
-  return validPlayers.slice(0, 3).map(({ score: _score, ...rest }) => rest);
+  return validPlayers.slice(0, 3).map(({ score, ...rest }) => {
+    void score;
+    return rest;
+  });
 }
 
 /**

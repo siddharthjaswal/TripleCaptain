@@ -41,26 +41,30 @@ function applyTheme(theme: ThemeMode) {
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<ThemeMode>("dark");
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-    // Read actual theme after mount
-    if (typeof document !== "undefined") {
+    if (typeof document === "undefined") {
+      return;
+    }
+    const syncTheme = () => {
       const current = document.documentElement.dataset.theme;
       if (current === "light" || current === "dark") {
         setTheme(current);
+        applyTheme(current);
         return;
       }
-    }
-    setTheme(getPreferredTheme());
+      const preferred = getPreferredTheme();
+      setTheme(preferred);
+      applyTheme(preferred);
+    };
+
+    const rafId = window.requestAnimationFrame(syncTheme);
+    return () => window.cancelAnimationFrame(rafId);
   }, []);
 
   useEffect(() => {
-    if (isClient) {
-      applyTheme(theme);
-    }
-  }, [theme, isClient]);
+    applyTheme(theme);
+  }, [theme]);
 
   const nextTheme: ThemeMode = theme === "dark" ? "light" : "dark";
 

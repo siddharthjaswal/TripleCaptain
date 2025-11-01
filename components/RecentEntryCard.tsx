@@ -12,11 +12,18 @@ export function RecentEntryCard() {
   const [recentEntries, setRecentEntries] = useState<
     Array<StoredEntryProfile & { ageLabel: string }>
   >([]);
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-    setRecentEntries(readRecent());
+    if (typeof window === "undefined") {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setRecentEntries(readRecent());
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, []);
 
   const handleClear = () => {
@@ -30,7 +37,7 @@ export function RecentEntryCard() {
     setRecentEntries([]);
   };
 
-  if (!isClient || recentEntries.length === 0) {
+  if (recentEntries.length === 0) {
     return null;
   }
 

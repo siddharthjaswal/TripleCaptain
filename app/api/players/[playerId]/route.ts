@@ -1,6 +1,57 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBootstrap, getFixtures } from "@/lib/fpl/client";
 import type { PlayerDetailsDTO, FixtureDifficultyDTO } from "@/lib/fpl/dto";
+import type { BootstrapElement, BootstrapStatic, Fixture } from "@/lib/fpl/schemas";
+
+type BootstrapTeam = BootstrapStatic["teams"][number];
+
+type PlayerRecord = Record<string, unknown>;
+
+const getNumber = (val: unknown): number => {
+  if (typeof val === "number") return val;
+  if (typeof val === "string") {
+    const parsed = Number.parseFloat(val);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+  return 0;
+};
+
+const parseNumeric = (val: unknown): number => {
+  if (typeof val === "number") return val;
+  if (typeof val === "string") {
+    const parsed = Number.parseFloat(val);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+  return 0;
+};
+
+const getString = (val: unknown): string | null => {
+  if (typeof val === "string") return val;
+  return null;
+};
+
+const getNullableNumber = (val: unknown): number | null => {
+  if (typeof val === "number") return val;
+  if (val === null) return null;
+  return null;
+};
+
+const toRecord = (element: BootstrapElement): PlayerRecord =>
+  element as PlayerRecord;
+
+const readNumberField = (record: PlayerRecord, key: string): number =>
+  getNumber(record[key]);
+
+const readNumericField = (record: PlayerRecord, key: string): number =>
+  parseNumeric(record[key]);
+
+const readStringField = (record: PlayerRecord, key: string): string | null =>
+  getString(record[key]);
+
+const readNullableNumberField = (
+  record: PlayerRecord,
+  key: string,
+): number | null => getNullableNumber(record[key]);
 
 export async function GET(
   request: NextRequest,
@@ -24,7 +75,9 @@ export async function GET(
     ]);
 
     // Find the player
-    const player = bootstrap.elements.find((el: any) => el.id === playerId);
+    const player = bootstrap.elements.find(
+      (el: BootstrapElement) => el.id === playerId,
+    );
 
     if (!player) {
       return NextResponse.json(
@@ -34,7 +87,9 @@ export async function GET(
     }
 
     // Find team info
-    const team = bootstrap.teams.find((t: any) => t.id === player.team);
+    const team = bootstrap.teams.find(
+      (t: BootstrapTeam) => t.id === player.team,
+    );
     const teamName = team?.name || "Unknown";
     const teamShort = team?.short_name || "UNK";
 
@@ -49,61 +104,55 @@ export async function GET(
 
     // Get next 5 fixtures for this team
     const teamFixtures = fixtures
-      .filter((f: any) =>
-        !f.finished &&
-        (f.team_h === player.team || f.team_a === player.team)
+      .filter(
+        (fixture: Fixture) =>
+          !fixture.finished &&
+          (fixture.team_h === player.team || fixture.team_a === player.team),
       )
-      .sort((a: any, b: any) => a.event - b.event)
+      .sort((a: Fixture, b: Fixture) => {
+        const aEvent = a.event ?? Number.MAX_SAFE_INTEGER;
+        const bEvent = b.event ?? Number.MAX_SAFE_INTEGER;
+        return aEvent - bEvent;
+      })
       .slice(0, 5);
 
-    const nextFixtures: FixtureDifficultyDTO[] = teamFixtures.map((fixture: any) => {
-      const isHome = fixture.team_h === player.team;
-      const opponentId = isHome ? fixture.team_a : fixture.team_h;
-      const opponent = bootstrap.teams.find((t: any) => t.id === opponentId);
-      const difficulty = isHome ? fixture.team_h_difficulty : fixture.team_a_difficulty;
+    const nextFixtures: FixtureDifficultyDTO[] = teamFixtures.map(
+      (fixture: Fixture) => {
+        const isHome = fixture.team_h === player.team;
+        const opponentId = isHome ? fixture.team_a : fixture.team_h;
+        const opponent = bootstrap.teams.find(
+          (t: BootstrapTeam) => t.id === opponentId,
+        );
+        const difficulty = isHome
+          ? fixture.team_h_difficulty ?? 3
+          : fixture.team_a_difficulty ?? 3;
 
-      return {
-        opponent: opponent?.name || "Unknown",
-        opponentShort: opponent?.short_name || "UNK",
-        difficulty: difficulty || 3,
-        isHome,
-      };
-    });
+        return {
+          opponent: opponent?.name || "Unknown",
+          opponentShort: opponent?.short_name || "UNK",
+          difficulty,
+          isHome,
+        };
+      },
+    );
 
     // Map status
-    const statusMap: { [key: string]: string } = {
-      'a': 'Available',
-      'd': 'Doubtful',
-      'i': 'Injured',
-      'u': 'Unavailable',
-      's': 'Suspended',
+    const statusMap: Record<string, string> = {
+      a: "Available",
+      d: "Doubtful",
+      i: "Injured",
+      u: "Unavailable",
+      s: "Suspended",
     };
 
-    // Helper to safely get number field
-    const getNumber = (val: any): number => {
-      if (typeof val === 'number') return val;
-      return 0;
-    };
-
-    // Helper to safely parse string to number
-    const parseString = (val: any): number => {
-      if (typeof val === 'string') return Number.parseFloat(val);
-      if (typeof val === 'number') return val;
-      return 0;
-    };
-
-    // Helper to safely get string field
-    const getString = (val: any): string | null => {
-      if (typeof val === 'string') return val;
-      return null;
-    };
+    const playerRecord = toRecord(player);
 
     // Build PlayerDetailsDTO
     const playerDetails: PlayerDetailsDTO = {
       // Basic Info
       playerId: player.id,
       name: player.web_name,
-      fullName: `${player.first_name || ''} ${player.second_name || ''}`.trim(),
+      fullName: `${player.first_name || ""} ${player.second_name || ""}`.trim(),
       photo: player.photo || null,
       position,
       team: teamName,
@@ -111,49 +160,57 @@ export async function GET(
       teamId: player.team,
 
       // Pricing
-      currentPrice: getNumber((player as any).now_cost) / 10, // Convert from 0.1m units to actual price
-      costChange: getNumber((player as any).cost_change_start) / 10,
+      currentPrice: readNumberField(playerRecord, "now_cost") / 10, // Convert from 0.1m units to actual price
+      costChange: readNumberField(playerRecord, "cost_change_start") / 10,
 
       // Availability
-      status: statusMap[getString((player as any).status) || 'a'] || 'Available',
-      news: getString((player as any).news),
-      chanceOfPlayingNextRound: (player as any).chance_of_playing_next_round ?? null,
+      status:
+        statusMap[readStringField(playerRecord, "status") || "a"] ||
+        "Available",
+      news: readStringField(playerRecord, "news"),
+      chanceOfPlayingNextRound: readNullableNumberField(
+        playerRecord,
+        "chance_of_playing_next_round",
+      ),
 
       // Season Stats
-      totalPoints: getNumber((player as any).total_points),
-      pointsPerGame: parseString((player as any).points_per_game),
-      minutes: getNumber((player as any).minutes),
-      goalsScored: getNumber((player as any).goals_scored),
-      assists: getNumber((player as any).assists),
-      cleanSheets: getNumber((player as any).clean_sheets),
-      goalsConceded: getNumber((player as any).goals_conceded),
-      ownGoals: getNumber((player as any).own_goals),
-      penaltiesSaved: getNumber((player as any).penalties_saved),
-      penaltiesMissed: getNumber((player as any).penalties_missed),
-      yellowCards: getNumber((player as any).yellow_cards),
-      redCards: getNumber((player as any).red_cards),
-      saves: getNumber((player as any).saves),
-      bonus: getNumber((player as any).bonus),
+      totalPoints: readNumberField(playerRecord, "total_points"),
+      pointsPerGame: readNumericField(playerRecord, "points_per_game"),
+      minutes: readNumberField(playerRecord, "minutes"),
+      goalsScored: readNumberField(playerRecord, "goals_scored"),
+      assists: readNumberField(playerRecord, "assists"),
+      cleanSheets: readNumberField(playerRecord, "clean_sheets"),
+      goalsConceded: readNumberField(playerRecord, "goals_conceded"),
+      ownGoals: readNumberField(playerRecord, "own_goals"),
+      penaltiesSaved: readNumberField(playerRecord, "penalties_saved"),
+      penaltiesMissed: readNumberField(playerRecord, "penalties_missed"),
+      yellowCards: readNumberField(playerRecord, "yellow_cards"),
+      redCards: readNumberField(playerRecord, "red_cards"),
+      saves: readNumberField(playerRecord, "saves"),
+      bonus: readNumberField(playerRecord, "bonus"),
 
       // Performance Metrics
-      form: parseString(player.form),
-      expectedPoints: parseString(player.ep_next),
-      expectedGoals: parseString((player as any).expected_goals),
-      expectedAssists: parseString((player as any).expected_assists),
-      expectedGoalInvolvements: parseString((player as any).expected_goal_involvements),
+      form: parseNumeric(player.form),
+      expectedPoints: parseNumeric(player.ep_next),
+      expectedGoals: readNumericField(playerRecord, "expected_goals"),
+      expectedAssists: readNumericField(playerRecord, "expected_assists"),
+      expectedGoalInvolvements: readNumericField(
+        playerRecord,
+        "expected_goal_involvements",
+      ),
 
       // ICT Index
-      ictIndex: parseString((player as any).ict_index),
-      influence: parseString((player as any).influence),
-      creativity: parseString((player as any).creativity),
-      threat: parseString((player as any).threat),
+      ictIndex: readNumericField(playerRecord, "ict_index"),
+      influence: readNumericField(playerRecord, "influence"),
+      creativity: readNumericField(playerRecord, "creativity"),
+      threat: readNumericField(playerRecord, "threat"),
 
       // Ownership & Popularity
-      selectedByPercent: parseString(player.selected_by_percent),
-      transfersIn: getNumber((player as any).transfers_in),
-      transfersOut: getNumber((player as any).transfers_out),
-      transfersInEvent: getNumber((player as any).transfers_in_event),
-      transfersOutEvent: getNumber((player as any).transfers_out_event),
+      selectedByPercent: parseNumeric(player.selected_by_percent),
+      transfersIn: readNumberField(playerRecord, "transfers_in"),
+      transfersOut: readNumberField(playerRecord, "transfers_out"),
+      transfersInEvent: readNumberField(playerRecord, "transfers_in_event"),
+      transfersOutEvent: readNumberField(playerRecord, "transfers_out_event"),
 
       // Fixtures
       nextFixtures,

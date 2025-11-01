@@ -1,17 +1,17 @@
 "use client";
 
 import { useTransition } from "react";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import type { FixtureDTO, FixturePlayerDTO } from "@/lib/fpl/dto";
 
 type FixturesCardProps = {
-  entryId: number;
   event: number;
   fixtures: FixtureDTO[];
   playersByFixture: Map<number, FixturePlayerDTO[]>;
 };
 
-export function FixturesCard({ entryId: _entryId, event, fixtures, playersByFixture }: FixturesCardProps) {
+export function FixturesCard({ event, fixtures, playersByFixture }: FixturesCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -176,9 +176,11 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
           <span className="font-bold text-base truncate">
             {fixture.homeTeam}
           </span>
-          <img
+          <Image
             src={fixture.homeTeamBadge}
             alt={fixture.homeTeam}
+            width={28}
+            height={28}
             className="h-7 w-7 object-contain shrink-0"
           />
           {showScore && (
@@ -198,9 +200,11 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
               {fixture.awayScore ?? 0}
             </span>
           )}
-          <img
+          <Image
             src={fixture.awayTeamBadge}
             alt={fixture.awayTeam}
+            width={28}
+            height={28}
             className="h-7 w-7 object-contain shrink-0"
           />
           <span className="font-bold text-base truncate">

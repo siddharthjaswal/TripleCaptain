@@ -112,7 +112,6 @@ export default async function EntryFixturesPage({
         </header>
 
         <FixturesCard
-          entryId={fixturesView.entryId}
           event={fixturesView.event}
           fixtures={fixturesView.fixtures}
           playersByFixture={fixturesView.playersByFixture}

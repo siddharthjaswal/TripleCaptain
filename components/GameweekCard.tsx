@@ -7,11 +7,10 @@ import { formatNumber } from "@/lib/format";
 import { GameweekPitchCard } from "./GameweekPitchCard";
 
 type GameweekCardProps = {
-  entryId: number;
   gameweek: LatestGwDTO;
 };
 
-export function GameweekCard({ entryId: _entryId, gameweek }: GameweekCardProps) {
+export function GameweekCard({ gameweek }: GameweekCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
