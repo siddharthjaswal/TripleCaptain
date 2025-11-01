@@ -73,6 +73,14 @@ export type LeagueTableEntryDTO = {
   playerName: string;
   points: number;
   totalPoints: number;
+  // Optional captain info (loaded async for small leagues)
+  captain?: {
+    playerId: number;
+    playerName: string;
+    playerPhoto: string | null;
+  };
+  // Optional team picks (for modal display)
+  teamPicks?: LatestGwDTO;
 };
 
 export type LeagueStandingDTO = {

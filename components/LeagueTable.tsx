@@ -1,9 +1,11 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import type { LeagueStandingDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
+import { useLeagueTeamPicks } from "@/hooks/useLeagueTeamPicks";
+import { TeamPitchModal } from "./TeamPitchModal";
 
 type LeagueTableProps = {
   league: LeagueStandingDTO;
@@ -15,7 +17,18 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const [selectedTeam, setSelectedTeam] = useState<{
+    teamName: string;
+    teamPicks: any;
+  } | null>(null);
   const gameweekLabel = league.gameweek ? `GW ${league.gameweek}` : null;
+
+  // Fetch team picks for small leagues (< 20 members)
+  const { entries: enrichedEntries, isLoading: isLoadingPicks } = useLeagueTeamPicks(
+    league.entries,
+    league.gameweek,
+    league.entries.length < 20
+  );
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -64,16 +77,26 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
               <th scope="col" className="min-w-[10rem] px-3 py-2 font-medium">
                 Manager
               </th>
+              {enrichedEntries.length < 20 && (
+                <th scope="col" className="min-w-[10rem] px-3 py-2 font-medium">
+                  Captain
+                </th>
+              )}
               <th scope="col" className="w-28 px-3 py-2 font-medium text-right">
                 GW Pts
               </th>
               <th scope="col" className="w-28 px-3 py-2 font-medium text-right">
                 Total
               </th>
+              {enrichedEntries.length < 20 && (
+                <th scope="col" className="w-16 px-3 py-2 font-medium text-center">
+                  Team
+                </th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-[color:var(--surface-border)]/60">
-            {league.entries.map((entry) => {
+            {enrichedEntries.map((entry) => {
               const delta = formatRankDelta(entry.rank, entry.lastRank);
               const isCurrentUser = entry.entryId === currentEntryId;
               return (
@@ -110,12 +133,65 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                   <td className="px-3 py-3 tc-text-muted">
                     {entry.playerName}
                   </td>
+                  {enrichedEntries.length < 20 && (
+                    <td className="px-3 py-3">
+                      {entry.isLoading ? (
+                        <div className="h-4 w-24 animate-pulse rounded bg-[color:var(--surface-border)]/60" />
+                      ) : entry.captain ? (
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                            C
+                          </span>
+                          <span className="text-sm font-medium">
+                            {entry.captain.playerName}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="tc-text-muted text-xs">—</span>
+                      )}
+                    </td>
+                  )}
                   <td className="px-3 py-3 text-right font-mono text-sm">
                     {formatNumber(entry.points)}
                   </td>
                   <td className="px-3 py-3 text-right font-mono text-sm">
                     {formatNumber(entry.totalPoints)}
                   </td>
+                  {enrichedEntries.length < 20 && (
+                    <td className="px-3 py-3 text-center">
+                      {entry.isLoading ? (
+                        <div className="mx-auto h-4 w-4 animate-pulse rounded bg-[color:var(--surface-border)]/60" />
+                      ) : entry.teamPicks ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelectedTeam({
+                              teamName: entry.entryName,
+                              teamPicks: entry.teamPicks,
+                            })
+                          }
+                          className="tc-focus-visible inline-flex h-8 w-8 items-center justify-center rounded-lg transition hover:bg-[color:var(--surface-hover)] text-[color:var(--accent)]"
+                          title="View team"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="h-4 w-4"
+                          >
+                            <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+                            <path
+                              fillRule="evenodd"
+                              d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      ) : (
+                        <span className="tc-text-muted text-xs">—</span>
+                      )}
+                    </td>
+                  )}
                 </tr>
               );
             })}
@@ -173,6 +249,16 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
             <p className="text-sm font-medium">Loading...</p>
           </div>
         </div>
+      )}
+
+      {/* Team Pitch Modal */}
+      {selectedTeam && selectedTeam.teamPicks && (
+        <TeamPitchModal
+          teamPicks={selectedTeam.teamPicks}
+          teamName={selectedTeam.teamName}
+          isOpen={true}
+          onClose={() => setSelectedTeam(null)}
+        />
       )}
     </section>
   );
