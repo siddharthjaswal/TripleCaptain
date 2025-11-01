@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import type { LatestGwDTO } from "@/lib/fpl/dto";
 import { getPlayerPhotoUrl } from "@/lib/fpl/images";
+import { PlayerDetailsModal } from "./PlayerDetailsModal";
 
 type TeamPitchModalProps = {
   teamPicks: LatestGwDTO;
@@ -18,6 +19,8 @@ export function TeamPitchModal({
   isOpen,
   onClose,
 }: TeamPitchModalProps) {
+  const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
+
   if (!isOpen) return null;
 
   // Group players by position
@@ -68,7 +71,11 @@ export function TeamPitchModal({
               <div className="tc-pitch-row__label">FORWARDS</div>
               <div className="tc-pitch-row__players">
                 {fwd.map((player) => (
-                  <PlayerChip key={player.elementId} player={player} />
+                  <PlayerChip
+                    key={player.elementId}
+                    player={player}
+                    onClick={() => setSelectedPlayerId(player.elementId)}
+                  />
                 ))}
               </div>
             </div>
@@ -80,7 +87,11 @@ export function TeamPitchModal({
               <div className="tc-pitch-row__label">MIDFIELDERS</div>
               <div className="tc-pitch-row__players">
                 {mid.map((player) => (
-                  <PlayerChip key={player.elementId} player={player} />
+                  <PlayerChip
+                    key={player.elementId}
+                    player={player}
+                    onClick={() => setSelectedPlayerId(player.elementId)}
+                  />
                 ))}
               </div>
             </div>
@@ -92,7 +103,11 @@ export function TeamPitchModal({
               <div className="tc-pitch-row__label">DEFENDERS</div>
               <div className="tc-pitch-row__players">
                 {def.map((player) => (
-                  <PlayerChip key={player.elementId} player={player} />
+                  <PlayerChip
+                    key={player.elementId}
+                    player={player}
+                    onClick={() => setSelectedPlayerId(player.elementId)}
+                  />
                 ))}
               </div>
             </div>
@@ -104,7 +119,11 @@ export function TeamPitchModal({
               <div className="tc-pitch-row__label">GOALKEEPER</div>
               <div className="tc-pitch-row__players">
                 {gk.map((player) => (
-                  <PlayerChip key={player.elementId} player={player} />
+                  <PlayerChip
+                    key={player.elementId}
+                    player={player}
+                    onClick={() => setSelectedPlayerId(player.elementId)}
+                  />
                 ))}
               </div>
             </div>
@@ -133,6 +152,15 @@ export function TeamPitchModal({
             </div>
           </div>
         )}
+
+        {/* Player Details Modal */}
+        {selectedPlayerId && (
+          <PlayerDetailsModal
+            playerId={selectedPlayerId}
+            isOpen={true}
+            onClose={() => setSelectedPlayerId(null)}
+          />
+        )}
       </div>
     </div>
   );
@@ -148,15 +176,27 @@ type PlayerChipProps = {
     isViceCaptain: boolean;
     photo: string | null;
   };
+  onClick?: () => void;
 };
 
-function PlayerChip({ player }: PlayerChipProps) {
+function PlayerChip({ player, onClick }: PlayerChipProps) {
   const [imageError, setImageError] = useState(false);
   const photoUrl = getPlayerPhotoUrl(player.photo);
   const showFallback = !photoUrl || imageError;
 
   return (
-    <div className="tc-player-chip-vertical tc-player-chip-vertical--compact">
+    <div
+      className={`tc-player-chip-vertical tc-player-chip-vertical--compact ${onClick ? "cursor-pointer transition hover:scale-105" : ""}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      } : undefined}
+    >
       <div className="tc-player-chip-vertical__image">
         {!showFallback ? (
           <Image

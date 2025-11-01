@@ -290,3 +290,64 @@ export type PredictionsDTO = {
   budgetAvailable: number; // Money in bank (in millions)
   disclaimer: string;
 };
+
+// Player Details Modal
+export type PlayerDetailsDTO = {
+  // Basic Info
+  playerId: number;
+  name: string;
+  fullName: string;
+  photo: string | null;
+  position: "GK" | "DEF" | "MID" | "FWD";
+  team: string;
+  teamShort: string;
+  teamId: number;
+
+  // Pricing
+  currentPrice: number; // in millions (e.g., 12.5)
+  costChange: number; // Season price change
+
+  // Availability
+  status: string; // "a" = available, "d" = doubtful, "i" = injured, "u" = unavailable, "s" = suspended
+  news: string | null; // Injury/suspension news
+  chanceOfPlayingNextRound: number | null; // 0-100 or null
+
+  // Season Stats
+  totalPoints: number;
+  pointsPerGame: number;
+  minutes: number;
+  goalsScored: number;
+  assists: number;
+  cleanSheets: number;
+  goalsConceded: number;
+  ownGoals: number;
+  penaltiesSaved: number;
+  penaltiesMissed: number;
+  yellowCards: number;
+  redCards: number;
+  saves: number;
+  bonus: number;
+
+  // Performance Metrics
+  form: number; // Average points per game in last 4 games
+  expectedPoints: number; // ep_next
+  expectedGoals: number; // expected_goals
+  expectedAssists: number; // expected_assists
+  expectedGoalInvolvements: number; // expected_goal_involvements
+
+  // ICT Index
+  ictIndex: number;
+  influence: number;
+  creativity: number;
+  threat: number;
+
+  // Ownership & Popularity
+  selectedByPercent: number;
+  transfersIn: number;
+  transfersOut: number;
+  transfersInEvent: number; // This gameweek
+  transfersOutEvent: number; // This gameweek
+
+  // Fixtures
+  nextFixtures: FixtureDifficultyDTO[]; // Next 5 fixtures
+};

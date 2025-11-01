@@ -5,6 +5,7 @@ import type { LatestGwDTO, LatestGwPlayerDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
 import { getPlayerPhotoUrl } from "@/lib/fpl/images";
 import Image from "next/image";
+import { PlayerDetailsModal } from "./PlayerDetailsModal";
 
 const POSITION_ORDER: Array<LatestGwPlayerDTO["position"]> = [
   "GK",
@@ -18,6 +19,8 @@ type GameweekPitchCardProps = {
 };
 
 export function GameweekPitchCard({ latest }: GameweekPitchCardProps) {
+  const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
+
   if (!latest.players || latest.players.length === 0) {
     return null;
   }
@@ -65,6 +68,7 @@ export function GameweekPitchCard({ latest }: GameweekPitchCardProps) {
                 position={position}
                 players={rowPlayers}
                 isLiveGameweek={latest.isLive}
+                onPlayerClick={setSelectedPlayerId}
               />
             );
           })}
@@ -76,12 +80,27 @@ export function GameweekPitchCard({ latest }: GameweekPitchCardProps) {
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
               {bench.map((player) => (
-                <PlayerChip key={player.elementId} player={player} compact isLiveGameweek={latest.isLive} />
+                <PlayerChip
+                  key={player.elementId}
+                  player={player}
+                  compact
+                  isLiveGameweek={latest.isLive}
+                  onClick={() => setSelectedPlayerId(player.elementId)}
+                />
               ))}
             </div>
           </div>
         ) : null}
       </div>
+
+      {/* Player Details Modal */}
+      {selectedPlayerId && (
+        <PlayerDetailsModal
+          playerId={selectedPlayerId}
+          isOpen={true}
+          onClose={() => setSelectedPlayerId(null)}
+        />
+      )}
     </section>
   );
 }
@@ -90,9 +109,10 @@ type PitchRowProps = {
   position: LatestGwPlayerDTO["position"];
   players: LatestGwPlayerDTO[];
   isLiveGameweek: boolean;
+  onPlayerClick: (playerId: number) => void;
 };
 
-function PitchRow({ position, players, isLiveGameweek }: PitchRowProps) {
+function PitchRow({ position, players, isLiveGameweek, onPlayerClick }: PitchRowProps) {
   return (
     <div className="tc-pitch-row">
       <span className="tc-pitch-row__label text-xs font-semibold uppercase tracking-wide">
@@ -100,7 +120,12 @@ function PitchRow({ position, players, isLiveGameweek }: PitchRowProps) {
       </span>
       <div className="tc-pitch-row__players">
         {players.map((player) => (
-          <PlayerChip key={player.elementId} player={player} isLiveGameweek={isLiveGameweek} />
+          <PlayerChip
+            key={player.elementId}
+            player={player}
+            isLiveGameweek={isLiveGameweek}
+            onClick={() => onPlayerClick(player.elementId)}
+          />
         ))}
       </div>
     </div>
@@ -111,9 +136,10 @@ type PlayerChipProps = {
   player: LatestGwPlayerDTO;
   compact?: boolean;
   isLiveGameweek: boolean;
+  onClick?: () => void;
 };
 
-function PlayerChip({ player, compact = false, isLiveGameweek }: PlayerChipProps) {
+function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: PlayerChipProps) {
   const badge = player.isCaptain ? "C" : player.isViceCaptain ? "V" : null;
   const multiplierLabel =
     player.multiplier > 1 ? `×${player.multiplier}` : null;
@@ -126,8 +152,17 @@ function PlayerChip({ player, compact = false, isLiveGameweek }: PlayerChipProps
 
   return (
     <div
-      className={`tc-player-chip-vertical ${compact ? "tc-player-chip-vertical--compact" : ""}`}
+      className={`tc-player-chip-vertical ${compact ? "tc-player-chip-vertical--compact" : ""} ${onClick ? "cursor-pointer transition hover:scale-105" : ""}`}
       aria-label={`${player.name}, ${player.position}, ${player.points} points`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      } : undefined}
     >
       <div className="tc-player-chip-vertical__image">
         {!showFallback ? (
