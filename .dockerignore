@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.github
+.vscode
+*.md
+.env.local
+.env*.local
+Dockerfile
+.dockerignore
+README.md
+DEPLOYMENT_PLAN.md
+theme.md
