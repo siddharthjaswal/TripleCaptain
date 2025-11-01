@@ -58,6 +58,18 @@ pnpm test:e2e
 
 To surface FPL API logs while developing, prefix commands with `FPL_DEBUG_LOGS=true pnpm dev`.
 
+## Production Build
+
+```bash
+# generate an optimized build
+pnpm build
+
+# optionally serve the build locally
+pnpm start
+```
+
+The build step reads values from `.env.production` (or environment variables provided by the host). Create that file from your deployment secrets before running the command so the compiled output matches production expectations.
+
 ## Deployment
 
 Deployments will target Vercel once milestone M5 is reached. Refer to `docs/plan_md_fpl_next.md` for the detailed deployment checklist.
