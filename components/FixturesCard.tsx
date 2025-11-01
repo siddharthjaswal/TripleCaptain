@@ -182,21 +182,26 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
               {fixture.homeTeam}
             </span>
           </div>
-          {showScore ? (
-            <div className="flex items-center gap-2 font-bold tabular-nums">
-              <span className={`${homeColor} text-base`}>
-                {fixture.homeScore ?? 0}
+          <div className="flex flex-col items-center gap-1">
+            {showScore ? (
+              <div className="flex items-center gap-2 font-bold tabular-nums">
+                <span className={`${homeColor} text-base`}>
+                  {fixture.homeScore ?? 0}
+                </span>
+                <span className="tc-text-muted">-</span>
+                <span className={`${awayColor} text-base`}>
+                  {fixture.awayScore ?? 0}
+                </span>
+              </div>
+            ) : (
+              <span className="tc-text-muted text-sm font-medium">vs</span>
+            )}
+            {fixture.kickoffTime && (
+              <span className="tc-text-muted text-[10px] font-medium">
+                {formatKickoffTime(fixture.kickoffTime)}
               </span>
-              <span className="tc-text-muted">-</span>
-              <span className={`${awayColor} text-base`}>
-                {fixture.awayScore ?? 0}
-              </span>
-            </div>
-          ) : (
-            <span className="tc-text-muted text-sm font-medium px-3">
-              {formatKickoffTime(fixture.kickoffTime)}
-            </span>
-          )}
+            )}
+          </div>
           <div className="flex items-center gap-2 flex-1">
             <span className="font-bold text-lg">
               {fixture.awayTeam}
