@@ -167,7 +167,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                           onClick={() =>
                             setSelectedTeam({
                               teamName: entry.entryName,
-                              teamPicks: entry.teamPicks,
+                              teamPicks: entry.teamPicks!,
                             })
                           }
                           className="tc-focus-visible inline-flex h-8 w-8 items-center justify-center rounded-lg transition hover:bg-[color:var(--surface-hover)] text-[color:var(--accent)]"
