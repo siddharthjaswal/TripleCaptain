@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Sparkles, Anchor, Sword, ShieldAlert, Loader2 } from 'lucide-react';
+import { Button, Card, Badge, Typography } from './ui';
 
 interface Recommendation {
     type: string;
@@ -37,109 +38,120 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
 
     if (loading) {
         return (
-            <div className="tc-card rounded-3xl p-12 text-center flex flex-col items-center gap-4 border border-[color:var(--surface-border)]">
-                <Loader2 className="h-12 w-12 animate-spin text-[color:var(--accent)]" />
-                <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-[color:var(--text-primary)]">Luffy is inspecting your ship...</h3>
-                    <p className="tc-text-muted italic">&quot;Checking the tangerines and counting the berries!&quot;</p>
+            <Card className="p-12 text-center flex flex-col items-center gap-6" glass>
+                <div className="relative">
+                    <Loader2 className="h-16 w-16 animate-spin text-[color:var(--accent)]" />
+                    <Anchor className="h-6 w-6 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[color:var(--accent)]" />
                 </div>
-            </div>
+                <div className="space-y-2">
+                    <Typography variant="title" weight="black">Luffy is inspecting your ship...</Typography>
+                    <Typography className="italic">&quot;Checking the tangerines and counting the berries!&quot;</Typography>
+                </div>
+            </Card>
         );
     }
 
     if (!audit) {
         return (
-            <div className="tc-card rounded-3xl p-8 text-center bg-gradient-to-br from-[color:var(--accent)]/5 to-[color:var(--surface-elevated)] border-dashed border-2 border-[color:var(--surface-border)]">
-                <Sparkles className="h-12 w-12 mx-auto text-[color:var(--accent)] mb-4" />
-                <h3 className="text-xl font-bold text-[color:var(--text-primary)] mb-2">Team Auditor</h3>
-                <p className="tc-text-muted mb-6">Let Captain Luffy critique your squad and find the hidden traps.</p>
-                <button 
-                    onClick={runAudit}
-                    className="tc-focus-visible inline-flex items-center gap-2 rounded-lg bg-[color:var(--accent)] px-6 py-3 text-sm font-bold text-[color:var(--accent-contrast)] hover:opacity-90 transition mx-auto"
-                >
-                    <Anchor className="mr-2 h-4 w-4" />
+            <Card className="p-12 text-center bg-gradient-to-br from-[color:var(--accent)]/10 to-transparent border-dashed border-2">
+                <Sparkles className="h-16 w-16 mx-auto text-[color:var(--accent)] mb-6 animate-pulse" />
+                <Typography variant="title" weight="black" className="mb-2">Team Auditor</Typography>
+                <Typography className="mb-8 max-w-md mx-auto text-[color:var(--text-secondary)]">
+                    Let Captain Luffy critique your squad and find the hidden traps in your formation.
+                </Typography>
+                <Button onClick={runAudit} size="lg" className="shadow-lg">
+                    <Anchor className="mr-2 h-5 w-5" />
                     Audit My Team
-                </button>
-            </div>
+                </Button>
+            </Card>
         );
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8 animate-fade-in">
             <div className="grid md:grid-cols-3 gap-6">
                 {/* Health Score */}
-                <div className="tc-card rounded-3xl p-6 flex flex-col items-center justify-center text-center bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)]">
-                    <h4 className="text-xs font-bold uppercase tracking-wider tc-text-muted mb-4">Ship Condition</h4>
-                    <div className="relative h-32 w-32 flex items-center justify-center">
-                        <svg className="h-full w-full transform -rotate-90 text-[color:var(--surface-border)]">
+                <Card className="p-8 flex flex-col items-center justify-center text-center relative overflow-hidden" glass>
+                    <div className="absolute inset-0 bg-[color:var(--accent)]/5 pointer-events-none" />
+                    <Typography variant="caption" className="mb-6">Ship Condition</Typography>
+                    <div className="relative h-40 w-40 flex items-center justify-center">
+                        <svg className="h-full w-full transform -rotate-90">
                             <circle
-                                cx="64"
-                                cy="64"
-                                r="58"
+                                cx="80"
+                                cy="80"
+                                r="74"
                                 stroke="currentColor"
-                                strokeWidth="8"
+                                strokeWidth="12"
                                 fill="transparent"
+                                className="text-[color:var(--surface-border)]"
                             />
                             <circle
-                                cx="64"
-                                cy="64"
-                                r="58"
+                                cx="80"
+                                cy="80"
+                                r="74"
                                 stroke="currentColor"
-                                strokeWidth="8"
+                                strokeWidth="12"
                                 fill="transparent"
-                                strokeDasharray={364.4}
-                                strokeDashoffset={364.4 - (364.4 * audit.healthScore) / 100}
-                                className={`${audit.healthScore > 70 ? 'text-green-500' : audit.healthScore > 40 ? 'text-yellow-500' : 'text-red-500'} transition-all duration-1000`}
+                                strokeDasharray={464.9}
+                                strokeDashoffset={464.9 - (464.9 * audit.healthScore) / 100}
+                                className={`${audit.healthScore > 70 ? 'text-green-500' : audit.healthScore > 40 ? 'text-yellow-500' : 'text-red-500'} transition-all duration-1000 ease-out`}
+                                strokeLinecap="round"
                             />
                         </svg>
-                        <span className="absolute text-4xl font-black text-[color:var(--text-primary)]">{audit.healthScore}%</span>
+                        <Typography variant="display" className="absolute text-5xl font-black">{audit.healthScore}%</Typography>
                     </div>
-                </div>
+                </Card>
 
                 {/* Critique */}
-                <div className="tc-card rounded-3xl md:col-span-2 p-6 bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] relative overflow-hidden text-[color:var(--text-primary)]">
-                    <div className="absolute top-0 right-0 p-4 opacity-5">
-                        <Anchor className="h-24 w-24" />
+                <Card className="md:col-span-2 p-8 relative overflow-hidden group" glass>
+                    <div className="absolute -top-12 -right-12 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
+                        <Anchor className="h-64 w-64" />
                     </div>
-                    <div className="relative">
-                        <div className="flex items-center gap-2 mb-4">
-                            <span className="bg-[color:var(--accent)] text-[color:var(--accent-contrast)] px-2 py-1 rounded text-xs font-bold uppercase">Captain&apos;s Log</span>
-                            <h3 className="font-bold">Luffy&apos;s Critique</h3>
+                    <div className="relative h-full flex flex-col">
+                        <div className="flex items-center gap-3 mb-6">
+                            <Badge variant="primary" className="px-3 py-1">Captain&apos;s Log</Badge>
+                            <Typography variant="title" weight="bold">Luffy&apos;s Critique</Typography>
                         </div>
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap italic">
+                        <Typography className="text-lg leading-relaxed italic text-[color:var(--text-secondary)] flex-1">
                             &quot;{audit.critique}&quot;
-                        </p>
+                        </Typography>
                     </div>
-                </div>
+                </Card>
             </div>
 
             {/* Recommendations */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {audit.recommendations.map((rec, i) => (
-                    <div key={i} className="tc-card rounded-2xl p-4 hover:shadow-md transition-shadow border-l-4 border-l-[color:var(--accent)] bg-[color:var(--surface-elevated)] text-[color:var(--text-primary)]">
-                        <div className="flex items-center gap-2 mb-2">
+                    <Card key={i} className="p-6 border-l-8 border-l-[color:var(--accent)] flex flex-col gap-4">
+                        <div className="flex items-center gap-2">
                             {rec.type.includes('Transfer') ? (
-                                <Sword className="h-4 w-4 text-red-500" />
+                                <div className="p-2 rounded-lg bg-red-500/10 text-red-500">
+                                    <Sword className="h-5 w-5" />
+                                </div>
                             ) : (
-                                <ShieldAlert className="h-4 w-4 text-blue-500" />
+                                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                                    <ShieldAlert className="h-5 w-5" />
+                                </div>
                             )}
-                            <span className="font-bold text-xs uppercase tracking-tight tc-text-muted">{rec.type}</span>
+                            <Typography variant="caption" weight="black">{rec.type}</Typography>
                         </div>
-                        {rec.player && <h5 className="font-bold text-lg mb-1">{rec.player}</h5>}
-                        <p className="text-xs tc-text-muted leading-snug">
+                        {rec.player && (
+                            <Typography variant="title" weight="bold" className="text-xl">
+                                {rec.player}
+                            </Typography>
+                        )}
+                        <Typography className="text-sm text-[color:var(--text-secondary)] leading-relaxed">
                             {rec.reason || rec.tip}
-                        </p>
-                    </div>
+                        </Typography>
+                    </Card>
                 ))}
             </div>
             
-            <div className="flex justify-center">
-                <button 
-                    onClick={runAudit}
-                    className="tc-focus-visible inline-flex items-center gap-2 rounded-lg border border-[color:var(--surface-border)] px-4 py-2 text-sm font-medium transition hover:bg-[color:var(--surface-elevated)] tc-text-muted hover:text-[color:var(--text-primary)]"
-                >
+            <div className="flex justify-center pt-4">
+                <Button variant="outline" onClick={runAudit} size="md">
+                    <Anchor className="mr-2 h-4 w-4" />
                     Re-Audit Team
-                </button>
+                </Button>
             </div>
         </div>
     );

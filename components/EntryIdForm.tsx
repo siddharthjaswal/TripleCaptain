@@ -3,6 +3,8 @@
 import { z } from "zod";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Card, Typography } from "./ui";
+import { Search } from "lucide-react";
 
 const entrySchema = z.object({
   entryId: z
@@ -20,8 +22,7 @@ export function EntryIdForm() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const result = entrySchema.safeParse({ entryId: data.get("entryId") });
+    const result = entrySchema.safeParse({ entryId });
 
     if (!result.success) {
       setFormError(result.error.issues[0]?.message ?? "Invalid entry ID");
@@ -37,47 +38,56 @@ export function EntryIdForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="tc-card tc-focus-visible flex w-full max-w-md flex-col gap-3 rounded-2xl p-6 shadow-lg"
-    >
-      <label htmlFor="entryId" className="text-left text-sm font-medium">
-        Enter your FPL Entry ID
-      </label>
-      <input
-        id="entryId"
-        name="entryId"
-        inputMode="numeric"
-        pattern="\d*"
-        value={entryId}
-        onChange={(event) => setEntryId(event.target.value)}
-        placeholder="e.g. 1234567"
-        className="rounded-xl border border-[color:var(--surface-border-strong)] bg-[color:var(--surface-input)] px-4 py-3 text-base text-[color:var(--text-primary)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]"
-        aria-invalid={formError ? "true" : "false"}
-        aria-describedby={formError ? "entryId-error" : undefined}
-        disabled={isPending}
-      />
-      {formError ? (
-        <p
-          id="entryId-error"
-          className="text-sm tc-danger"
-          role="alert"
-          aria-live="polite"
-        >
-          {formError}
-        </p>
-      ) : null}
-      <button
-        type="submit"
-        className="mt-2 inline-flex items-center justify-center rounded-xl bg-[color:var(--accent)] px-4 py-3 text-sm font-semibold text-[color:var(--accent-contrast)] transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--surface-root)] disabled:cursor-not-allowed disabled:opacity-70"
-        disabled={isPending}
+    <Card className="w-full max-w-md p-1 group overflow-visible" hover={false}>
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-6 p-8"
       >
-        {isPending ? "Loading…" : "View Dashboard"}
-      </button>
-      <p className="text-xs tc-text-muted">
-        You can find your entry ID in the URL when viewing your team on the FPL
-        website (e.g. <code>.../entry/1234567/event/</code>).
-      </p>
-    </form>
+        <div className="space-y-2">
+            <Typography variant="title" weight="black" className="text-center">Welcome Manager</Typography>
+            <Typography variant="caption" className="text-center">Enter your FPL ID to begin the voyage</Typography>
+        </div>
+
+        <div className="space-y-4">
+            <div className="relative group">
+                <Search className={`absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 transition-colors ${entryId ? 'text-[color:var(--accent)]' : 'text-[color:var(--text-tertiary)]'}`} />
+                <input
+                    id="entryId"
+                    name="entryId"
+                    inputMode="numeric"
+                    pattern="\d*"
+                    value={entryId}
+                    onChange={(event) => setEntryId(event.target.value)}
+                    placeholder="e.g. 1234567"
+                    className="tc-input pl-12 h-14 text-lg font-bold tracking-widest placeholder:tracking-normal placeholder:font-normal"
+                    aria-invalid={formError ? "true" : "false"}
+                    disabled={isPending}
+                />
+            </div>
+            
+            {formError && (
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-center">
+                    <Typography className="text-xs font-bold text-red-500">{formError}</Typography>
+                </div>
+            )}
+
+            <Button
+                type="submit"
+                size="lg"
+                className="w-full h-14 text-lg uppercase"
+                loading={isPending}
+            >
+                View Dashboard
+            </Button>
+        </div>
+
+        <div className="pt-4 border-t border-[color:var(--surface-border)] border-dashed">
+             <Typography className="text-[10px] text-center text-[color:var(--text-tertiary)] leading-relaxed">
+                Find your ID in the URL on the FPL website:<br/>
+                <code className="text-[color:var(--text-secondary)] font-mono">.../entry/1234567/event/</code>
+            </Typography>
+        </div>
+      </form>
+    </Card>
   );
 }

@@ -1,4 +1,6 @@
 import type { ProfileDTO } from "@/lib/fpl/dto";
+import { Card, Typography } from "@/components/ui";
+import { User } from "lucide-react";
 
 type ProfileCardProps = {
   profile: ProfileDTO;
@@ -6,22 +8,28 @@ type ProfileCardProps = {
 
 export function ProfileCard({ profile }: ProfileCardProps) {
   return (
-    <section className="tc-card rounded-3xl p-6 shadow-lg">
-      <h2 className="tc-text-muted text-sm font-medium uppercase tracking-wide">
-        Manager
-      </h2>
-      <div className="mt-4 space-y-3">
-        <p className="text-2xl font-semibold">{profile.teamName}</p>
-        <p className="tc-text-muted text-base">{profile.managerName}</p>
+    <Card className="p-8 relative overflow-hidden" glass>
+      <div className="absolute top-0 right-0 p-4 opacity-5">
+        <User className="h-24 w-24" />
       </div>
-      <div className="mt-6 flex gap-6 text-sm tc-text-muted">
-        <div>
-          <p className="text-xs uppercase tracking-wide tc-text-muted">
-            Entry ID
-          </p>
-          <p className="mt-1 font-mono">{profile.entryId}</p>
+      <Typography variant="caption" weight="bold" className="mb-4">
+        Manager Profile
+      </Typography>
+      <div className="space-y-1">
+        <Typography variant="title" weight="black" className="text-3xl">
+          {profile.teamName}
+        </Typography>
+        <Typography className="text-lg text-[color:var(--text-secondary)]">
+          {profile.managerName}
+        </Typography>
+      </div>
+      <div className="mt-8 flex items-center gap-2">
+        <div className="bg-[color:var(--surface-hover)] px-3 py-1.5 rounded-lg border border-[color:var(--surface-border)]">
+          <Typography variant="caption" weight="black" className="text-[10px]">
+            Entry ID: {profile.entryId}
+          </Typography>
         </div>
       </div>
-    </section>
+    </Card>
   );
 }

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Compass, Gem, Loader2 } from 'lucide-react';
+import { Compass, Gem, Loader2, Sparkles } from 'lucide-react';
+import { Button, Card, Badge, Typography } from './ui';
 
 interface Pick {
     name: string;
@@ -35,65 +36,73 @@ export function DifferentialScout() {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center p-12 gap-4">
-                <Loader2 className="h-10 w-10 animate-spin text-[color:var(--accent)]" />
-                <p className="tc-text-muted animate-pulse">Scouting for hidden treasures...</p>
-            </div>
+            <Card className="p-20 text-center flex flex-col items-center gap-6" glass>
+                <div className="relative">
+                    <Compass className="h-16 w-16 animate-spin text-[color:var(--accent)]" />
+                    <Sparkles className="h-6 w-6 absolute top-0 right-0 text-yellow-500 animate-pulse" />
+                </div>
+                <Typography variant="title" weight="black" className="animate-pulse">Scouting for hidden treasures...</Typography>
+            </Card>
         );
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8 animate-fade-in">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-[color:var(--text-primary)]">
-                    <Compass className="h-6 w-6 text-[color:var(--accent)]" />
-                    <h2 className="text-2xl font-bold">Differential Scout</h2>
+                <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-2xl bg-[color:var(--accent)] text-[color:var(--accent-contrast)] shadow-lg shadow-[color:var(--accent)]/20">
+                        <Compass className="h-6 w-6" />
+                    </div>
+                    <div>
+                        <Typography variant="title" weight="black">Differential Scout</Typography>
+                        <Typography variant="caption">Hidden Gems & Low Ownership High-Upside Players</Typography>
+                    </div>
                 </div>
-                <button 
-                    onClick={scout}
-                    className="tc-focus-visible inline-flex items-center gap-2 rounded-lg px-3 py-1 text-sm font-medium transition hover:bg-[color:var(--surface-elevated)] tc-text-muted hover:text-[color:var(--text-primary)]"
-                >
+                <Button variant="ghost" size="sm" onClick={scout}>
                     Refresh List
-                </button>
+                </Button>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-8">
                 {picks.map((pick, i) => (
-                    <div key={i} className="tc-card rounded-3xl relative overflow-hidden group border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)] text-[color:var(--text-primary)] transition-all hover:shadow-xl">
-                        <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                            <Gem className="h-24 w-24 text-[color:var(--accent)]" />
+                    <Card key={i} className="relative overflow-hidden group hover:shadow-2xl transition-all duration-500" glass>
+                        <div className="absolute -right-8 -top-8 opacity-5 group-hover:opacity-20 transition-all duration-700 group-hover:scale-110">
+                            <Gem className="h-40 w-40 text-[color:var(--accent)]" />
                         </div>
-                        <div className="p-6 space-y-4">
+                        
+                        <div className="p-8 space-y-6">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-xl font-black">{pick.name}</h3>
-                                <span className="bg-yellow-500/20 text-yellow-500 border border-yellow-500/50 px-2 py-0.5 rounded-full text-[10px] font-black uppercase flex items-center">
-                                    <Gem className="mr-1 h-3 w-3" /> Pick #{i+1}
-                                </span>
+                                <Typography variant="title" weight="black" className="text-2xl">{pick.name}</Typography>
+                                <Badge className="bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 px-3 py-1 font-black">
+                                    <Gem className="mr-2 h-4 w-4" /> #{i+1}
+                                </Badge>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2">
-                                <div className="bg-[color:var(--surface-root)] rounded-xl p-3 text-center border border-[color:var(--surface-border)]">
-                                    <p className="text-[10px] uppercase font-bold tc-text-muted mb-1">Exp. Points</p>
-                                    <p className="text-xl font-black text-[color:var(--accent)]">{pick.epNext}</p>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-[color:var(--surface-root)] rounded-2xl p-4 text-center border border-[color:var(--surface-border)] shadow-inner">
+                                    <Typography variant="caption" weight="bold" className="mb-1">Exp. Points</Typography>
+                                    <Typography variant="title" weight="black" className="text-3xl text-[color:var(--accent)]">{pick.epNext}</Typography>
                                 </div>
-                                <div className="bg-[color:var(--surface-root)] rounded-xl p-3 text-center border border-[color:var(--surface-border)]">
-                                    <p className="text-[10px] uppercase font-bold tc-text-muted mb-1">Ownership</p>
-                                    <p className="text-xl font-black text-secondary">{pick.ownership}%</p>
+                                <div className="bg-[color:var(--surface-root)] rounded-2xl p-4 text-center border border-[color:var(--surface-border)] shadow-inner">
+                                    <Typography variant="caption" weight="bold" className="mb-1">Ownership</Typography>
+                                    <Typography variant="title" weight="black" className="text-3xl text-secondary">{pick.ownership}%</Typography>
                                 </div>
                             </div>
 
-                                <p className="text-sm leading-relaxed italic tc-text-muted">
+                            <div className="pt-4 border-t border-[color:var(--surface-border)] border-dashed">
+                                <Typography className="text-base leading-relaxed italic text-[color:var(--text-secondary)]">
                                     &quot;{pick.reasoning}&quot;
-                                </p>
+                                </Typography>
+                            </div>
                         </div>
-                    </div>
+                    </Card>
                 ))}
             </div>
             
             {picks.length === 0 && !loading && (
-                <div className="text-center py-12">
-                    <p className="tc-text-muted">No hidden treasures found yet. Try refreshing!</p>
-                </div>
+                <Card className="p-12 text-center" glass>
+                    <Typography variant="caption">No hidden treasures found yet. Try refreshing!</Typography>
+                </Card>
             )}
         </div>
     );

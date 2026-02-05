@@ -1,5 +1,7 @@
 import type { LatestGwDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
+import { Card, Typography, Badge } from "@/components/ui";
+import { Zap, CheckCircle2 } from "lucide-react";
 
 type LatestGwCardProps = {
   latest: LatestGwDTO;
@@ -7,68 +9,53 @@ type LatestGwCardProps = {
 
 export function LatestGwCard({ latest }: LatestGwCardProps) {
   return (
-    <section className="tc-card rounded-3xl p-6 shadow-lg">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="tc-text-muted text-sm font-medium uppercase tracking-wide">
+    <Card className="p-8 relative overflow-hidden" glass>
+       <div className="absolute top-0 right-0 p-4 opacity-5 text-emerald-500">
+        <Zap className="h-24 w-24 fill-current" />
+      </div>
+
+      <div className="flex items-center justify-between gap-3 mb-8">
+        <Typography variant="caption" weight="bold">
           Latest Gameweek
-        </h2>
+        </Typography>
         <StatusPill isLive={latest.isLive} event={latest.event} />
       </div>
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Metric label="GW Points" value={formatNumber(latest.points)} />
-        <Metric
-          label="GW Rank"
-          value={latest.rank ? `#${formatNumber(latest.rank)}` : "—"}
-        />
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div className="space-y-1">
+          <Typography variant="caption" className="text-[10px]">GW Points</Typography>
+          <Typography variant="title" weight="black" className="text-3xl text-emerald-500">{formatNumber(latest.points)}</Typography>
+        </div>
+        <div className="space-y-1">
+          <Typography variant="caption" className="text-[10px]">GW Rank</Typography>
+          <Typography variant="title" weight="black" className="text-3xl">{latest.rank ? `#${formatNumber(latest.rank)}` : "—"}</Typography>
+        </div>
       </div>
-      <div className="mt-6 text-sm tc-text-muted">
-        {latest.chipUsed ? (
-          <p>
-            Chip played:{" "}
-            <span className="font-semibold uppercase tracking-wide text-[var(--accent)]">
-              {latest.chipUsed.replace(/_/g, " ")}
-            </span>
-          </p>
-        ) : (
-          <p>No chip used this gameweek.</p>
-        )}
-      </div>
-    </section>
+
+      {latest.chipUsed && (
+        <div className="mt-8 flex items-center gap-2 text-xs font-bold uppercase text-[color:var(--brand-gold)]">
+          <Zap className="h-4 w-4 fill-current" />
+          Chip Active: {latest.chipUsed.replace(/_/g, " ")}
+        </div>
+      )}
+    </Card>
   );
 }
 
-type StatusPillProps = {
-  isLive: boolean;
-  event: number;
-};
-
-function StatusPill({ isLive, event }: StatusPillProps) {
+function StatusPill({ isLive, event }: { isLive: boolean; event: number }) {
   if (isLive) {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase text-emerald-300 ring-1 ring-inset ring-emerald-500/40">
-        <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+      <Badge variant="success" className="animate-glow flex gap-2">
+        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
         Live — GW {event}
-      </span>
+      </Badge>
     );
   }
 
   return (
-    <span className="inline-flex items-center rounded-full bg-[color:var(--surface-border)]/30 px-3 py-1 text-xs font-semibold uppercase tc-text-muted">
-      Completed — GW {event}
-    </span>
-  );
-}
-
-type MetricProps = {
-  label: string;
-  value: string;
-};
-
-function Metric({ label, value }: MetricProps) {
-  return (
-    <div className="rounded-2xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/90 px-4 py-5">
-      <p className="tc-text-muted text-xs uppercase tracking-wide">{label}</p>
-      <p className="mt-2 text-2xl font-semibold">{value}</p>
-    </div>
+    <Badge variant="secondary" className="flex gap-2">
+        <CheckCircle2 className="h-3 w-3" />
+        GW {event} Over
+    </Badge>
   );
 }
