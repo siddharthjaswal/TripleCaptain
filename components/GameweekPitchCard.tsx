@@ -54,7 +54,8 @@ export function GameweekPitchCard({ latest }: GameweekPitchCardProps) {
         </div>
       </header>
       <div className="mt-6 space-y-4">
-        <div className="tc-pitch rounded-3xl border border-[color:var(--surface-border)] p-4">
+        <div className="tc-pitch rounded-3xl border border-[color:var(--surface-border)]">
+          <div className="tc-pitch-bottom-box" />
           {POSITION_ORDER.map((position) => {
             const rowPlayers = starters.filter(
               (player) => player.position === position,
