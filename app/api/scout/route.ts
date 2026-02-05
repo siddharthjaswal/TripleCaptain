@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { scoutDifferentials } from '@/lib/fpl/scout';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const picks = await scoutDifferentials();
         return NextResponse.json({ success: true, picks });

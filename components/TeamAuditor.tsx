@@ -41,7 +41,7 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
                 <Loader2 className="h-12 w-12 animate-spin text-[color:var(--accent)]" />
                 <div className="space-y-2">
                     <h3 className="text-xl font-bold text-[color:var(--text-primary)]">Luffy is inspecting your ship...</h3>
-                    <p className="tc-text-muted italic">"Checking the tangerines and counting the berries!"</p>
+                    <p className="tc-text-muted italic">&quot;Checking the tangerines and counting the berries!&quot;</p>
                 </div>
             </div>
         );
@@ -103,11 +103,11 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
                     </div>
                     <div className="relative">
                         <div className="flex items-center gap-2 mb-4">
-                            <span className="bg-[color:var(--accent)] text-[color:var(--accent-contrast)] px-2 py-1 rounded text-xs font-bold uppercase">Captain's Log</span>
-                            <h3 className="font-bold">Luffy's Critique</h3>
+                            <span className="bg-[color:var(--accent)] text-[color:var(--accent-contrast)] px-2 py-1 rounded text-xs font-bold uppercase">Captain&apos;s Log</span>
+                            <h3 className="font-bold">Luffy&apos;s Critique</h3>
                         </div>
                         <p className="text-sm leading-relaxed whitespace-pre-wrap italic">
-                            "{audit.critique}"
+                            &quot;{audit.critique}&quot;
                         </p>
                     </div>
                 </div>

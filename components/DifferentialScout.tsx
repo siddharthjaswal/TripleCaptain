@@ -82,11 +82,9 @@ export function DifferentialScout() {
                                 </div>
                             </div>
 
-                            <div className="pt-2">
                                 <p className="text-sm leading-relaxed italic tc-text-muted">
-                                    "{pick.reasoning}"
+                                    &quot;{pick.reasoning}&quot;
                                 </p>
-                            </div>
                         </div>
                     </div>
                 ))}
