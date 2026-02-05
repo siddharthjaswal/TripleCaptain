@@ -6,6 +6,14 @@ import "dotenv/config";
 const prisma = new PrismaClient();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+interface Pick {
+    element: number;
+}
+
+interface PicksData {
+    picks: Pick[];
+}
+
 export async function auditTeam(entryId: number) {
     console.log(`Auditing team for entry ${entryId}...`);
     
@@ -18,7 +26,7 @@ export async function auditTeam(entryId: number) {
     const nextGwId = currentGw.id + 1;
 
     // 2. Get user picks
-    const picksData = await getEntryPicks(entryId, currentGw.id);
+    const picksData = await getEntryPicks(entryId, currentGw.id) as PicksData;
     const playerIds = picksData.picks.map(p => p.element);
 
     // 3. Fetch player details from DB
@@ -79,7 +87,8 @@ Return ONLY the JSON.`;
     
     // Clean JSON response
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    const auditResult = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+    if (!jsonMatch) throw new Error("Invalid AI response");
+    const auditResult = JSON.parse(jsonMatch[0]);
 
     if (auditResult) {
         // Save to DB

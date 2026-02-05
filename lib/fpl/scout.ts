@@ -5,6 +5,13 @@ import "dotenv/config";
 const prisma = new PrismaClient();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+interface Pick {
+    name: string;
+    reasoning: string;
+    epNext: number;
+    ownership: number;
+}
+
 export async function scoutDifferentials() {
     console.log('Scouting for differentials...');
     
@@ -73,7 +80,8 @@ Return ONLY the JSON.`;
     const responseText = result.response.text();
     
     const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-    const picks = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
+    if (!jsonMatch) return [];
+    const picks = JSON.parse(jsonMatch[0]) as Pick[];
 
     if (picks.length > 0) {
         // Save to DB
