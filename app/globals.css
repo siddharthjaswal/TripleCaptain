@@ -9,9 +9,10 @@
   --brand-gold: #ffb700; /* Achievement Gold */
 
   /* --- SURFACE COLORS - LIGHT (Day Stadium) --- */
-  --surface-root: #f8fafc;
+  --surface-root: #f0f2f5;
   --surface-elevated: #ffffff;
-  --surface-glass: rgba(255, 255, 255, 0.7);
+  --surface-glass: rgba(255, 255, 255, 0.75);
+  --surface-blur: blur(20px) saturate(180%);
   --surface-hover: #f1f5f9;
   --surface-border: #e2e8f0;
   --surface-border-strong: #cbd5e1;
@@ -66,7 +67,8 @@
   /* --- SURFACE COLORS - DARK (Night Stadium) --- */
   --surface-root: #020617; /* Deepest Indigo */
   --surface-elevated: #0f172a;
-  --surface-glass: rgba(15, 23, 42, 0.6);
+  --surface-glass: rgba(15, 23, 42, 0.65);
+  --surface-blur: blur(25px) saturate(200%);
   --surface-hover: #1e293b;
   --surface-border: #1e293b;
   --surface-border-strong: #334155;
@@ -155,10 +157,16 @@ body {
 
 .tc-card-glass {
   background: var(--surface-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--surface-border);
+  backdrop-filter: var(--surface-blur);
+  -webkit-backdrop-filter: var(--surface-blur);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 1.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .tc-card-glass {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(15, 23, 42, 0.6);
 }
 
 .tc-button {

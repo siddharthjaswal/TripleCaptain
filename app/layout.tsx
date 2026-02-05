@@ -46,10 +46,16 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
-      <body className="tc-surface min-h-dvh antialiased">
+      <body className="tc-surface min-h-dvh antialiased relative">
         <Script id="tc-theme-script" strategy="beforeInteractive">
           {themeScript}
         </Script>
+        {/* iOS-style background accents */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 dark:bg-blue-400/5 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] bg-purple-500/10 dark:bg-purple-400/5 rounded-full blur-[100px]" />
+          <div className="absolute top-[20%] right-[10%] w-[25%] h-[25%] bg-emerald-500/5 dark:bg-emerald-400/5 rounded-full blur-[80px]" />
+        </div>
         {children}
         <Analytics />
       </body>
