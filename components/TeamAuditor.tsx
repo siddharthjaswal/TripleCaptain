@@ -79,26 +79,29 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
                             <circle
                                 cx="80"
                                 cy="80"
-                                r="74"
+                                r="70"
                                 stroke="currentColor"
-                                strokeWidth="12"
+                                strokeWidth="16"
                                 fill="transparent"
-                                className="text-[color:var(--surface-border)]"
+                                className="text-[color:var(--surface-border)]/30"
                             />
                             <circle
                                 cx="80"
                                 cy="80"
-                                r="74"
+                                r="70"
                                 stroke="currentColor"
-                                strokeWidth="12"
+                                strokeWidth="16"
                                 fill="transparent"
-                                strokeDasharray={464.9}
-                                strokeDashoffset={464.9 - (464.9 * audit.healthScore) / 100}
+                                strokeDasharray={439.8}
+                                strokeDashoffset={439.8 - (439.8 * audit.healthScore) / 100}
                                 className={`${audit.healthScore > 70 ? 'text-green-500' : audit.healthScore > 40 ? 'text-yellow-500' : 'text-red-500'} transition-all duration-1000 ease-out`}
                                 strokeLinecap="round"
                             />
                         </svg>
-                        <Typography variant="display" className="absolute text-5xl font-black">{audit.healthScore}%</Typography>
+                        <div className="absolute flex flex-col items-center">
+                            <Typography variant="display" className="text-4xl font-black leading-none">{audit.healthScore}</Typography>
+                            <Typography variant="caption" className="text-[10px] font-black opacity-50">%</Typography>
+                        </div>
                     </div>
                 </Card>
 
