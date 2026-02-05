@@ -162,6 +162,14 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
         return;
     }
 
+    // Fallback 3: Try standard dist path
+    if (imgUrl.includes('photos/players')) {
+        const parts = imgUrl.split('/');
+        const fileName = parts[parts.length - 1];
+        setImgUrl(`https://fantasy.premierleague.com/dist/img/players/${fileName}`);
+        return;
+    }
+
     setImageError(true);
   };
 
