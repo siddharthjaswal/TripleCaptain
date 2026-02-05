@@ -144,6 +144,8 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
   const multiplierLabel =
     player.multiplier > 1 ? `×${player.multiplier}` : null;
 
+  const photoUrl = getPlayerPhotoUrl(player.photo, player.code);
+  const showLiveIndicator = isLiveGameweek && player.rawPoints > 0;
   const [imgUrl, setImgUrl] = useState(photoUrl);
   const [imageError, setImageError] = useState(false);
 
@@ -182,6 +184,12 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
       onClick={onClick}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      } : undefined}
     >
       <div className="tc-player-chip-vertical__image">
         {!showFallback ? (
