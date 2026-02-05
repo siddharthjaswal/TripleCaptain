@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  id         Int      @id
+  name       String
+  shortName  String
+  code       Int
+  players    Player[]
+  homeFixtures Fixture[] @relation("HomeTeam")
+  awayFixtures Fixture[] @relation("AwayTeam")
+}
+
+model Player {
+  id              Int      @id
+  webName         String
+  firstName       String?
+  secondName      String?
+  elementType     Int      // 1=GK, 2=DEF, 3=MID, 4=FWD
+  teamId          Int
+  team            Team     @relation(fields: [teamId], references: [id])
+  photo           String?
+  
+  // Stats
+  epNext          Float?   // Expected points next GW
+  epThis          Float?   // Expected points this GW
+  form            Float?   // Recent form
+  nowCost         Int      // Price in 0.1m
+  selectedByPercent Float? // Ownership %
+  pointsPerGame   Float?
+  minutes         Int      @default(0)
+  chanceOfPlayingNext Int? // Injury status %
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([teamId])
+  @@index([elementType])
+}
+
+model Gameweek {
+  id           Int      @id
+  name         String
+  deadlineTime DateTime
+  finished     Boolean  @default(false)
+  isCurrent    Boolean  @default(false)
+  isNext       Boolean  @default(false)
+  fixtures     Fixture[]
+}
+
+model Fixture {
+  id            Int      @id
+  gameweekId    Int?
+  gameweek      Gameweek? @relation(fields: [gameweekId], references: [id])
+  homeTeamId    Int
+  awayTeamId    Int
+  homeTeam      Team     @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam      Team     @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  homeScore     Int?
+  awayScore     Int?
+  difficultyH   Int?
+  difficultyA   Int?
+  kickoffTime   DateTime?
+  finished      Boolean  @default(false)
+
+  @@index([gameweekId])
+  @@index([homeTeamId])
+  @@index([awayTeamId])
+}
+
+model TeamAudit {
+  id            String   @id @default(cuid())
+  entryId       Int
+  gameweek      Int
+  healthScore   Int      // 0-100
+  critique      String   @db.Text
+  suggestions   Json     // Specific transfer/captain advice
+  createdAt     DateTime @default(now())
+
+  @@index([entryId, gameweek])
+}
+
+model DifferentialPick {
+  id            String   @id @default(cuid())
+  playerId      Int
+  gameweek      Int
+  reasoning     String   @db.Text
+  expectedPoints Float
+  ownership     Float
+  createdAt     DateTime @default(now())
+
+  @@index([gameweek])
+}

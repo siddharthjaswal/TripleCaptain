@@ -10,6 +10,7 @@ import { TransferSuggestionsCard } from "@/components/TransferSuggestionsCard";
 import { ChipRecommendationsCard } from "@/components/ChipRecommendationsCard";
 import { DifferentialPicksCard } from "@/components/DifferentialPicksCard";
 import { FixtureAnalysisCard } from "@/components/FixtureAnalysisCard";
+import { DifferentialScout } from "@/components/DifferentialScout";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { loadPredictions, parseEntryId } from "@/lib/fpl/service";
 
@@ -207,6 +208,7 @@ export default async function PredictionsPage({
 
         {/* Differential Picks */}
         <DifferentialPicksCard differentials={predictions.differentialPicks} />
+        <DifferentialScout />
 
         {/* Fixture Analysis */}
         <FixtureAnalysisCard analysis={predictions.fixtureAnalysis} />

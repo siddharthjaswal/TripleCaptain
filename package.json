@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:sync": "tsx scripts/sync.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -16,7 +19,10 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "^6.0.1",
     "@vercel/analytics": "^1.5.0",
+    "dotenv": "^17.2.3",
     "next": "16.0.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
@@ -41,7 +47,9 @@
     "eslint-plugin-testing-library": "^7.13.3",
     "jsdom": "^26.0.0",
     "prettier": "^3.5.1",
+    "prisma": "^6.0.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^3.0.5"
   },

@@ -10,6 +10,7 @@ import { loadEntrySummary, parseEntryId } from "@/lib/fpl/service";
 import { ProfileCard } from "@/components/cards/ProfileCard";
 import { TotalsCard } from "@/components/cards/TotalsCard";
 import { LatestGwCard } from "@/components/cards/LatestGwCard";
+import { TeamAuditor } from "@/components/TeamAuditor";
 
 type EntryPageParams = {
   entryId: string;
@@ -118,6 +119,7 @@ export default async function EntryPage({
           )}
         </div>
         <GameweekPitchCard latest={summary.latest} />
+        <TeamAuditor entryId={summary.profile.entryId} />
         <PersistLastEntry
           entryId={summary.profile.entryId}
           teamName={summary.profile.teamName}
