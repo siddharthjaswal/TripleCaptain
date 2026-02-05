@@ -39,6 +39,7 @@ export const BootstrapStaticSchema = z
           team: z.number(),
           team_code: z.number().optional(),
           photo: z.string().optional(),
+          code: z.number().optional(),
           // Prediction fields
           ep_next: z.string().optional(), // Expected points next GW
           ep_this: z.string().optional(), // Expected points this GW

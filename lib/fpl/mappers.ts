@@ -168,6 +168,7 @@ function mapLatestGameweekPlayers(params: {
         points: appliedPoints,
         rawPoints,
         photo: playerInfo?.photo ?? null,
+        code: playerInfo?.code ?? null,
         teamId: playerInfo?.team ?? null,
         teamCode: playerInfo?.team_code ?? null,
       } satisfies LatestGwPlayerDTO;

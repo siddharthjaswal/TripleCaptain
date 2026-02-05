@@ -144,11 +144,28 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
   const multiplierLabel =
     player.multiplier > 1 ? `×${player.multiplier}` : null;
 
-  const photoUrl = getPlayerPhotoUrl(player.photo);
-  const showLiveIndicator = isLiveGameweek && player.rawPoints > 0;
+  const [imgUrl, setImgUrl] = useState(photoUrl);
   const [imageError, setImageError] = useState(false);
 
-  const showFallback = !photoUrl || imageError;
+  const handleImageError = () => {
+    if (!imgUrl) return;
+    
+    // Fallback 1: Try .jpg instead of .png
+    if (imgUrl.endsWith('.png')) {
+      setImgUrl(imgUrl.replace('.png', '.jpg'));
+      return;
+    }
+    
+    // Fallback 2: Try without 'p' prefix
+    if (imgUrl.includes('/p')) {
+        setImgUrl(imgUrl.replace('/p', '/'));
+        return;
+    }
+
+    setImageError(true);
+  };
+
+  const showFallback = !imgUrl || imageError;
 
   return (
     <div
@@ -157,46 +174,40 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
       onClick={onClick}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
-      onKeyDown={onClick ? (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick();
-        }
-      } : undefined}
     >
       <div className="tc-player-chip-vertical__image">
         {!showFallback ? (
           <Image
-            src={photoUrl}
+            src={imgUrl!}
             alt={player.name}
-            width={compact ? 60 : 80}
-            height={compact ? 60 : 80}
-            className="rounded-lg object-cover"
+            width={compact ? 44 : 66}
+            height={compact ? 55 : 82}
+            className="object-contain"
             unoptimized
-            onError={() => setImageError(true)}
+            onError={handleImageError}
           />
         ) : (
           <div
-            className="flex items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-800"
-            style={{ width: compact ? '60px' : '80px', height: compact ? '60px' : '80px' }}
+            className="flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-700/50 to-slate-800/50 backdrop-blur-sm border border-white/10"
+            style={{ width: compact ? '40px' : '60px', height: compact ? '50px' : '75px' }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
-              className={`text-slate-400 ${compact ? 'h-8 w-8' : 'h-10 w-10'}`}
+              className={`text-slate-400 ${compact ? 'h-6 w-6' : 'h-8 w-8'}`}
             >
               <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
             </svg>
           </div>
         )}
         {badge && (
-          <span className="tc-player-chip-vertical__badge" aria-label={badge === "C" ? "Captain" : "Vice Captain"}>
+          <span className="tc-player-chip-vertical__badge">
             {badge}
           </span>
         )}
         {showLiveIndicator && (
-          <span className="tc-player-chip-vertical__live" aria-label="Playing">
+          <span className="tc-player-chip-vertical__live">
             <span className="tc-player-chip-vertical__live-dot" />
           </span>
         )}
@@ -207,8 +218,8 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
           {player.position}
           {multiplierLabel ? ` ${multiplierLabel}` : ""}
         </p>
+        <div className="tc-player-chip-vertical__points">{player.points}</div>
       </div>
-      <div className="tc-player-chip-vertical__points">{player.points}</div>
     </div>
   );
 }

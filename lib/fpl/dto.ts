@@ -52,6 +52,7 @@ export type LatestGwPlayerDTO = {
   points: number;
   rawPoints: number;
   photo: string | null;
+  code: number | null;
   teamId: number | null;
   teamCode: number | null;
 };

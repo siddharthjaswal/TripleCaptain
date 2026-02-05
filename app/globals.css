@@ -133,9 +133,7 @@ body {
   color: var(--text-primary);
   font-family:
     var(--font-geist-sans),
-    system-ui,
-    -apple-system,
-    sans-serif;
+    system-ui, -apple-system, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -145,7 +143,7 @@ body {
 .tc-card {
   background: var(--surface-elevated);
   border: 1px solid var(--surface-border);
-  border-radius: 1.5rem; /* 24px */
+  border-radius: 1.5rem;
   box-shadow: var(--shadow-sm);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -175,7 +173,7 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  border-radius: 0.75rem; /* 12px */
+  border-radius: 0.75rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   padding: 0.625rem 1.25rem;
@@ -254,11 +252,11 @@ body {
 
 .tc-pitch {
   background: var(--pitch-gradient);
-  border-radius: 2rem;
-  padding: 2rem;
+  border-radius: 2.5rem;
+  padding: 5rem 2rem; /* Maximum vertical space */
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 5rem; /* Massive gap between rows */
   position: relative;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
@@ -268,19 +266,14 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      rgba(255, 255, 255, 0.1),
-      transparent 70%
-    );
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), transparent 70%);
   pointer-events: none;
 }
 
 .tc-pitch-row {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 2rem; /* Increased label to players gap */
   position: relative;
   z-index: 1;
   width: 100%;
@@ -291,16 +284,16 @@ body {
   font-size: 0.65rem;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.35em;
   text-align: center;
 }
 
 .tc-pitch-row__players {
   display: flex;
   justify-content: space-around;
-  align-items: flex-start;
-  flex-wrap: nowrap; /* Force horizontal for usual formation */
-  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
   width: 100%;
 }
 
@@ -313,50 +306,53 @@ body {
   min-width: 0;
   max-width: 110px;
   color: #ffffff;
+  position: relative;
 }
 
 .tc-player-chip-vertical__image {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 66px;
+  height: 82px;
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.6));
+  z-index: 10;
+  margin-bottom: 0.75rem; /* Increased margin to prevent overlap */
 }
 
 .tc-player-chip-vertical__badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 20px;
-  height: 20px;
+  top: -6px;
+  right: -6px;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--brand-gold);
   color: #000;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 900;
   border-radius: 50%;
   border: 2px solid #fff;
-  box-shadow: var(--shadow-sm);
-  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  z-index: 20;
 }
 
 .tc-player-chip-vertical__live {
   position: absolute;
-  top: -4px;
-  left: -4px;
+  top: -6px;
+  left: -6px;
   width: 18px;
   height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.4);
   border-radius: 50%;
   border: 1.5px solid #fff;
-  z-index: 2;
+  z-index: 20;
 }
 
 .tc-player-chip-vertical__live-dot {
@@ -373,36 +369,48 @@ body {
   align-items: center;
   width: 100%;
   text-align: center;
+  background: rgba(15, 23, 42, 0.5); /* Semi-transparent dark background for text */
+  padding: 6px 4px;
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
 .tc-player-chip-vertical__name {
-  font-weight: 700;
-  font-size: 0.75rem;
+  font-weight: 900;
+  font-size: 0.7rem;
+  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
+  text-transform: uppercase;
+  color: #ffffff;
+  letter-spacing: 0.02em;
 }
 
 .tc-player-chip-vertical__position {
   font-size: 0.6rem;
-  opacity: 0.8;
-  font-weight: 600;
+  opacity: 0.6;
+  font-weight: 700;
+  color: #f1f5f9;
 }
 
 .tc-player-chip-vertical__points {
   font-weight: 900;
   font-size: 0.9rem;
   color: var(--brand-secondary);
+  margin-top: 4px;
+  text-shadow: 0 0 10px rgba(0, 255, 133, 0.3);
 }
 
 .tc-player-chip-vertical--compact {
-  width: 80px;
+  max-width: 80px;
 }
 
 .tc-player-chip-vertical--compact .tc-player-chip-vertical__image {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 55px;
 }
 
 /* --- ANIMATIONS --- */
@@ -425,7 +433,6 @@ body {
   animation: glow 3s ease-in-out infinite;
 }
 
-/* Hide scrollbar but keep functionality */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

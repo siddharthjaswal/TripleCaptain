@@ -5,19 +5,24 @@
 const FPL_ASSETS_BASE = "https://resources.premierleague.com/premierleague";
 
 /**
- * Get player photo URL from FPL photo code
+ * Get player photo URL from FPL photo code or player code
  * @param photoCode - Photo code from bootstrap element (e.g., "12345.jpg")
+ * @param playerCode - Numeric code for the player
  * @returns Full URL to player photo or null if no code provided
  */
-export function getPlayerPhotoUrl(photoCode: string | null): string | null {
-  if (!photoCode) {
+export function getPlayerPhotoUrl(photoCode: string | null, playerCode?: number | null): string | null {
+  if (!photoCode && !playerCode) {
     return null;
   }
 
-  // Extract code from format like "12345.jpg" -> "12345"
-  const code = photoCode.replace(/\.(jpg|png|jpeg)$/i, "");
+  const code = photoCode 
+    ? photoCode.replace(/\.(jpg|png|jpeg)$/i, "") 
+    : playerCode?.toString();
 
-  return `${FPL_ASSETS_BASE}/photos/players/110x140/p${code}.png`;
+  if (!code) return null;
+
+  // Primary: standard PNG format
+  return `https://resources.premierleague.com/premierleague/photos/players/110x140/p${code}.png`;
 }
 
 /**
