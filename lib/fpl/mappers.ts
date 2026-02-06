@@ -156,6 +156,9 @@ export function mapLatestGameweekPlayers(params: {
       const multiplier = pick.multiplier ?? 1;
       const appliedPoints = isBench ? rawPoints : rawPoints * multiplier;
 
+      const ownership = playerInfo?.selected_by_percent ? parseFloat(playerInfo.selected_by_percent) : 0;
+      const impactScore = appliedPoints * (1 - ownership / 100);
+
       return {
         elementId: pick.element,
         name: playerInfo?.web_name ?? `Player ${pick.element}`,
@@ -171,6 +174,8 @@ export function mapLatestGameweekPlayers(params: {
         code: playerInfo?.code ?? null,
         teamId: playerInfo?.team ?? null,
         teamCode: playerInfo?.team_code ?? null,
+        ownership,
+        impactScore: parseFloat(impactScore.toFixed(1)),
       } satisfies LatestGwPlayerDTO;
     });
 }

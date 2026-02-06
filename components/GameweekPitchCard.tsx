@@ -177,10 +177,12 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
   };
 
   const showFallback = !imgUrl || imageError;
+  const isHighImpact = player.impactScore !== null && player.impactScore >= 5;
+  const isDeadwood = player.points <= 2 && player.ownership !== null && player.ownership > 20;
 
   return (
     <div
-      className={`tc-player-chip-vertical ${compact ? "tc-player-chip-vertical--compact" : ""} ${onClick ? "cursor-pointer transition hover:scale-105" : ""}`}
+      className={`tc-player-chip-vertical ${compact ? "tc-player-chip-vertical--compact" : ""} ${onClick ? "cursor-pointer transition hover:scale-105" : ""} ${isHighImpact ? 'ring-2 ring-emerald-500/50 rounded-2xl p-1 bg-emerald-500/5' : ''}`}
       aria-label={`${player.name}, ${player.position}, ${player.points} points`}
       onClick={onClick}
       role={onClick ? "button" : undefined}
@@ -228,13 +230,25 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
             <span className="tc-player-chip-vertical__live-dot" />
           </span>
         )}
+        {isDeadwood && (
+            <div className="absolute inset-0 bg-red-900/40 rounded-xl flex items-center justify-center backdrop-blur-[1px] z-20">
+                <span className="text-[10px] font-black text-white bg-red-600 px-1.5 rounded-sm uppercase tracking-tighter shadow-lg">Blanked</span>
+            </div>
+        )}
       </div>
       <div className="tc-player-chip-vertical__info">
         <p className="tc-player-chip-vertical__name">{player.name}</p>
-        <p className="tc-player-chip-vertical__position">
-          {player.position}
-          {multiplierLabel ? ` ${multiplierLabel}` : ""}
-        </p>
+        <div className="flex items-center gap-1 justify-center">
+            <p className="tc-player-chip-vertical__position">
+                {player.position}
+                {multiplierLabel ? ` ${multiplierLabel}` : ""}
+            </p>
+            {player.impactScore !== null && player.impactScore > 5 && (
+                <span title="Rank Booster vs the World" className="text-[8px] font-black bg-emerald-500 text-black px-1 rounded-sm animate-glow">
+                    +{player.impactScore}
+                </span>
+            )}
+        </div>
         <div className="tc-player-chip-vertical__points">{player.points}</div>
       </div>
     </div>

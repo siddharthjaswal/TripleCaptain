@@ -58,6 +58,8 @@ export type LatestGwPlayerDTO = {
   code: number | null;
   teamId: number | null;
   teamCode: number | null;
+  ownership: number | null;
+  impactScore: number | null; // (Points * (1 - Ownership/100))
 };
 
 export type LeagueSummaryDTO = {
