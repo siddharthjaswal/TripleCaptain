@@ -93,6 +93,19 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
                     <MetricBox label="UPSIDE" value={differential.upsideScore.toFixed(1)} color="text-yellow-500" />
                 </div>
 
+                {/* Fixture Timeline */}
+                <div className="space-y-3">
+                    <Typography variant="caption" weight="black" className="text-[9px] opacity-30 tracking-[0.3em] uppercase">Upcoming Campaign</Typography>
+                    <div className="grid grid-cols-5 gap-2">
+                        {differential.upcomingFixtures.map((f, i) => (
+                            <div key={i} className={`p-2 rounded-xl border text-center transition-all hover:scale-105 ${getDiffBorder(f.difficulty)}`}>
+                                <Typography weight="black" className="text-[9px] uppercase leading-none mb-1">{f.opponentShort}</Typography>
+                                <Typography variant="caption" className="text-[8px] font-black opacity-60">{f.isHome ? 'H' : 'A'}</Typography>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/5 relative group overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                         <TrendingUp className="w-16 h-16 text-emerald-400" />

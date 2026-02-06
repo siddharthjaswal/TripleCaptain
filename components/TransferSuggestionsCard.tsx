@@ -145,10 +145,10 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
         <div className="flex-[1.5] p-8 space-y-8 bg-white/[0.01]">
             <div className="grid grid-cols-3 gap-6">
                 <div className="space-y-1">
-                    <Typography variant="caption" weight="black" className="text-[9px] opacity-30 tracking-widest">EXPECTED GAIN</Typography>
+                    <Typography variant="caption" weight="black" className="text-[9px] opacity-30 tracking-widest uppercase">Expected Gain</Typography>
                     <div className="flex items-baseline gap-1 text-emerald-400">
                         <Typography weight="black" className="text-3xl">+{pointsGain}</Typography>
-                        <Typography weight="black" className="text-[10px] opacity-60">PTS</Typography>
+                        <Typography weight="black" className="text-[10px] opacity-60">OVER 5GWs</Typography>
                     </div>
                 </div>
                 <div className="space-y-1">
@@ -159,7 +159,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                     </div>
                 </div>
                 <div className="space-y-1">
-                    <Typography variant="caption" weight="black" className="text-[9px] opacity-30 tracking-widest">FIXTURE RUN</Typography>
+                    <Typography variant="caption" weight="black" className="text-[9px] opacity-30 tracking-widest uppercase">Upcoming Run</Typography>
                     <div className="flex gap-1.5 pt-1">
                         {suggestion.playerIn.upcomingFixtures.map((f, i) => (
                             <div key={i} className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black border transition-colors hover:scale-110 ${getDiffStyle(f.difficulty)}`}>

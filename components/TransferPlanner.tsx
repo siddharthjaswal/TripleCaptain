@@ -355,7 +355,7 @@ function FixtureTimeline({ teamId, bgwDgwMap, nextGw }: {
     nextGw: number 
 }) {
     const teamFixtures = bgwDgwMap[teamId] || {};
-    const weeks = Array.from({ length: 3 }, (_, i) => nextGw + i);
+    const weeks = Array.from({ length: 5 }, (_, i) => nextGw + i);
 
     return (
         <div className="flex gap-1 justify-center">

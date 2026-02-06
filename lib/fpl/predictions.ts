@@ -451,14 +451,14 @@ export function calculateTransferSuggestions(
           el.selected_by_percent ?? "0",
         );
 
-        // Get next 3 fixtures for this player's team
+        // Get next 5 fixtures for this player's team
         const playerFixtures = upcomingFixtures
           .filter(
             (f) =>
               (f.team_h === el.team || f.team_a === el.team) && f.event !== null,
           )
           .sort((a, b) => (a.event ?? 0) - (b.event ?? 0))
-          .slice(0, 3)
+          .slice(0, 5)
           .map((f) => {
             const isHome = f.team_h === el.team;
             const opponentId = isHome ? f.team_a : f.team_h;
@@ -715,14 +715,14 @@ export function calculateDifferentialPicks(
         };
       }
 
-      // Get next 3 fixtures
+      // Get next 5 fixtures
       const playerUpcomingFixtures = upcomingFixtures
         .filter(
           (f) =>
             (f.team_h === player.team || f.team_a === player.team) && f.event !== null,
         )
         .sort((a, b) => (a.event ?? 0) - (b.event ?? 0))
-        .slice(0, 3)
+        .slice(0, 5)
         .map((f) => {
           const isHome = f.team_h === player.team;
           const opponentId = isHome ? f.team_a : f.team_h;
