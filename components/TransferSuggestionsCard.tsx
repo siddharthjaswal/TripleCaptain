@@ -3,17 +3,16 @@
 import React from "react";
 import Image from "next/image";
 import type { TransferSuggestionDTO } from "@/lib/fpl/dto";
-import { getPlayerPhotoUrl } from "@/lib/fpl/images";
+import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
 import { Card, Typography, Badge } from "./ui";
 import { 
-    ArrowRightLeft, 
+    ArrowRight, 
     TrendingUp, 
-    ArrowDownRight, 
-    ArrowUpRight, 
-    ShieldAlert, 
-    Search,
-    ChevronDown,
-    ChevronUp
+    Zap, 
+    Target,
+    BarChart2,
+    ChevronRight,
+    Plus
 } from "lucide-react";
 
 type TransferSuggestionsCardProps = {
@@ -31,36 +30,23 @@ export function TransferSuggestionsCard({
         <div className="p-5 w-20 h-20 rounded-3xl bg-emerald-500/10 text-emerald-500 mx-auto mb-8 flex items-center justify-center">
              <TrendingUp className="w-10 h-10" />
         </div>
-        <Typography variant="title" weight="black" className="mb-2 uppercase text-3xl text-white">Squad Optimized</Typography>
-        <Typography className="text-[color:var(--text-secondary)] text-lg">Your crew is in peak condition for the coming matches.</Typography>
+        <Typography variant="title" weight="black" className="mb-2 uppercase text-white">Squad Optimized</Typography>
+        <Typography className="text-[color:var(--text-secondary)] text-lg">No transfer suggestions required at this time.</Typography>
       </Card>
     );
   }
 
   return (
-    <section className="space-y-12 animate-fade-in pb-20">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 px-2">
-            <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                    <div className="p-4 rounded-2xl bg-[color:var(--accent)] text-white shadow-2xl shadow-[color:var(--accent)]/30">
-                        <ArrowRightLeft className="h-8 w-8" />
-                    </div>
-                    <div>
-                        <Typography variant="display" className="text-4xl leading-none mb-2">Transfer Market</Typography>
-                        <Typography variant="caption" weight="black" className="opacity-40 tracking-[0.3em] text-xs">TACTICAL RECRUITMENT HUB</Typography>
-                    </div>
-                </div>
+    <section className="space-y-10 animate-fade-in pb-20">
+        <div className="flex items-center justify-between px-4">
+            <div className="space-y-1">
+                <Typography variant="display" className="text-3xl md:text-5xl text-white">Transfer Market</Typography>
+                <Typography variant="caption" weight="black" className="opacity-40 tracking-[0.3em] text-[10px]">SCIENTIFIC RECRUITMENT ENGINE</Typography>
             </div>
             
-            <Card className="px-10 py-5 flex items-center gap-6 border-[color:var(--accent)]/20 bg-white/5 relative overflow-hidden" glass hover={false}>
-                <div className="absolute top-0 right-0 p-2 opacity-5">
-                    <TrendingUp className="w-12 h-12" />
-                </div>
-                <div>
-                    <Typography variant="caption" weight="black" className="text-[11px] opacity-40 uppercase tracking-widest mb-1">Total Budget</Typography>
-                    <Typography variant="title" weight="black" className="text-4xl text-[color:var(--brand-secondary)]">£{budgetAvailable.toFixed(1)}m</Typography>
-                </div>
+            <Card className="px-8 py-4 border-white/5 bg-white/5" glass hover={false}>
+                <Typography variant="caption" weight="black" className="text-[10px] opacity-40 uppercase tracking-widest mb-1">Bank Balance</Typography>
+                <Typography variant="title" weight="black" className="text-3xl text-emerald-400">£{budgetAvailable.toFixed(1)}m</Typography>
             </Card>
         </div>
 
@@ -84,141 +70,161 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
   const [imgOut, setImgOut] = React.useState(photoOut);
   const [imgIn, setImgIn] = React.useState(photoIn);
   
-  const handleImgError = (url: string | null, setter: (val: string | null) => void) => {
-    if (!url) return;
-    if (url.includes('250x250')) {
-        setter(url.replace('250x250', '110x140'));
-        return;
-    }
-    setter(null);
+  const handleImgError = (setter: (val: string | null) => void) => {
+    setter(null); // Force fallback to shirt
   };
 
-  return (
-    <div className="flex flex-col h-full group relative">
-        {/* Connection Link (Visual only) */}
-        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-y-1/2 -z-10" />
+  const pointsGain = (suggestion.playerIn.expectedPoints - (suggestion.playerOut.expectedPoints || 0)).toFixed(1);
 
-        <Card className="relative overflow-hidden flex flex-col h-full border-white/5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] transition-all duration-500 group-hover:border-[color:var(--accent)]/30 group-hover:-translate-y-2" glass hover={false}>
-            {/* Net Cost Floating Header */}
-            <div className={`h-1.5 w-full bg-gradient-to-r ${suggestion.netCost > 0 ? 'from-red-500/50 to-red-600' : 'from-emerald-500/50 to-emerald-600'} opacity-80`} />
-            
-            <div className="p-8 space-y-10 flex-1 flex flex-col">
-                {/* Header: Option & Cost */}
-                <div className="flex justify-between items-center">
-                    <Badge variant="primary" className="px-5 py-1.5 font-black italic tracking-widest shadow-xl">#{rank}</Badge>
-                    <div className="flex items-center gap-3">
-                        <Typography variant="caption" weight="black" className="text-[10px] opacity-30">NET COST</Typography>
-                        <div className={`px-3 py-1 rounded-lg border font-black text-sm ${suggestion.netCost > 0 ? 'border-red-500/30 text-red-400 bg-red-500/5' : 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5'}`}>
-                            {suggestion.netCost > 0 ? '-' : '+'}£{Math.abs(suggestion.netCost).toFixed(1)}m
-                        </div>
+  return (
+    <Card className="relative overflow-hidden flex flex-col h-full border-white/10 bg-slate-950/40" glass hover={false}>
+      {/* High-Impact Top Bar */}
+      <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+            <div className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs ${rank === 1 ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/30' : 'bg-white/10 text-white/60'}`}>
+                    {rank}
+                </div>
+                <Typography weight="black" className="text-xs uppercase tracking-widest opacity-60">Recommendation</Typography>
+            </div>
+            <div className="text-right">
+                <Typography variant="caption" weight="black" className="text-[9px] opacity-40 uppercase mb-1">Gain over 3 GWs</Typography>
+                <div className="flex items-center gap-2 text-emerald-400">
+                    <TrendingUp className="w-3 h-3" />
+                    <Typography weight="black" className="text-lg">+{pointsGain} pts</Typography>
+                </div>
+            </div>
+      </div>
+      
+      <div className="p-8 space-y-12 flex-1">
+        {/* THE EXCHANGE: OUT -> IN */}
+        <div className="flex items-center justify-between gap-4 relative">
+             {/* Center Arrow */}
+             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0">
+                <div className="w-12 h-12 rounded-full border-2 border-dashed border-white/10 flex items-center justify-center">
+                    <ArrowRight className="w-6 h-6 text-white/10" />
+                </div>
+             </div>
+
+             {/* Player OUT */}
+             <div className="flex flex-col items-center gap-4 flex-1 z-10">
+                <div className="relative group">
+                    <div className="relative w-20 h-20 bg-slate-900 rounded-full overflow-hidden border-2 border-red-500/20 group-hover:border-red-500/40 transition-colors shadow-2xl">
+                         <Image 
+                            src={imgOut || getTeamShirtUrl(suggestion.playerOut.teamId)!} 
+                            alt="Out" 
+                            fill 
+                            className={`object-contain ${!imgOut ? 'p-3 opacity-50' : ''}`} 
+                            unoptimized 
+                            onError={() => handleImgError(setImgOut)} 
+                        />
+                        <div className="absolute inset-0 bg-red-500/10 mix-blend-overlay" />
+                    </div>
+                    <div className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-lg">
+                        <X className="w-3 h-3" />
                     </div>
                 </div>
+                <div className="text-center space-y-1">
+                    <Typography weight="black" className="text-sm uppercase truncate w-28 text-white/80">{suggestion.playerOut.playerName}</Typography>
+                    <Typography variant="caption" weight="black" className="text-[10px] text-white/30">£{suggestion.playerOut.cost.toFixed(1)}m</Typography>
+                </div>
+             </div>
 
-                <div className="space-y-12">
-                    {/* --- PLAYER OUT SECTION --- */}
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-4 px-2">
-                             <ArrowDownRight className="w-4 h-4 text-red-500 animate-bounce" />
-                             <Typography variant="caption" weight="black" className="text-red-500 tracking-[0.2em]">THROW OVERBOARD</Typography>
-                        </div>
-                        
-                        <div className="p-6 rounded-3xl bg-red-500/[0.03] border border-red-500/10 space-y-6">
-                            {/* Full Width Name Row */}
-                            <div className="border-b border-white/5 pb-4">
-                                <Typography weight="black" className="text-xl uppercase leading-tight text-white block w-full">{suggestion.playerOut.playerName}</Typography>
-                                <Typography variant="caption" className="text-[10px] font-bold text-white/30 uppercase mt-1">{suggestion.playerOut.position} • £{suggestion.playerOut.cost.toFixed(1)}m</Typography>
-                            </div>
-
-                            <div className="flex items-center gap-6">
-                                <div className="relative w-16 h-16 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl shrink-0 border border-white/5">
-                                    {imgOut ? (
-                                        <Image src={imgOut} alt="Out" fill className="object-contain" unoptimized onError={() => handleImgError(imgOut, setImgOut)} />
-                                    ) : (
-                                        <div className="flex items-center justify-center w-full h-full text-red-500/20"><ShieldAlert className="w-8 h-8" /></div>
-                                    )}
-                                </div>
-                                <div className="flex-1">
-                                    <div className="p-4 rounded-2xl bg-black/40 border border-white/5 relative">
-                                        <div className="absolute -top-2 left-4 px-2 bg-[#0a0f1e] text-[8px] font-black text-red-500 tracking-widest border border-red-500/20 rounded">REASON</div>
-                                        <Typography className="text-xs text-red-400/80 italic leading-relaxed">&quot;{suggestion.playerOut.reasoning}&quot;</Typography>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+             {/* Player IN */}
+             <div className="flex flex-col items-center gap-4 flex-1 z-10">
+                <div className="relative group">
+                    <div className="relative w-24 h-24 bg-slate-900 rounded-full overflow-hidden border-4 border-emerald-500 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all">
+                        <Image 
+                            src={imgIn || getTeamShirtUrl(suggestion.playerIn.teamId)!} 
+                            alt="In" 
+                            fill 
+                            className={`object-contain ${!imgIn ? 'p-4 opacity-70' : ''}`} 
+                            unoptimized 
+                            onError={() => handleImgError(setImgIn)} 
+                        />
+                        <div className="absolute inset-0 bg-emerald-500/5 mix-blend-overlay" />
                     </div>
-
-                    {/* --- CENTRAL TRANSITION --- */}
-                    <div className="flex justify-center -my-8 relative z-20">
-                         <div className="w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.2)] rotate-45 group-hover:rotate-[135deg] transition-all duration-700">
-                            <ArrowRightLeft className="w-6 h-6 -rotate-45" />
-                         </div>
+                    <div className="absolute -top-1 -right-1 bg-emerald-500 text-black rounded-full p-1.5 shadow-lg">
+                        <Plus className="w-4 h-4 font-black" />
                     </div>
+                </div>
+                <div className="text-center space-y-1">
+                    <Typography weight="black" className="text-base uppercase text-white leading-none">{suggestion.playerIn.playerName}</Typography>
+                    <Typography variant="caption" weight="black" className="text-[10px] text-emerald-500/60 uppercase">{suggestion.playerIn.team.shortName} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
+                </div>
+             </div>
+        </div>
 
-                    {/* --- PLAYER IN SECTION --- */}
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-4 px-2">
-                             <ArrowUpRight className="w-4 h-4 text-emerald-500 animate-pulse" />
-                             <Typography variant="caption" weight="black" className="text-emerald-500 tracking-[0.2em]">NEW SIGNING</Typography>
-                        </div>
-                        
-                        <div className="p-8 rounded-[2rem] bg-emerald-500/[0.04] border border-emerald-500/20 space-y-8 relative group-hover:bg-emerald-500/[0.08] transition-colors">
-                            {/* Full Width Name Row */}
-                            <div className="border-b border-white/5 pb-4">
-                                <Typography weight="black" className="text-3xl uppercase leading-tight text-white block w-full">{suggestion.playerIn.playerName}</Typography>
-                                <Typography variant="caption" className="text-xs font-black text-emerald-500/60 uppercase tracking-widest mt-1">{suggestion.playerIn.team?.shortName || 'UNK'} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
-                            </div>
-
-                            <div className="flex items-center gap-8">
-                                <div className="relative w-24 h-24 bg-slate-900 rounded-3xl overflow-hidden shadow-2xl shrink-0 border border-emerald-500/30">
-                                    {imgIn ? (
-                                        <Image src={imgIn} alt="In" fill className="object-contain" unoptimized onError={() => handleImgError(imgIn, setImgIn)} />
-                                    ) : (
-                                        <div className="flex items-center justify-center w-full h-full text-emerald-500/20"><Search className="w-10 h-10" /></div>
-                                    )}
-                                </div>
-                                <div className="flex-1 space-y-4">
-                                    <div className="px-5 py-3 bg-emerald-500/20 rounded-2xl border border-emerald-500/30 inline-block">
-                                        <Typography variant="caption" weight="black" className="text-[10px] font-black opacity-40 uppercase tracking-tighter mb-1 block">Expected Points</Typography>
-                                        <Typography weight="black" className="text-4xl text-emerald-400 leading-none">{suggestion.playerIn.expectedPoints.toFixed(1)}</Typography>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Fixtures */}
-                            <div className="space-y-3">
-                                <Typography variant="caption" weight="black" className="text-[9px] opacity-30 tracking-[0.3em]">UPCOMING FIXTURES</Typography>
-                                <div className="grid grid-cols-3 gap-3">
-                                    {suggestion.playerIn.upcomingFixtures.map((f, i) => (
-                                        <div key={i} className={`p-3 rounded-2xl border transition-all hover:scale-105 text-center shadow-lg ${getDiffStyle(f.difficulty)}`}>
-                                            <Typography weight="black" className="text-xs mb-1 uppercase tracking-tighter">{f.opponentShort}</Typography>
-                                            <Typography variant="caption" className="text-[9px] font-bold opacity-60 uppercase">{f.isHome ? 'Home' : 'Away'}</Typography>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Final Scout Verdict */}
-                            <div className="p-5 rounded-2xl bg-white/5 border border-white/5 shadow-inner">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Search className="w-3 h-3 text-emerald-500" />
-                                    <Typography variant="caption" weight="black" className="text-[9px] opacity-40 uppercase tracking-widest">Chief Scout Verdict</Typography>
-                                </div>
-                                <Typography className="text-xs text-white/80 italic leading-relaxed">
-                                    &quot;{suggestion.playerIn.reasoning}&quot;
-                                </Typography>
-                            </div>
-                        </div>
+        {/* METRICS & VERDICT */}
+        <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-1">
+                    <Typography variant="caption" weight="black" className="text-[8px] opacity-40 uppercase">Scout Score</Typography>
+                    <div className="flex items-center gap-2">
+                        <BarChart2 className="w-3 h-3 text-emerald-400" />
+                        <Typography weight="black" className="text-xl text-white">{suggestion.playerIn.expectedPoints.toFixed(1)}</Typography>
+                    </div>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-1">
+                    <Typography variant="caption" weight="black" className="text-[8px] opacity-40 uppercase">Net Cost</Typography>
+                    <div className="flex items-center gap-2">
+                        <Zap className="w-3 h-3 text-blue-400" />
+                        <Typography weight="black" className={`text-xl ${suggestion.netCost > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                            {suggestion.netCost > 0 ? '-' : ''}£{Math.abs(suggestion.netCost).toFixed(1)}m
+                        </Typography>
                     </div>
                 </div>
             </div>
-        </Card>
-    </div>
+
+            {/* Upcoming Fixtures */}
+            <div className="space-y-3">
+                 <div className="flex items-center justify-between px-1">
+                    <Typography variant="caption" weight="black" className="text-[9px] opacity-40 uppercase tracking-widest">Upcoming Battleground</Typography>
+                    <Badge variant="secondary" className="text-[8px] opacity-50 px-2 py-0">Next 3 GWs</Badge>
+                 </div>
+                 <div className="grid grid-cols-3 gap-3">
+                    {suggestion.playerIn.upcomingFixtures.map((f, i) => (
+                        <div key={i} className={`p-2.5 rounded-xl border transition-all text-center ${getDiffStyle(f.difficulty)}`}>
+                            <Typography weight="black" className="text-[10px] uppercase leading-none mb-1">{f.opponentShort}</Typography>
+                            <Typography variant="caption" className="text-[8px] font-bold opacity-60">{f.isHome ? 'HOME' : 'AWAY'}</Typography>
+                        </div>
+                    ))}
+                 </div>
+            </div>
+
+            {/* Tactical Reasoning */}
+            <div className="p-5 rounded-2xl bg-indigo-500/5 border border-indigo-500/20 relative group">
+                <div className="absolute top-4 right-4 opacity-10">
+                    <Target className="w-8 h-8 text-indigo-400" />
+                </div>
+                <Typography variant="caption" weight="black" className="text-[9px] text-indigo-400 mb-2 block uppercase tracking-widest">Gaffer&apos;s Strategic Rationale</Typography>
+                <Typography className="text-sm leading-relaxed text-white/80 italic">
+                    &quot;{suggestion.playerIn.reasoning}&quot;
+                </Typography>
+            </div>
+        </div>
+      </div>
+
+      {/* Action Footer */}
+      <div className="px-8 py-5 border-t border-white/5 bg-white/[0.01] flex items-center justify-between">
+            <Typography variant="caption" weight="black" className="text-[9px] opacity-30">SUGGESTED RECRUITMENT</Typography>
+            <div className="flex items-center gap-1 text-emerald-500">
+                <Typography weight="black" className="text-[10px] uppercase tracking-tighter">View Tactics</Typography>
+                <ChevronRight className="w-3 h-3" />
+            </div>
+      </div>
+    </Card>
   );
 }
 
+const X = ({ className }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+    </svg>
+)
+
 function getDiffStyle(diff: number) {
-    if (diff <= 2) return "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 shadow-emerald-500/10";
-    if (diff === 3) return "border-white/10 bg-white/5 text-white/60 shadow-white/5";
-    if (diff === 4) return "border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-amber-500/10";
-    return "border-red-500/30 bg-red-500/10 text-red-400 shadow-red-500/10";
+    if (diff <= 2) return "border-emerald-500/30 bg-emerald-500/10 text-emerald-400";
+    if (diff === 3) return "border-white/10 bg-white/5 text-white/50";
+    if (diff === 4) return "border-amber-500/30 bg-amber-500/10 text-amber-400";
+    return "border-red-500/30 bg-red-500/10 text-red-400";
 }
