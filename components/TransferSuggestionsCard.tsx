@@ -91,7 +91,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                 <div className="relative group">
                     <div className="relative w-20 h-20 bg-slate-900 rounded-full overflow-hidden border-2 border-red-500/30 group-hover:border-red-500/50 transition-all shadow-xl">
                          <Image 
-                            src={imgOut || getTeamShirtUrl(suggestion.playerOut.teamId)!} 
+                            src={imgOut || getTeamShirtUrl(suggestion.playerOut.teamCode)!} 
                             alt="Out" 
                             fill 
                             className={`object-contain ${!imgOut ? 'p-3 opacity-40' : ''}`} 
@@ -123,7 +123,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                 <div className="relative group">
                     <div className="relative w-28 h-28 bg-slate-900 rounded-full overflow-hidden border-4 border-emerald-500/40 group-hover:border-emerald-500 group-hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] transition-all shadow-2xl">
                         <Image 
-                            src={imgIn || getTeamShirtUrl(suggestion.playerIn.teamId)!} 
+                            src={imgIn || getTeamShirtUrl(suggestion.playerIn.teamCode)!} 
                             alt="In" 
                             fill 
                             className={`object-contain ${!imgIn ? 'p-5 opacity-60' : ''}`} 

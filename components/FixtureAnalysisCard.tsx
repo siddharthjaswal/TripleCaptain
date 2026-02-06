@@ -87,7 +87,7 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
             <div className="flex items-center gap-5">
                 <div className="w-16 h-16 relative flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 shadow-2xl shrink-0 p-3">
                     <Image 
-                        src={`https://resources.premierleague.com/premierleague/badges/t${team.teamId}.png`} 
+                        src={`https://resources.premierleague.com/premierleague/badges/t${team.teamCode}.png`} 
                         alt={team.teamShort}
                         fill
                         className="object-contain p-2"

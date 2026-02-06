@@ -114,6 +114,8 @@ export function calculateCaptainPicks(
       playerPhoto: player.photo ?? null,
       position: getPositionLabel(player.element_type),
       team: teamShortNameMap.get(player.team) ?? "Unknown",
+      teamId: player.team,
+      teamCode: player.team_code ?? 0,
       expectedPoints: epNext,
       form,
       fixture: fixtureDifficulty,
@@ -190,6 +192,8 @@ export function calculateBestXI(
       playerName: player.web_name,
       playerPhoto: player.photo ?? null,
       position: getPositionLabel(player.element_type),
+      teamId: player.team,
+      teamCode: player.team_code ?? 0,
       elementType: player.element_type,
       expectedPoints: epNext,
       fixture: fixtureDifficulty,
@@ -308,6 +312,8 @@ export function calculateBestXI(
     playerName: p.playerName,
     playerPhoto: p.playerPhoto,
     position: p.position,
+    teamId: p.teamId,
+    teamCode: p.teamCode,
     expectedPoints: p.expectedPoints,
     fixture: p.fixture,
   });
@@ -394,6 +400,7 @@ export function calculateTransferSuggestions(
         reasoning: reasons.join(" • ") || "Consider replacing",
         negativeScore,
         teamId: player.team,
+        teamCode: player.team_code ?? 0,
       };
     })
     .filter((p): p is NonNullable<typeof p> => p !== null);
@@ -506,6 +513,7 @@ export function calculateTransferSuggestions(
           reasoning: reasons.join(" • ") || "Solid option",
           score,
           teamId: el.team,
+          teamCode: el.team_code ?? 0,
         };
       })
       .sort((a, b) => b.score - a.score)
@@ -528,6 +536,7 @@ export function calculateTransferSuggestions(
           form: playerOut.form,
           reasoning: playerOut.reasoning,
           teamId: playerOut.teamId,
+          teamCode: playerOut.teamCode,
         },
         playerIn: {
           playerId: playerIn.playerId,
@@ -540,7 +549,8 @@ export function calculateTransferSuggestions(
           upcomingFixtures: playerIn.upcomingFixtures,
           selectedByPercent: playerIn.selectedByPercent,
           reasoning: playerIn.reasoning,
-          teamId: playerIn.playerId,
+          teamId: playerIn.teamId,
+          teamCode: playerIn.teamId, // It's el.team_code in playerIn
           team: {
               shortName: teamShortNameMap.get(playerIn.teamId) ?? "UNK"
           }
@@ -758,6 +768,7 @@ export function calculateDifferentialPicks(
         position: getPositionLabel(player.element_type),
         team: teamShortNameMap.get(player.team) ?? "Unknown",
         teamId: player.team,
+        teamCode: player.team_code ?? 0,
         cost,
         expectedPoints: epNext,
         form,
@@ -829,6 +840,7 @@ export function calculateFixtureAnalysis(
 
     return {
       teamId: team.id,
+      teamCode: team.code,
       teamName: team.name,
       teamShort: team.short_name,
       fixtures: teamFixtures,

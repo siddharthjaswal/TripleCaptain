@@ -65,7 +65,7 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
                 <div className="relative group shrink-0">
                     <div className="relative w-24 h-24 bg-slate-900 rounded-full overflow-hidden border-4 border-yellow-500/40 group-hover:border-yellow-500 transition-all shadow-2xl">
                         <Image 
-                            src={imgUrl || getTeamShirtUrl(differential.teamId)!} 
+                            src={imgUrl || getTeamShirtUrl(differential.teamCode)!} 
                             alt={differential.playerName} 
                             fill 
                             className={`object-contain ${!imgUrl ? 'p-5 opacity-60' : ''}`} 
@@ -133,4 +133,11 @@ function MetricBox({ label, value, color }: { label: string, value: string, colo
             <Typography weight="black" className={`text-2xl ${color}`}>{value}</Typography>
         </div>
     )
+}
+
+function getDiffBorder(diff: number) {
+    if (diff <= 2) return "border-emerald-500/30 bg-emerald-500/10 text-emerald-400";
+    if (diff === 3) return "border-white/10 bg-white/5 text-white/60";
+    if (diff === 4) return "border-amber-500/30 bg-amber-500/10 text-amber-400";
+    return "border-red-500/30 bg-red-500/10 text-red-400";
 }

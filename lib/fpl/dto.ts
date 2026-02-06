@@ -183,6 +183,8 @@ export type CaptainPickDTO = {
   playerPhoto: string | null;
   position: "GK" | "DEF" | "MID" | "FWD";
   team: string;
+  teamId: number;
+  teamCode: number;
   expectedPoints: number;
   form: number;
   fixture: FixtureDifficultyDTO | null;
@@ -195,6 +197,8 @@ export type PlayerPredictionDTO = {
   playerName: string;
   playerPhoto: string | null;
   position: "GK" | "DEF" | "MID" | "FWD";
+  teamId: number;
+  teamCode: number;
   expectedPoints: number;
   fixture: FixtureDifficultyDTO | null;
 };
@@ -220,6 +224,7 @@ export type TransferPlayerOutDTO = {
   form: number;
   reasoning: string;
   teamId: number;
+  teamCode: number;
 };
 
 export type TransferPlayerInDTO = {
@@ -234,6 +239,7 @@ export type TransferPlayerInDTO = {
   selectedByPercent: number;
   reasoning: string;
   teamId: number;
+  teamCode: number;
   team: {
       shortName: string;
   };
@@ -260,6 +266,7 @@ export type DifferentialPickDTO = {
   position: "GK" | "DEF" | "MID" | "FWD";
   team: string;
   teamId: number;
+  teamCode: number;
   cost: number;
   expectedPoints: number;
   form: number;
@@ -272,6 +279,7 @@ export type DifferentialPickDTO = {
 
 export type TeamFixtureRunDTO = {
   teamId: number;
+  teamCode: number;
   teamName: string;
   teamShort: string;
   fixtures: Array<{
