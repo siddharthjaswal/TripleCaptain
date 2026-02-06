@@ -182,7 +182,7 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
 
   return (
     <div
-      className={`tc-player-chip-vertical ${compact ? "tc-player-chip-vertical--compact" : ""} ${onClick ? "cursor-pointer transition hover:scale-105" : ""} ${isHighImpact ? 'ring-2 ring-emerald-500/50 rounded-2xl p-1 bg-emerald-500/5' : ''}`}
+      className={`tc-player-chip-vertical ${compact ? "tc-player-chip-vertical--compact" : ""} ${onClick ? "cursor-pointer transition hover:scale-105" : ""} ${isHighImpact ? 'z-30' : ''}`}
       aria-label={`${player.name}, ${player.position}, ${player.points} points`}
       onClick={onClick}
       role={onClick ? "button" : undefined}
@@ -238,18 +238,19 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
       </div>
       <div className="tc-player-chip-vertical__info">
         <p className="tc-player-chip-vertical__name">{player.name}</p>
-        <div className="flex items-center gap-1 justify-center">
-            <p className="tc-player-chip-vertical__position">
-                {player.position}
-                {multiplierLabel ? ` ${multiplierLabel}` : ""}
-            </p>
-            {player.impactScore !== null && player.impactScore > 5 && (
-                <span title="Rank Booster vs the World" className="text-[8px] font-black bg-emerald-500 text-black px-1 rounded-sm animate-glow">
+        <p className="tc-player-chip-vertical__position">
+            {player.position}
+            {multiplierLabel ? ` ${multiplierLabel}` : ""}
+        </p>
+        <div className="tc-player-chip-vertical__points">{player.points}</div>
+        
+        {player.impactScore !== null && player.impactScore > 5 && (
+            <div className="tc-impact-badge">
+                <span title="Rank Booster vs the World" className="text-[9px] font-black bg-emerald-500 text-black px-1.5 py-0.5 rounded-full shadow-lg border border-white/20">
                     +{player.impactScore}
                 </span>
-            )}
-        </div>
-        <div className="tc-player-chip-vertical__points">{player.points}</div>
+            </div>
+        )}
       </div>
     </div>
   );
