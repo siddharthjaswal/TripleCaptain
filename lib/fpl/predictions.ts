@@ -51,34 +51,43 @@ export function calculateCaptainPicks(
     const epNext = Number.parseFloat(player.ep_next ?? "0");
     const form = Number.parseFloat(player.form ?? "0");
 
-    // Find player's fixture
-    const fixture = nextGwFixtures.find(
+    // Find player's fixtures in the next GW
+    const playerFixtures = nextGwFixtures.filter(
       (f) => f.team_h === player.team || f.team_a === player.team,
     );
 
     let fixtureDifficulty: FixtureDifficultyDTO | null = null;
     let difficultyBonus = 0;
+    const isDoubleGw = playerFixtures.length >= 2;
 
-    if (fixture) {
-      const isHome = fixture.team_h === player.team;
-      const opponentId = isHome ? fixture.team_a : fixture.team_h;
-      const difficulty = isHome
-        ? (fixture.team_h_difficulty ?? 3)
-        : (fixture.team_a_difficulty ?? 3);
-
+    if (playerFixtures.length > 0) {
+      // Use the first fixture as primary for DTO but calculate bonus for all
+      const primaryFixture = playerFixtures[0];
+      const isHome = primaryFixture.team_h === player.team;
+      const opponentId = isHome ? primaryFixture.team_a : primaryFixture.team_h;
+      
       fixtureDifficulty = {
         opponent: teamNameMap.get(opponentId) ?? "Unknown",
         opponentShort: teamShortNameMap.get(opponentId) ?? "???",
-        difficulty,
+        difficulty: isHome ? (primaryFixture.team_h_difficulty ?? 3) : (primaryFixture.team_a_difficulty ?? 3),
         isHome,
       };
 
-      // Bonus for easy fixtures
-      if (difficulty <= 2) {
-        difficultyBonus = 1.5;
-      } else if (difficulty === 3) {
-        difficultyBonus = 0.5;
+      // Calculate combined difficulty bonus
+      playerFixtures.forEach(f => {
+          const home = f.team_h === player.team;
+          const diff = home ? (f.team_h_difficulty ?? 3) : (f.team_a_difficulty ?? 3);
+          if (diff <= 2) difficultyBonus += 1.5;
+          else if (diff === 3) difficultyBonus += 0.5;
+      });
+
+      // Massive bonus for having two games
+      if (isDoubleGw) {
+          difficultyBonus += 4.0; 
       }
+    } else {
+        // Penalty for Blank Gameweek
+        difficultyBonus -= 5.0;
     }
 
     // Form bonus

@@ -2,7 +2,7 @@
 
 import type { FixtureAnalysisDTO, TeamFixtureRunDTO } from "@/lib/fpl/dto";
 import { Card, Typography, Badge } from "./ui";
-import { BarChart3, CheckCircle2, XCircle, Shield, Info } from "lucide-react";
+import { BarChart3, CheckCircle2, XCircle, Info } from "lucide-react";
 import Image from "next/image";
 
 type FixtureAnalysisCardProps = {
@@ -77,6 +77,20 @@ export function FixtureAnalysisCard({ analysis }: FixtureAnalysisCardProps) {
 }
 
 function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" | "worst" }) {
+  // Group fixtures by gameweek to detect DGW
+  const groupedFixtures = team.fixtures.reduce((acc, f) => {
+      if (!acc[f.gameweek]) acc[f.gameweek] = [];
+      acc[f.gameweek].push(f);
+      return acc;
+  }, {} as Record<number, any[]>);
+
+  // Get range of gameweeks based on averageDifficulty (which assumes targetGws range)
+  // Find min/max GW from fixtures or use props
+  const gws = Object.keys(groupedFixtures).map(Number).sort((a,b) => a-b);
+  const minGw = gws[0];
+  const maxGw = minGw + 4; // Assume 5 GW view
+  const gwRange = Array.from({ length: 5 }, (_, i) => minGw + i);
+
   return (
     <Card className="relative overflow-hidden group border-white/5" glass hover={false}>
       {/* Dynamic Background Accent */}
@@ -95,7 +109,7 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
                     />
                 </div>
                 <div>
-                    <Typography variant="title" weight="black" className="text-2xl uppercase leading-none mb-2">{team.teamName}</Typography>
+                    <Typography variant="title" weight="black" className="text-2xl uppercase leading-none mb-2 text-white">{team.teamName}</Typography>
                     <div className="flex items-center gap-3">
                          <Badge variant={type === 'best' ? 'success' : 'error'} className="font-black text-[9px] px-3 py-1 tracking-widest">
                             {type === 'best' ? 'TARGET' : 'AVOID'}
@@ -105,10 +119,7 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
                 </div>
             </div>
             
-            {/* Diff Gauge (Visual) */}
-            <div className="hidden sm:block">
-                <DifficultyIndicator difficulty={team.averageDifficulty} type={type} />
-            </div>
+            <DifficultyIndicator difficulty={team.averageDifficulty} type={type} />
         </div>
 
         {/* Fixture Timeline */}
@@ -119,18 +130,43 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
              </div>
 
              <div className="grid grid-cols-5 gap-4">
-                {team.fixtures.map((f, i) => (
-                    <div key={i} className="space-y-3 group/fix cursor-help">
-                        <div className={`p-4 rounded-2xl border-2 transition-all duration-300 group-hover/fix:scale-105 text-center shadow-xl ${getDiffStyle(f.difficulty)}`}>
-                            <Typography weight="black" className="text-sm mb-1 uppercase tracking-tighter leading-none">{f.opponentShort}</Typography>
-                            <Typography variant="caption" className="text-[9px] font-black opacity-50 uppercase leading-none">{f.isHome ? 'HOME' : 'AWAY'}</Typography>
+                {gwRange.map(gw => {
+                    const fixtures = groupedFixtures[gw] || [];
+                    const isBlank = fixtures.length === 0;
+                    const isDouble = fixtures.length >= 2;
+                    
+                    return (
+                        <div key={gw} className="space-y-3 group/fix relative">
+                            <div className={`p-4 rounded-2xl border-2 transition-all duration-300 group-hover/fix:scale-105 text-center shadow-xl flex flex-col items-center justify-center min-h-[85px] ${isBlank ? 'bg-red-950/20 border-red-500/20' : getDiffStyle(fixtures[0].difficulty)} ${isDouble ? 'ring-2 ring-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.2)]' : ''}`}>
+                                {isBlank ? (
+                                    <div className="space-y-1">
+                                        <Typography weight="black" className="text-xs text-red-500 uppercase">BLANK</Typography>
+                                        <Typography variant="caption" className="text-[8px] font-black text-red-500/40">NO GAME</Typography>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-1">
+                                        {fixtures.map((f, i) => (
+                                            <div key={i} className={i > 0 ? "pt-1 border-t border-white/5 mt-1" : ""}>
+                                                <Typography weight="black" className="text-xs uppercase tracking-tighter leading-none text-white">{f.opponentShort}</Typography>
+                                                <Typography variant="caption" className="text-[8px] font-black opacity-50 uppercase leading-none">{f.isHome ? 'H' : 'A'}</Typography>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                
+                                {isDouble && (
+                                    <div className="absolute -top-2 -right-2 bg-emerald-500 text-black text-[7px] font-black px-1.5 py-0.5 rounded shadow-lg z-20">DOUBLE</div>
+                                )}
+                            </div>
+                            <div className="flex flex-col items-center gap-1">
+                                <Typography variant="caption" className={`text-[8px] font-black uppercase ${isBlank ? 'text-red-500/40' : 'opacity-20'}`}>GW{gw}</Typography>
+                                {!isBlank && (
+                                    <div className={`h-1 w-full rounded-full ${getDiffStyleLine(fixtures[0].difficulty)}`} />
+                                )}
+                            </div>
                         </div>
-                        <div className="flex flex-col items-center gap-1">
-                            <Typography variant="caption" className="text-[8px] font-black opacity-20 uppercase">GW{f.gameweek}</Typography>
-                            <div className={`h-1 w-full rounded-full ${getDiffStyleLine(f.difficulty)}`} />
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
       </div>
@@ -139,12 +175,10 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
 }
 
 function DifficultyIndicator({ difficulty, type }: { difficulty: number, type: "best" | "worst" }) {
-    // 1-5 scale, 1 is best. 
-    // Best run = low difficulty. Worst run = high difficulty.
     const percent = ((difficulty - 1) / 4) * 100;
     
     return (
-        <div className="w-24 space-y-2">
+        <div className="w-24 space-y-2 hidden sm:block">
             <div className="flex justify-between items-center text-[8px] font-black opacity-30 uppercase tracking-widest">
                 <span>Safe</span>
                 <span>Trap</span>
