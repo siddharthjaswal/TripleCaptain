@@ -21,8 +21,8 @@ export function getPlayerPhotoUrl(photoCode: string | null, playerCode?: number 
 
   if (!code) return null;
 
-  // Primary: standard PNG format
-  return `https://resources.premierleague.com/premierleague/photos/players/110x140/p${code}.png`;
+  // Primary: 250x250 PNG (High quality action portraits)
+  return `https://resources.premierleague.com/premierleague/photos/players/250x250/p${code}.png`;
 }
 
 /**

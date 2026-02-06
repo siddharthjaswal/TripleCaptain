@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { LatestGwDTO, LatestGwPlayerDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
-import { getPlayerPhotoUrl } from "@/lib/fpl/images";
+import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
 import Image from "next/image";
 import { PlayerDetailsModal } from "./PlayerDetailsModal";
 
@@ -149,34 +149,30 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
   const showLiveIndicator = isLiveGameweek && player.rawPoints > 0;
   const [imgUrl, setImgUrl] = useState(photoUrl);
   const [imageError, setImageError] = useState(false);
+  const [useShirtFallback, setUseShirtFallback] = useState(false);
 
   const handleImageError = () => {
     if (!imgUrl) return;
     
-    // Fallback 1: Try .jpg instead of .png
+    // Fallback 1: Try 110x140 instead of 250x250
+    if (imgUrl.includes('250x250')) {
+      setImgUrl(imgUrl.replace('250x250', '110x140'));
+      return;
+    }
+
+    // Fallback 2: Try .jpg instead of .png
     if (imgUrl.endsWith('.png')) {
       setImgUrl(imgUrl.replace('.png', '.jpg'));
       return;
     }
     
-    // Fallback 2: Try without 'p' prefix
-    if (imgUrl.includes('/p')) {
-        setImgUrl(imgUrl.replace('/p', '/'));
-        return;
-    }
-
-    // Fallback 3: Try standard dist path
-    if (imgUrl.includes('photos/players')) {
-        const parts = imgUrl.split('/');
-        const fileName = parts[parts.length - 1];
-        setImgUrl(`https://fantasy.premierleague.com/dist/img/players/${fileName}`);
-        return;
-    }
-
+    // Fallback 3: Use Team Shirt
+    setUseShirtFallback(true);
     setImageError(true);
   };
 
-  const showFallback = !imgUrl || imageError;
+  const shirtUrl = getTeamShirtUrl(player.teamCode);
+  const showFallback = (!imgUrl || imageError) && !useShirtFallback;
   const isHighImpact = player.impactScore !== null && player.impactScore >= 5;
   const isDeadwood = player.points <= 2 && player.ownership !== null && player.ownership > 20;
 
@@ -195,7 +191,16 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
       } : undefined}
     >
       <div className="tc-player-chip-vertical__image">
-        {!showFallback ? (
+        {useShirtFallback && shirtUrl ? (
+             <Image
+                src={shirtUrl}
+                alt="Team Shirt"
+                width={compact ? 44 : 66}
+                height={compact ? 55 : 82}
+                className="object-contain"
+                unoptimized
+            />
+        ) : !showFallback ? (
           <Image
             src={imgUrl!}
             alt={player.name}
