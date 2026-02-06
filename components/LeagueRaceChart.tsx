@@ -12,23 +12,20 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import type { ValueType } from "recharts/types/component/DefaultTooltipContent";
+import { Card, Typography, Badge } from "./ui";
+import { TrendingUp, Activity } from "lucide-react";
 
 type LeagueRaceChartProps = {
   race: LeagueRaceDTO;
 };
 
-// Generate distinct colors for the lines
+// Generate distinct premium colors
 const CHART_COLORS = [
-  "#3b82f6", // blue
+  "#38bdf8", // sky
+  "#10b981", // emerald
+  "#fbbf24", // amber
   "#ef4444", // red
-  "#10b981", // green
-  "#f59e0b", // amber
   "#8b5cf6", // violet
-  "#ec4899", // pink
-  "#06b6d4", // cyan
-  "#f97316", // orange
-  "#84cc16", // lime
-  "#6366f1", // indigo
 ];
 
 type CustomTooltipProps = {
@@ -43,11 +40,8 @@ type CustomTooltipProps = {
 };
 
 function CustomTooltip({ active, payload, label, entryColors }: CustomTooltipProps) {
-  if (!active || !payload || !payload.length) {
-    return null;
-  }
+  if (!active || !payload || !payload.length) return null;
 
-  // Sort payload by value (points) in descending order
   const sortedPayload = [...payload].sort((a, b) => {
     const aValue = typeof a.value === "number" ? a.value : 0;
     const bValue = typeof b.value === "number" ? b.value : 0;
@@ -55,34 +49,23 @@ function CustomTooltip({ active, payload, label, entryColors }: CustomTooltipPro
   });
 
   return (
-    <div
-      className="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)] p-3 shadow-lg"
-      style={{
-        backgroundColor: "var(--surface-elevated)",
-      }}
-    >
-      <p className="mb-2 font-bold text-[color:var(--text-primary)]">
-        GW{label}
-      </p>
-      <div className="space-y-1">
+    <Card className="p-4 border-white/10 shadow-2xl min-w-[180px]" glass hover={false}>
+      <Typography variant="caption" weight="black" className="mb-3 opacity-40">Gameweek {label}</Typography>
+      <div className="space-y-2">
         {sortedPayload.map((entry, index) => (
-          <div key={index} className="flex items-center gap-2 text-sm">
-            <div
-              className="h-3 w-3 rounded-full"
-              style={{
-                backgroundColor: entryColors.get(String(entry.name)) || entry.color,
-              }}
-            />
-            <span className="flex-1 text-[color:var(--text-primary)]">
-              {entry.name}
-            </span>
-            <span className="font-mono font-semibold text-[color:var(--text-primary)]">
-              {entry.value}
-            </span>
+          <div key={index} className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 min-w-0">
+                <div
+                className="h-2 w-2 rounded-full shrink-0"
+                style={{ backgroundColor: entryColors.get(String(entry.name)) || entry.color }}
+                />
+                <Typography weight="black" className="text-[10px] uppercase truncate opacity-80">{entry.name}</Typography>
+            </div>
+            <Typography weight="black" className="text-xs font-mono">{entry.value}</Typography>
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -92,22 +75,15 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
   });
 
   const chartData = useMemo(() => {
-    // Find all unique gameweeks
     const allEvents = new Set<number>();
-    race.entries.forEach((entry) => {
-      entry.history.forEach((h) => allEvents.add(h.event));
-    });
-
+    race.entries.forEach((entry) => entry.history.forEach((h) => allEvents.add(h.event)));
     const sortedEvents = Array.from(allEvents).sort((a, b) => a - b);
 
-    // Build chart data structure
     return sortedEvents.map((event) => {
       const dataPoint: Record<string, number> = { event };
       race.entries.forEach((entry) => {
         const historyItem = entry.history.find((h) => h.event === event);
-        if (historyItem) {
-          dataPoint[entry.entryName] = historyItem.totalPoints;
-        }
+        if (historyItem) dataPoint[entry.entryName] = historyItem.totalPoints;
       });
       return dataPoint;
     });
@@ -124,88 +100,87 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
   const toggleEntry = (entryName: string) => {
     setVisibleEntries((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(entryName)) {
-        newSet.delete(entryName);
-      } else {
-        newSet.add(entryName);
-      }
+      newSet.has(entryName) ? newSet.delete(entryName) : newSet.add(entryName);
       return newSet;
     });
   };
 
-  if (!race.entries.length || !chartData.length) {
-    return null;
-  }
+  if (!race.entries.length || !chartData.length) return null;
 
   return (
-    <section className="tc-card rounded-3xl p-6 shadow-lg">
-      <header className="mb-6">
-        <h2 className="text-xl font-semibold">Top 5 Race</h2>
-        <p className="tc-text-muted text-sm mt-1">
-          Points progression over gameweeks
-        </p>
-      </header>
+    <Card className="p-8 space-y-8 animate-fade-in border-white/5" glass hover={false}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+            <div className="p-3 rounded-2xl bg-[color:var(--accent)] text-white">
+                <TrendingUp className="w-6 h-6" />
+            </div>
+            <div>
+                <Typography variant="title" weight="black" className="uppercase">Title Race</Typography>
+                <Typography variant="caption">Points progression of the top 5 managers</Typography>
+            </div>
+        </div>
+        <Badge variant="secondary" className="font-black">Active Battle</Badge>
+      </div>
 
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={chartData}>
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="var(--surface-border)"
-            opacity={0.3}
-          />
-          <XAxis
-            dataKey="event"
-            label={{ value: "Gameweek", position: "insideBottom", offset: -5, fill: "var(--text-primary)" }}
-            stroke="var(--text-primary)"
-            tick={{ fill: "var(--text-primary)", fontSize: 12 }}
-          />
-          <YAxis
-            label={{ value: "Total Points", angle: -90, position: "insideLeft", fill: "var(--text-primary)" }}
-            stroke="var(--text-primary)"
-            tick={{ fill: "var(--text-primary)", fontSize: 12 }}
-          />
-          <Tooltip content={<CustomTooltip entryColors={entryColors} />} />
-          {race.entries.map((entry, index) => (
-            <Line
-              key={entry.entryId}
-              type="monotone"
-              dataKey={entry.entryName}
-              stroke={CHART_COLORS[index % CHART_COLORS.length]}
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 4 }}
-              hide={!visibleEntries.has(entry.entryName)}
+      <div className="h-[400px] w-full mt-4">
+        <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+            <XAxis
+                dataKey="event"
+                stroke="rgba(255,255,255,0.2)"
+                tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: 900 }}
+                axisLine={false}
+                tickLine={false}
+                dy={10}
             />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
+            <YAxis
+                stroke="rgba(255,255,255,0.2)"
+                tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: 900 }}
+                axisLine={false}
+                tickLine={false}
+                dx={-10}
+                domain={['auto', 'auto']}
+            />
+            <Tooltip content={<CustomTooltip entryColors={entryColors} />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }} />
+            {race.entries.map((entry, index) => (
+                <Line
+                key={entry.entryId}
+                type="monotone"
+                dataKey={entry.entryName}
+                stroke={CHART_COLORS[index % CHART_COLORS.length]}
+                strokeWidth={3}
+                dot={false}
+                activeDot={{ r: 6, strokeWidth: 0 }}
+                hide={!visibleEntries.has(entry.entryName)}
+                animationDuration={1500}
+                />
+            ))}
+            </LineChart>
+        </ResponsiveContainer>
+      </div>
 
-      <div className="mt-4 flex flex-wrap gap-2 justify-center border-t border-[color:var(--surface-border)] pt-4">
+      <div className="flex flex-wrap gap-3 justify-center pt-6 border-t border-white/5">
         {race.entries.map((entry, index) => {
           const color = CHART_COLORS[index % CHART_COLORS.length];
           const isVisible = visibleEntries.has(entry.entryName);
           return (
             <button
               key={entry.entryId}
-              type="button"
               onClick={() => toggleEntry(entry.entryName)}
-              className={`tc-focus-visible inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+              className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
                 isVisible
-                  ? "bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] hover:border-[color:var(--accent)]"
-                  : "bg-[color:var(--surface-elevated)]/50 border border-[color:var(--surface-border)]/50 opacity-50"
+                  ? "bg-white/5 border border-white/10 shadow-lg"
+                  : "opacity-30 border border-transparent grayscale"
               }`}
+              style={{ color: isVisible ? color : 'inherit' }}
             >
-              <div
-                className="h-3 w-3 rounded-full"
-                style={{ backgroundColor: isVisible ? color : "var(--text-muted)" }}
-              />
-              <span className={isVisible ? "text-[color:var(--text-primary)]" : "text-[color:var(--text-muted)] line-through"}>
-                {entry.entryName}
-              </span>
+              <div className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
+              <span>{entry.entryName}</span>
             </button>
           );
         })}
       </div>
-    </section>
+    </Card>
   );
 }
