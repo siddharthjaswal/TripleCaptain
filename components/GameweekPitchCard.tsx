@@ -243,19 +243,16 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
       </div>
       <div className="tc-player-chip-vertical__info">
         <p className="tc-player-chip-vertical__name">{player.name}</p>
-        <p className="tc-player-chip-vertical__position">
-            {player.position}
-            {multiplierLabel ? ` ${multiplierLabel}` : ""}
-        </p>
-        <div className="tc-player-chip-vertical__points">{player.points}</div>
-        
-        {player.impactScore !== null && player.impactScore > 5 && (
-            <div className="tc-impact-badge">
-                <div title="Rank Booster vs the World" className="tc-impact-badge-content">
+        <div className="tc-player-chip-vertical__position">
+            <span>{player.position}</span>
+            {multiplierLabel && <span>{multiplierLabel}</span>}
+            {player.impactScore !== null && player.impactScore > 5 && (
+                <div title="Rank Booster vs the World" className="tc-impact-badge-inline">
                     +{player.impactScore}
                 </div>
-            </div>
-        )}
+            )}
+        </div>
+        <div className="tc-player-chip-vertical__points">{player.points}</div>
       </div>
     </div>
   );
