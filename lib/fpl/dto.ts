@@ -276,6 +276,8 @@ export type DifferentialPickDTO = {
   upcomingFixtures: FixtureDifficultyDTO[];
   reasoning: string;
   upsideScore: number; // ep_next / ownership ratio
+  isDoubleGw?: boolean;
+  isBlankGw?: boolean;
 };
 
 export type TeamFixtureRunDTO = {

@@ -82,8 +82,14 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
                     <Typography weight="black" className="text-3xl uppercase text-white leading-tight mb-2">{differential.playerName}</Typography>
                     <div className="flex items-center justify-center md:justify-start gap-3">
                         <Typography variant="caption" className="text-xs font-black text-yellow-500/60 uppercase tracking-[0.2em]">{differential.team} • {differential.position} • £{differential.cost.toFixed(1)}m</Typography>
-                        {differential.reasoning.includes('DOUBLE') && (
+                        {differential.isDoubleGw && (
                              <Badge variant="primary" className="bg-emerald-500 text-black text-[8px] font-black animate-glow">DOUBLE GW</Badge>
+                        )}
+                        {differential.isBlankGw && (
+                             <Badge variant="error" className="text-[8px] font-black">BLANK GW</Badge>
+                        )}
+                        {!differential.isDoubleGw && differential.reasoning.includes('DOUBLE') && (
+                             <Badge variant="secondary" className="bg-white/5 text-white/40 border-white/10 text-[8px] font-black">UPCOMING DGW</Badge>
                         )}
                     </div>
                 </div>
@@ -95,7 +101,7 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
                     <MetricBox label="OWNERSHIP" value={`${differential.ownership.toFixed(1)}%`} color="text-[color:var(--accent)]" />
                     <MetricBox label="EXPECTED" value={differential.expectedPoints.toFixed(1)} color="text-emerald-400" />
                     <MetricBox label="FORM" value={differential.form.toFixed(1)} color="text-white" />
-                    <MetricBox label="UPSIDE" value={differential.upsideScore.toFixed(1)} color="text-yellow-500" />
+                    <MetricBox label="UPSIDE" value={differential.upsideScore.toFixed(1)} color={differential.isDoubleGw ? "text-emerald-500" : "text-yellow-500"} />
                 </div>
 
                 {/* Fixture Timeline */}

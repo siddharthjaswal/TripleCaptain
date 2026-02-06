@@ -82,6 +82,9 @@ function CaptainPickItem({ pick, rank }: { pick: CaptainPickDTO; rank: number })
                     {pick.reasoning.includes('DOUBLE') && (
                         <div className="bg-emerald-500 text-black text-[8px] font-black px-1 rounded animate-glow">DGW</div>
                     )}
+                    {pick.reasoning.includes('BLANK') && (
+                         <div className="bg-red-500 text-white text-[8px] font-black px-1 rounded">BGW</div>
+                    )}
                 </div>
                 <Typography variant="caption" className="text-[10px] font-black opacity-40">{pick.team} • {pick.position}</Typography>
             </div>
