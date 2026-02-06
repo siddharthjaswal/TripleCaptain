@@ -120,7 +120,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                                 <ArrowUpRight className="w-2 h-2" /> SCOUT VERDICT
                             </Typography>
                             <Typography weight="black" className="text-lg uppercase truncate leading-none mb-1">{suggestion.playerIn.playerName}</Typography>
-                            <Typography className="text-[10px] text-white/50">{suggestion.playerIn.team.shortName} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
+                            <Typography className="text-[10px] text-white/50">{suggestion.playerIn.team?.shortName || 'UNK'} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
                         </div>
                         <div className="text-right">
                              <Typography variant="title" weight="black" className="text-emerald-500">{suggestion.playerIn.expectedPoints.toFixed(1)}</Typography>

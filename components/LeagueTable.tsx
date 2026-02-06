@@ -6,7 +6,7 @@ import type { LeagueStandingDTO, LatestGwDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
 import { useLeagueTeamPicks } from "@/hooks/useLeagueTeamPicks";
 import { TeamPitchModal } from "./TeamPitchModal";
-import { Card, Typography, Badge } from "./ui";
+import { Card, Typography, Badge, Button } from "./ui";
 import { Eye, Trophy, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 type LeagueTableProps = {
