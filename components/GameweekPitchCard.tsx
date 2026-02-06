@@ -178,7 +178,7 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
 
   return (
     <div
-      className={`tc-player-chip-vertical ${compact ? "tc-player-chip-vertical--compact" : ""} ${onClick ? "cursor-pointer transition hover:scale-105" : ""} ${isHighImpact ? 'z-30' : ''}`}
+      className={`tc-player-chip-vertical ${compact ? "tc-player-chip-vertical--compact" : ""} ${onClick ? "cursor-pointer transition hover:scale-105" : ""} ${isHighImpact ? 'tc-player-chip-vertical--halo z-30' : ''}`}
       aria-label={`${player.name}, ${player.position}, ${player.points} points`}
       onClick={onClick}
       role={onClick ? "button" : undefined}
@@ -251,9 +251,9 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
         
         {player.impactScore !== null && player.impactScore > 5 && (
             <div className="tc-impact-badge">
-                <span title="Rank Booster vs the World" className="text-[9px] font-black bg-emerald-500 text-black px-1.5 py-0.5 rounded-full shadow-lg border border-white/20">
+                <div title="Rank Booster vs the World" className="tc-impact-badge-content">
                     +{player.impactScore}
-                </span>
+                </div>
             </div>
         )}
       </div>

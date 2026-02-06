@@ -48,5 +48,6 @@ export function getTeamShirtUrl(teamCode: number | null): string | null {
     return null;
   }
 
-  return `${FPL_ASSETS_BASE}/photos/shirts/standard/shirt_${teamCode}-110.png`;
+  // standard FPL shirt path
+  return `https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${teamCode}-110.png`;
 }
