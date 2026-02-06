@@ -2,8 +2,22 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import type { PlayerDetailsDTO } from "@/lib/fpl/dto";
-import { getPlayerPhotoUrl } from "@/lib/fpl/images";
+import type { PlayerDetailsDTO, FixtureDifficultyDTO } from "@/lib/fpl/dto";
+import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
+import { Card, Typography, Badge, Button } from "./ui";
+import { 
+    X, 
+    Activity, 
+    Target, 
+    TrendingUp, 
+    Users, 
+    Clock, 
+    Zap, 
+    Shield, 
+    Calendar,
+    AlertTriangle,
+    Loader2
+} from "lucide-react";
 
 type PlayerDetailsModalProps = {
   playerId: number;
@@ -19,7 +33,8 @@ export function PlayerDetailsModal({
   const [player, setPlayer] = useState<PlayerDetailsDTO | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [imageError, setImageError] = useState(false);
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const [useShirtFallback, setUseShirtFallback] = useState(false);
 
   useEffect(() => {
     if (!isOpen || !playerId) return;
@@ -27,6 +42,7 @@ export function PlayerDetailsModal({
     const fetchPlayerDetails = async () => {
       setIsLoading(true);
       setError(null);
+      setUseShirtFallback(false);
 
       try {
         const response = await fetch(`/api/players/${playerId}`);
@@ -37,9 +53,10 @@ export function PlayerDetailsModal({
 
         const data: PlayerDetailsDTO = await response.json();
         setPlayer(data);
+        setImgUrl(getPlayerPhotoUrl(data.photo));
       } catch (err) {
         console.error("Error fetching player details:", err);
-        setError("Unable to load player details");
+        setError("Unable to load player details. The FPL scout is busy!");
       } finally {
         setIsLoading(false);
       }
@@ -50,242 +67,239 @@ export function PlayerDetailsModal({
 
   if (!isOpen) return null;
 
-  const photoUrl = player?.photo ? getPlayerPhotoUrl(player.photo) : null;
-  const showFallback = !photoUrl || imageError;
+  const handleImageError = () => {
+    if (!imgUrl) return;
+    if (imgUrl.includes('250x250')) {
+      setImgUrl(imgUrl.replace('250x250', '110x140'));
+      return;
+    }
+    setUseShirtFallback(true);
+  };
+
+  const shirtUrl = player ? getTeamShirtUrl(player.teamId) : null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in"
       onClick={onClose}
     >
-      <div
-        className="tc-card rounded-3xl p-6 shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+      <Card
+        className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto scrollbar-hide border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
         onClick={(e) => e.stopPropagation()}
+        glass
+        hover={false}
       >
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="tc-focus-visible absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-[color:var(--surface-hover)]"
+          className="absolute top-6 right-6 z-50 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white/50 hover:text-white"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="h-5 w-5"
-          >
-            <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-          </svg>
+          <X className="h-6 w-6" />
         </button>
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center py-12">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-[color:var(--surface-border)] border-t-[color:var(--accent)]" />
-            <p className="mt-4 text-sm tc-text-muted">Loading player details...</p>
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-32 gap-6">
+            <Loader2 className="h-12 w-12 animate-spin text-[color:var(--accent)]" />
+            <Typography variant="title" weight="black" className="animate-pulse uppercase">Scouting Profile...</Typography>
           </div>
-        )}
-
-        {/* Error State */}
-        {error && !isLoading && (
-          <div className="py-12 text-center">
-            <p className="text-rose-400">{error}</p>
+        ) : error ? (
+          <div className="py-32 text-center space-y-4">
+            <AlertTriangle className="h-12 w-12 mx-auto text-red-500" />
+            <Typography variant="title" weight="bold" className="text-red-500">{error}</Typography>
+            <Button onClick={onClose} variant="outline">Close Report</Button>
           </div>
-        )}
-
-        {/* Player Details */}
-        {player && !isLoading && !error && (
-          <>
-            {/* Header Section */}
-            <div className="flex items-start gap-6 pb-6 border-b border-[color:var(--surface-border)]">
-              <div className="flex-shrink-0">
-                {!showFallback ? (
-                  <Image
-                    src={photoUrl}
-                    alt={player.name}
-                    width={100}
-                    height={100}
-                    className="object-contain rounded-lg"
-                    unoptimized
-                    onError={() => setImageError(true)}
-                  />
-                ) : (
-                  <div className="tc-placeholder-avatar flex h-[100px] w-[100px] items-center justify-center rounded-lg">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="h-12 w-12"
-                    >
-                      <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
-                    </svg>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <h2 className="text-2xl font-bold mb-1">{player.fullName || player.name}</h2>
-                <div className="flex items-center gap-3 flex-wrap mb-3">
-                  <span className="tc-chip">{player.team}</span>
-                  <span className="tc-chip">{player.position}</span>
-                  <span className="tc-chip font-mono">£{player.currentPrice}m</span>
+        ) : player && (
+          <div className="flex flex-col">
+            {/* Top Banner / Hero */}
+            <div className="relative p-8 md:p-12 bg-gradient-to-br from-[color:var(--accent)]/20 to-transparent flex flex-col md:flex-row items-center gap-12 border-b border-white/5">
+                <div className="relative group shrink-0">
+                    <div className="absolute inset-0 bg-[color:var(--accent)]/20 blur-3xl rounded-full -z-10 group-hover:bg-[color:var(--accent)]/30 transition-all" />
+                    {useShirtFallback && shirtUrl ? (
+                         <Image src={shirtUrl} alt="Shirt" width={180} height={220} className="object-contain drop-shadow-2xl" unoptimized />
+                    ) : imgUrl ? (
+                        <Image src={imgUrl} alt={player.name} width={180} height={220} className="object-contain drop-shadow-2xl" unoptimized onError={handleImageError} />
+                    ) : (
+                        <div className="w-32 h-40 bg-white/5 rounded-2xl flex items-center justify-center">
+                            <Zap className="h-12 w-12 opacity-20" />
+                        </div>
+                    )}
                 </div>
 
-                {/* Availability Warning */}
-                {player.status !== 'Available' && (
-                  <div className="inline-flex items-center gap-2 rounded-lg bg-amber-500/10 px-3 py-2 text-sm">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="h-4 w-4 text-amber-500"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <div>
-                      <span className="font-semibold text-amber-500">{player.status}</span>
-                      {player.news && <span className="ml-2 tc-text-muted">• {player.news}</span>}
-                      {player.chanceOfPlayingNextRound !== null && (
-                        <span className="ml-2 tc-text-muted">• {player.chanceOfPlayingNextRound}% chance of playing</span>
-                      )}
+                <div className="flex-1 text-center md:text-left space-y-6">
+                    <div className="space-y-2">
+                        <Badge variant="primary" className="mb-2 tracking-widest">{player.team} • {player.position}</Badge>
+                        <Typography variant="display" className="text-5xl md:text-6xl">{player.fullName || player.name}</Typography>
                     </div>
-                  </div>
-                )}
-              </div>
-            </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-b border-[color:var(--surface-border)]">
-              <StatCard label="Total Points" value={player.totalPoints} />
-              <StatCard label="PPG" value={player.pointsPerGame.toFixed(1)} />
-              <StatCard label="Form" value={player.form.toFixed(1)} />
-              <StatCard label="Owned by" value={`${player.selectedByPercent}%`} />
-            </div>
-
-            {/* Season Stats */}
-            <div className="py-6 border-b border-[color:var(--surface-border)]">
-              <h3 className="text-sm font-semibold uppercase tracking-wide tc-text-muted mb-4">
-                Season Statistics
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                <MiniStat label="Minutes" value={player.minutes} />
-                <MiniStat label="Goals" value={player.goalsScored} />
-                <MiniStat label="Assists" value={player.assists} />
-                <MiniStat label="Clean Sheets" value={player.cleanSheets} />
-                <MiniStat label="Goals Conceded" value={player.goalsConceded} />
-                <MiniStat label="Bonus" value={player.bonus} />
-                <MiniStat label="Yellow Cards" value={player.yellowCards} />
-                <MiniStat label="Red Cards" value={player.redCards} />
-                {player.position === "GK" && (
-                  <>
-                    <MiniStat label="Saves" value={player.saves} />
-                    <MiniStat label="Penalties Saved" value={player.penaltiesSaved} />
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Performance Metrics */}
-            <div className="py-6 border-b border-[color:var(--surface-border)]">
-              <h3 className="text-sm font-semibold uppercase tracking-wide tc-text-muted mb-4">
-                Expected Stats
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <MiniStat label="xP Next GW" value={player.expectedPoints.toFixed(1)} />
-                <MiniStat label="xG" value={player.expectedGoals.toFixed(2)} />
-                <MiniStat label="xA" value={player.expectedAssists.toFixed(2)} />
-                <MiniStat label="xGI" value={player.expectedGoalInvolvements.toFixed(2)} />
-              </div>
-            </div>
-
-            {/* ICT Index */}
-            <div className="py-6 border-b border-[color:var(--surface-border)]">
-              <h3 className="text-sm font-semibold uppercase tracking-wide tc-text-muted mb-4">
-                ICT Index
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <MiniStat label="ICT Index" value={player.ictIndex.toFixed(1)} />
-                <MiniStat label="Influence" value={player.influence.toFixed(1)} />
-                <MiniStat label="Creativity" value={player.creativity.toFixed(1)} />
-                <MiniStat label="Threat" value={player.threat.toFixed(1)} />
-              </div>
-            </div>
-
-            {/* Transfers */}
-            <div className="py-6 border-b border-[color:var(--surface-border)]">
-              <h3 className="text-sm font-semibold uppercase tracking-wide tc-text-muted mb-4">
-                Transfers
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <MiniStat label="In (Total)" value={player.transfersIn.toLocaleString()} />
-                <MiniStat label="Out (Total)" value={player.transfersOut.toLocaleString()} />
-                <MiniStat label="In (This GW)" value={player.transfersInEvent.toLocaleString()} />
-                <MiniStat label="Out (This GW)" value={player.transfersOutEvent.toLocaleString()} />
-              </div>
-            </div>
-
-            {/* Next Fixtures */}
-            {player.nextFixtures.length > 0 && (
-              <div className="pt-6">
-                <h3 className="text-sm font-semibold uppercase tracking-wide tc-text-muted mb-4">
-                  Next 5 Fixtures
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {player.nextFixtures.map((fixture, idx) => (
-                    <div
-                      key={idx}
-                      className="inline-flex items-center gap-2 rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/60 px-3 py-2"
-                    >
-                      <span className="text-xs tc-text-muted">
-                        {fixture.isHome ? '🏠' : '📍'}
-                      </span>
-                      <span className="text-sm font-medium">
-                        {fixture.opponentShort}
-                      </span>
-                      <span
-                        className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${getDifficultyColor(
-                          fixture.difficulty
-                        )}`}
-                      >
-                        {fixture.difficulty}
-                      </span>
+                    <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                         <PriceTag label="Current Price" value={`£${player.currentPrice}m`} />
+                         <PriceTag label="Season Change" value={`${player.costChange > 0 ? '+' : ''}${player.costChange}m`} />
                     </div>
-                  ))}
+
+                    {player.status !== 'Available' && (
+                        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-center gap-4 text-red-500 max-w-md">
+                            <AlertTriangle className="h-6 w-6 shrink-0" />
+                            <div className="text-left">
+                                <Typography weight="black" className="text-sm uppercase tracking-tight">{player.status}</Typography>
+                                <Typography className="text-xs opacity-80">{player.news}</Typography>
+                            </div>
+                        </div>
+                    )}
                 </div>
-              </div>
-            )}
-          </>
+            </div>
+
+            {/* Content Grid */}
+            <div className="p-8 md:p-12 grid md:grid-cols-3 gap-12">
+                {/* Left Column: Key Metrics */}
+                <div className="space-y-10">
+                    <section className="space-y-4">
+                        <Typography variant="caption" weight="black" className="opacity-50">Core Metrics</Typography>
+                        <div className="grid grid-cols-2 gap-4">
+                            <StatBox icon={<Target />} label="Total Pts" value={player.totalPoints} color="emerald" />
+                            <StatBox icon={<TrendingUp />} label="Form" value={player.form.toFixed(1)} color="blue" />
+                            <StatBox icon={<Zap />} label="PPG" value={player.pointsPerGame.toFixed(1)} color="purple" />
+                            <StatBox icon={<Users />} label="Owned" value={`${player.selectedByPercent}%`} color="amber" />
+                        </div>
+                    </section>
+
+                    <section className="space-y-4">
+                        <Typography variant="caption" weight="black" className="opacity-50">Expected Value</Typography>
+                        <Card className="p-6 bg-white/5 border-transparent space-y-4">
+                             <div className="flex justify-between items-center">
+                                <Typography className="text-sm opacity-60">xP Next GW</Typography>
+                                <Typography weight="black" className="text-emerald-500">{player.expectedPoints.toFixed(1)}</Typography>
+                             </div>
+                             <div className="flex justify-between items-center">
+                                <Typography className="text-sm opacity-60">xG (Expected Goals)</Typography>
+                                <Typography weight="black">{player.expectedGoals.toFixed(2)}</Typography>
+                             </div>
+                             <div className="flex justify-between items-center">
+                                <Typography className="text-sm opacity-60">xA (Expected Assists)</Typography>
+                                <Typography weight="black">{player.expectedAssists.toFixed(2)}</Typography>
+                             </div>
+                        </Card>
+                    </section>
+                </div>
+
+                {/* Middle Column: Season Totals */}
+                <div className="space-y-10">
+                    <section className="space-y-4">
+                        <Typography variant="caption" weight="black" className="opacity-50">Season Breakdown</Typography>
+                        <div className="space-y-2">
+                             <LinearStat label="Minutes Played" value={player.minutes} max={3420} />
+                             <DataRow label="Goals Scored" value={player.goalsScored} />
+                             <DataRow label="Assists" value={player.assists} />
+                             <DataRow label="Clean Sheets" value={player.cleanSheets} />
+                             <DataRow label="Bonus Points" value={player.bonus} />
+                             <DataRow label="Yellow Cards" value={player.yellowCards} />
+                        </div>
+                    </section>
+
+                    <section className="space-y-4">
+                        <Typography variant="caption" weight="black" className="opacity-50">ICT Index (Rankings)</Typography>
+                        <div className="grid grid-cols-2 gap-4">
+                            <SmallStat label="Influence" value={player.influence.toFixed(1)} />
+                            <SmallStat label="Creativity" value={player.creativity.toFixed(1)} />
+                            <SmallStat label="Threat" value={player.threat.toFixed(1)} />
+                            <SmallStat label="Index" value={player.ictIndex.toFixed(1)} />
+                        </div>
+                    </section>
+                </div>
+
+                {/* Right Column: Fixtures */}
+                <div className="space-y-10">
+                    <section className="space-y-4">
+                        <Typography variant="caption" weight="black" className="opacity-50">Upcoming Fixtures</Typography>
+                        <div className="space-y-3">
+                            {player.nextFixtures.map((f, i) => (
+                                <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 group hover:bg-white/10 transition-colors">
+                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm ${getDiffColor(f.difficulty)}`}>
+                                        {f.difficulty}
+                                     </div>
+                                     <div className="flex-1">
+                                        <Typography weight="black" className="text-sm uppercase">{f.opponentShort}</Typography>
+                                        <Typography variant="caption" className="text-[10px]">{f.isHome ? 'Home' : 'Away'}</Typography>
+                                     </div>
+                                     <Calendar className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                </div>
+            </div>
+          </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="text-center">
-      <div className="text-2xl font-bold text-[color:var(--accent)]">{value}</div>
-      <div className="text-xs tc-text-muted mt-1">{label}</div>
-    </div>
-  );
+function PriceTag({ label, value }: { label: string, value: string }) {
+    return (
+        <div className="px-4 py-2 rounded-2xl bg-white/5 border border-white/10 text-center min-w-[120px]">
+            <Typography variant="caption" className="text-[10px] opacity-40">{label}</Typography>
+            <Typography weight="black" className="text-xl">{value}</Typography>
+        </div>
+    )
 }
 
-function MiniStat({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="flex items-center justify-between rounded-lg bg-[color:var(--surface-elevated)]/60 px-3 py-2">
-      <span className="text-xs tc-text-muted">{label}</span>
-      <span className="text-sm font-semibold">{value}</span>
-    </div>
-  );
+function StatBox({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: any, color: string }) {
+    const colors: any = {
+        emerald: 'text-emerald-500 bg-emerald-500/10',
+        blue: 'text-blue-500 bg-blue-500/10',
+        purple: 'text-purple-500 bg-purple-500/10',
+        amber: 'text-amber-500 bg-amber-500/10'
+    };
+    return (
+        <div className="p-4 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2">
+            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center mx-auto ${colors[color]}`}>
+                {React.cloneElement(icon as React.ReactElement, { className: 'w-5 h-5' })}
+            </div>
+            <div>
+                <Typography variant="caption" className="text-[9px] opacity-40">{label}</Typography>
+                <Typography weight="black" className="text-lg leading-none">{value}</Typography>
+            </div>
+        </div>
+    )
 }
 
-function getDifficultyColor(difficulty: number): string {
-  if (difficulty <= 2) return "bg-emerald-500/20 text-emerald-400";
-  if (difficulty === 3) return "bg-slate-500/20 text-slate-400";
-  if (difficulty === 4) return "bg-amber-500/20 text-amber-400";
-  return "bg-rose-500/20 text-rose-400";
+function DataRow({ label, value }: { label: string, value: any }) {
+    return (
+        <div className="flex justify-between items-center py-3 border-b border-white/5">
+            <Typography className="text-sm opacity-60">{label}</Typography>
+            <Typography weight="bold">{value}</Typography>
+        </div>
+    )
+}
+
+function LinearStat({ label, value, max }: { label: string, value: number, max: number }) {
+    const percent = Math.min(100, (value / max) * 100);
+    return (
+        <div className="space-y-2 py-3">
+            <div className="flex justify-between items-center">
+                <Typography className="text-sm opacity-60">{label}</Typography>
+                <Typography weight="bold">{value.toLocaleString()}</Typography>
+            </div>
+            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full bg-[color:var(--accent)]" style={{ width: `${percent}%` }} />
+            </div>
+        </div>
+    )
+}
+
+function SmallStat({ label, value }: { label: string, value: string }) {
+    return (
+        <div className="p-3 rounded-xl bg-white/5 border border-white/5 text-center">
+            <Typography variant="caption" className="text-[8px] opacity-40 mb-1">{label}</Typography>
+            <Typography weight="black" className="text-sm">{value}</Typography>
+        </div>
+    )
+}
+
+function getDiffColor(diff: number) {
+    if (diff <= 2) return "bg-emerald-500/20 text-emerald-500";
+    if (diff === 3) return "bg-slate-500/20 text-slate-400";
+    if (diff === 4) return "bg-amber-500/20 text-amber-500";
+    return "bg-red-500/20 text-red-500";
 }
