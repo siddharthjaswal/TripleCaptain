@@ -259,6 +259,7 @@ export type DifferentialPickDTO = {
   playerPhoto: string | null;
   position: "GK" | "DEF" | "MID" | "FWD";
   team: string;
+  teamId: number;
   cost: number;
   expectedPoints: number;
   form: number;

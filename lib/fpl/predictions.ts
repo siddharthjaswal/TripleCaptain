@@ -505,6 +505,7 @@ export function calculateTransferSuggestions(
           selectedByPercent,
           reasoning: reasons.join(" • ") || "Solid option",
           score,
+          teamId: el.team,
         };
       })
       .sort((a, b) => b.score - a.score)
@@ -539,9 +540,9 @@ export function calculateTransferSuggestions(
           upcomingFixtures: playerIn.upcomingFixtures,
           selectedByPercent: playerIn.selectedByPercent,
           reasoning: playerIn.reasoning,
-          teamId: el.team,
+          teamId: playerIn.playerId,
           team: {
-              shortName: teamShortNameMap.get(el.team) ?? "UNK"
+              shortName: teamShortNameMap.get(playerIn.teamId) ?? "UNK"
           }
         },
         netCost,
@@ -756,6 +757,7 @@ export function calculateDifferentialPicks(
         playerPhoto: player.photo ?? null,
         position: getPositionLabel(player.element_type),
         team: teamShortNameMap.get(player.team) ?? "Unknown",
+        teamId: player.team,
         cost,
         expectedPoints: epNext,
         form,

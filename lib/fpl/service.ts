@@ -570,8 +570,8 @@ export async function loadPredictions(
     try {
         currentPicks = await getEntryPicks(entryId, currentEvent);
     } catch (error) {
+        console.warn(`Picks for GW ${currentEvent} not available, falling back to GW ${currentEvent - 1}`);
         if (currentEvent > 1) {
-            console.warn(`Picks for GW ${currentEvent} not available, falling back to GW ${currentEvent - 1}`);
             currentPicks = await getEntryPicks(entryId, currentEvent - 1);
         } else {
             throw error;
@@ -601,6 +601,8 @@ export async function loadPredictions(
       value: latestHistory?.value ?? 0,
       bank: latestHistory?.bank ?? 0,
     };
+
+    console.log(`Calculating predictions for ${entryId} (GW ${nextGw})...`);
 
     // Calculate predictions
     const captainPicks = calculateCaptainPicks(
@@ -659,6 +661,7 @@ export async function loadPredictions(
         "Predictions based on FPL's expected points algorithm. Actual performance may vary. Always check for late team news before the deadline.",
     };
   } catch (error) {
+    console.error("Error in loadPredictions:", error);
     if (error instanceof FplError && error.status === 404) {
       notFound();
     }
