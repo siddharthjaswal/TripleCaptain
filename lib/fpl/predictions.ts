@@ -705,6 +705,9 @@ export function calculateDifferentialPicks(
   currentSquadIds: Set<number>,
   budget: number,
 ): DifferentialPickDTO[] {
+  const teamNameMap = new Map(
+    bootstrap.teams.map((team) => [team.id, team.name]),
+  );
   const teamShortNameMap = new Map(
     bootstrap.teams.map((team) => [team.id, team.short_name]),
   );

@@ -1,5 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../prisma';
 import { callGemini } from './gemini';
+import { getEntryPicks } from './client';
 
 interface Pick {
     element: number;
@@ -22,7 +23,7 @@ export async function auditTeam(entryId: number) {
 
     // 2. Get user picks
     const picksData = await getEntryPicks(entryId, currentGw.id) as PicksData;
-    const playerIds = picksData.picks.map(p => p.element);
+    const playerIds = picksData.picks.map((p: any) => p.element);
 
     // 3. Fetch player details from DB
     const players = await prisma.player.findMany({
@@ -31,7 +32,7 @@ export async function auditTeam(entryId: number) {
     });
 
     // 4. Get upcoming fixtures for these teams
-    const teamIds = players.map(p => p.teamId);
+    const teamIds = players.map((p: any) => p.teamId);
     const upcomingFixtures = await prisma.fixture.findMany({
         where: {
             gameweekId: { gte: nextGwId, lte: nextGwId + 3 },
@@ -47,7 +48,7 @@ export async function auditTeam(entryId: number) {
     });
 
     // 5. Prepare prompt for AI
-    const teamData = players.map(p => ({
+    const teamData = players.map((p: any) => ({
         name: p.webName,
         position: p.elementType === 1 ? 'GK' : p.elementType === 2 ? 'DEF' : p.elementType === 3 ? 'MID' : 'FWD',
         team: p.team.name,
@@ -56,8 +57,8 @@ export async function auditTeam(entryId: number) {
         cost: p.nowCost / 10,
         ownership: p.selectedByPercent,
         fixtures: upcomingFixtures
-            .filter(f => f.homeTeamId === p.teamId || f.awayTeamId === p.teamId)
-            .map(f => {
+            .filter((f: any) => f.homeTeamId === p.teamId || f.awayTeamId === p.teamId)
+            .map((f: any) => {
                 const isHome = f.homeTeamId === p.teamId;
                 const opponent = isHome ? f.awayTeam.shortName : f.homeTeam.shortName;
                 const difficulty = isHome ? f.difficultyH : f.difficultyA;
