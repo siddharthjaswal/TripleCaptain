@@ -153,9 +153,7 @@ export default async function EntryPage({
                         <div className="flex-1 space-y-4">
                             <Typography variant="title" weight="black">Ready for Gameweek {summary.nextDeadline?.nextGameweek}?</Typography>
                             <Typography className="text-[color:var(--text-secondary)]">The deadline is approaching! Use the Transfer Planner to simulate your moves and get my verdict before you commit.</Typography>
-                            <Button asChild>
-                                <Link href={`/${entryId}/planner`}>Start Planning</Link>
-                            </Button>
+                            <Button asChild><Link href={`/${entryId}/planner`}>Start Planning</Link></Button>
                         </div>
                         <div className="shrink-0">
                              <div className="relative h-32 w-32 bg-[color:var(--brand-gold)]/20 rounded-full flex items-center justify-center border-4 border-[color:var(--brand-gold)]/30">

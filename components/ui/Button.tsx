@@ -36,12 +36,18 @@ export function Button({
 
     const combinedClassName = `${baseStyles} ${variants[variant]} ${sizes[size]} ${loading || disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`;
 
+    // If asChild is true, we must pass ONLY the single child to Slot
+    // We don't show the loading spinner inside a Slot-wrapped component
     return (
         <Component className={combinedClassName} disabled={loading || disabled} {...props}>
-            {loading ? (
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-            ) : null}
-            {children}
+            {asChild ? children : (
+                <>
+                    {loading && (
+                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    )}
+                    {children}
+                </>
+            )}
         </Component>
     );
 }

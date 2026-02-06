@@ -50,7 +50,9 @@ export function EntryIdForm() {
 
         <div className="space-y-4">
             <div className="relative group">
-                <Search className={`absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 transition-colors ${entryId ? 'text-[color:var(--accent)]' : 'text-[color:var(--text-tertiary)]'}`} />
+                {!entryId && (
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[color:var(--text-tertiary)] transition-opacity" />
+                )}
                 <input
                     id="entryId"
                     name="entryId"
@@ -59,7 +61,7 @@ export function EntryIdForm() {
                     value={entryId}
                     onChange={(event) => setEntryId(event.target.value)}
                     placeholder="e.g. 1234567"
-                    className="tc-input pl-12 h-14 text-lg font-bold tracking-widest placeholder:tracking-normal placeholder:font-normal"
+                    className={`tc-input h-14 text-lg font-bold tracking-widest placeholder:tracking-normal placeholder:font-normal transition-all ${!entryId ? 'pl-12' : 'pl-6 text-center'}`}
                     aria-invalid={formError ? "true" : "false"}
                     disabled={isPending}
                 />
