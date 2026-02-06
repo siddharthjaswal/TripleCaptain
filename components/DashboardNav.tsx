@@ -56,7 +56,10 @@ export function DashboardNav({ entryId, active, currentEvent }: DashboardNavProp
       </nav>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="tc-bottom-nav md:hidden">
+      <nav 
+        className="md:hidden fixed bottom-0 left-0 w-full h-20 bg-slate-900/90 backdrop-blur-xl border-t border-slate-800 flex flex-row justify-around items-center pb-4 z-[100] shadow-[0_-10px_30px_rgba(0,0,0,0.5)]"
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, display: 'flex' }}
+      >
         {links.map((link) => {
           const href =
             link.slug === "summary" ? `/${entryId}` : `/${entryId}/${link.slug}`;
@@ -68,10 +71,14 @@ export function DashboardNav({ entryId, active, currentEvent }: DashboardNavProp
             <Link
               key={link.slug}
               href={href}
-              className={`tc-nav-item-mobile ${isActive ? 'tc-nav-item-mobile--active' : ''}`}
+              className={`flex flex-col items-center justify-center gap-1 flex-1 h-full ${
+                isActive 
+                  ? "text-emerald-400" 
+                  : "text-slate-400"
+              }`}
             >
-              <Icon strokeWidth={isActive ? 3 : 2} />
-              <span className="text-[10px]">{label}</span>
+              <Icon size={22} strokeWidth={isActive ? 3 : 2} />
+              <span className="text-[9px] font-bold uppercase tracking-tight">{label}</span>
             </Link>
           );
         })}
