@@ -67,6 +67,7 @@ export function calculateCaptainPicks(
       const opponentId = isHome ? primaryFixture.team_a : primaryFixture.team_h;
       
       fixtureDifficulty = {
+        gameweek: primaryFixture.event,
         opponent: teamNameMap.get(opponentId) ?? "Unknown",
         opponentShort: teamShortNameMap.get(opponentId) ?? "???",
         difficulty: isHome ? (primaryFixture.team_h_difficulty ?? 3) : (primaryFixture.team_a_difficulty ?? 3),
@@ -189,6 +190,7 @@ export function calculateBestXI(
         : (fixture.team_a_difficulty ?? 3);
 
       fixtureDifficulty = {
+        gameweek: fixture.event,
         opponent: teamShortNameMap.get(opponentId) ?? "Unknown",
         opponentShort: teamShortNameMap.get(opponentId) ?? "???",
         difficulty,
@@ -483,6 +485,7 @@ export function calculateTransferSuggestions(
               : (f.team_a_difficulty ?? 3);
 
             return {
+              gameweek: f.event,
               opponent: teamShortNameMap.get(opponentId) ?? "Unknown",
               opponentShort: teamShortNameMap.get(opponentId) ?? "???",
               difficulty,
@@ -496,9 +499,19 @@ export function calculateTransferSuggestions(
             (playerFixtures.length || 1);
         const fixtureBonus = avgDifficulty <= 2.5 ? 2 : avgDifficulty <= 3 ? 1 : 0;
 
-        const score = epNext + fixtureBonus + form * 0.2;
+        // Double Gameweek Logic for next week
+        const nextWeekFixtures = playerFixtures.filter(f => f.gameweek === upcomingFixtures[0]?.event);
+        const isDoubleGw = nextWeekFixtures.length >= 2;
+        const isBlankGw = nextWeekFixtures.length === 0;
+
+        const dgwBonus = isDoubleGw ? 4.0 : isBlankGw ? -5.0 : 0;
+
+        const score = epNext + fixtureBonus + (form * 0.2) + dgwBonus;
 
         const reasons: string[] = [];
+        if (isDoubleGw) {
+            reasons.push("🚀 DOUBLE GAMEWEEK");
+        }
         if (epNext >= 6) {
           reasons.push(`High expected points (${epNext.toFixed(1)})`);
         }
@@ -727,6 +740,7 @@ export function calculateDifferentialPicks(
           : (nextFixture.team_a_difficulty ?? 3);
 
         fixtureDifficulty = {
+          gameweek: nextFixture.event,
           opponent: teamShortNameMap.get(opponentId) ?? "Unknown",
           opponentShort: teamShortNameMap.get(opponentId) ?? "???",
           difficulty,
@@ -750,6 +764,7 @@ export function calculateDifferentialPicks(
             : (f.team_a_difficulty ?? 3);
 
           return {
+            gameweek: f.event,
             opponent: teamShortNameMap.get(opponentId) ?? "Unknown",
             opponentShort: teamShortNameMap.get(opponentId) ?? "???",
             difficulty,
@@ -760,7 +775,16 @@ export function calculateDifferentialPicks(
       // Calculate upside score (higher is better)
       const upsideScore = ownership > 0 ? epNext / ownership : epNext * 10;
 
+      // DGW Bonus for Differentials
+      const hasDgwInRun = playerUpcomingFixtures.some(f => {
+          const gwFixtures = upcomingFixtures.filter(uf => uf.event === f.gameweek && (uf.team_h === player.team || uf.team_a === player.team));
+          return gwFixtures.length >= 2;
+      });
+
       const reasons: string[] = [];
+      if (hasDgwInRun) {
+          reasons.push("🚀 UPCOMING DOUBLE");
+      }
       if (epNext >= 6) reasons.push(`High expected points (${epNext.toFixed(1)})`);
       if (ownership < 5) reasons.push(`Very low ownership (${ownership.toFixed(1)}%)`);
       if (form >= 6) reasons.push("Excellent form");

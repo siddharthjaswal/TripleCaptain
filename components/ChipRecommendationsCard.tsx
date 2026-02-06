@@ -8,7 +8,6 @@ import {
     Trophy, 
     Rocket, 
     Target, 
-    Clock,
     Sparkles,
     TrendingUp,
     CheckCircle2,
@@ -74,7 +73,7 @@ function ChipRecommendationItem({
 
   return (
     <Card 
-        className={`relative overflow-hidden border-white/10 bg-slate-950/40 transition-all duration-500 ${isRecommended ? 'ring-2 ring-emerald-500/20 border-emerald-500/30' : ''}`} 
+        className={`relative overflow-hidden flex flex-col h-full border-white/10 bg-slate-950/40 transition-all duration-500 ${isRecommended ? 'ring-2 ring-emerald-500/20 border-emerald-500/30' : ''}`} 
         glass
         hover={false}
     >

@@ -5,7 +5,7 @@ import Image from "next/image";
 import type { DifferentialPickDTO } from "@/lib/fpl/dto";
 import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
 import { Card, Typography, Badge } from "./ui";
-import { Gem, Zap, TrendingUp, Users } from "lucide-react";
+import { Gem, TrendingUp } from "lucide-react";
 
 type DifferentialPicksCardProps = {
   differentials: DifferentialPickDTO[];
@@ -80,7 +80,12 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
                 </div>
                 <div className="text-center md:text-left">
                     <Typography weight="black" className="text-3xl uppercase text-white leading-tight mb-2">{differential.playerName}</Typography>
-                    <Typography variant="caption" className="text-xs font-black text-yellow-500/60 uppercase tracking-[0.2em]">{differential.team} • {differential.position} • £{differential.cost.toFixed(1)}m</Typography>
+                    <div className="flex items-center justify-center md:justify-start gap-3">
+                        <Typography variant="caption" className="text-xs font-black text-yellow-500/60 uppercase tracking-[0.2em]">{differential.team} • {differential.position} • £{differential.cost.toFixed(1)}m</Typography>
+                        {differential.reasoning.includes('DOUBLE') && (
+                             <Badge variant="primary" className="bg-emerald-500 text-black text-[8px] font-black animate-glow">DOUBLE GW</Badge>
+                        )}
+                    </div>
                 </div>
             </div>
 

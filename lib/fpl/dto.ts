@@ -171,6 +171,7 @@ export type GameweekViewDTO = {
 // Predictions feature DTOs
 
 export type FixtureDifficultyDTO = {
+  gameweek: number | null;
   opponent: string;
   opponentShort: string;
   difficulty: number; // 1-5 scale (1=easiest, 5=hardest)

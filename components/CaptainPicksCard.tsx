@@ -77,7 +77,12 @@ function CaptainPickItem({ pick, rank }: { pick: CaptainPickDTO; rank: number })
                 />
             </div>
             <div className="min-w-0">
-                <Typography weight="black" className="text-xl uppercase truncate leading-none mb-1">{pick.playerName}</Typography>
+                <div className="flex items-center gap-2">
+                    <Typography weight="black" className="text-xl uppercase truncate leading-none mb-1">{pick.playerName}</Typography>
+                    {pick.reasoning.includes('DOUBLE') && (
+                        <div className="bg-emerald-500 text-black text-[8px] font-black px-1 rounded animate-glow">DGW</div>
+                    )}
+                </div>
                 <Typography variant="caption" className="text-[10px] font-black opacity-40">{pick.team} • {pick.position}</Typography>
             </div>
         </div>

@@ -82,13 +82,11 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
       if (!acc[f.gameweek]) acc[f.gameweek] = [];
       acc[f.gameweek].push(f);
       return acc;
-  }, {} as Record<number, any[]>);
+  }, {} as Record<number, TeamFixtureRunDTO['fixtures']>);
 
-  // Get range of gameweeks based on averageDifficulty (which assumes targetGws range)
-  // Find min/max GW from fixtures or use props
+  // Get range of gameweeks
   const gws = Object.keys(groupedFixtures).map(Number).sort((a,b) => a-b);
   const minGw = gws[0];
-  const maxGw = minGw + 4; // Assume 5 GW view
   const gwRange = Array.from({ length: 5 }, (_, i) => minGw + i);
 
   return (

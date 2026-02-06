@@ -6,12 +6,8 @@ import type { TransferSuggestionDTO } from "@/lib/fpl/dto";
 import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
 import { Card, Typography, Badge } from "./ui";
 import { 
-    ArrowRightLeft, 
     TrendingUp, 
-    Zap, 
-    Target,
-    BarChart2,
-    ChevronRight,
+    Target, 
     ArrowRight
 } from "lucide-react";
 
@@ -30,7 +26,7 @@ export function TransferSuggestionsCard({
         <div className="p-5 w-20 h-20 rounded-3xl bg-emerald-500/10 text-emerald-500 mx-auto mb-8 flex items-center justify-center">
              <TrendingUp className="w-10 h-10" />
         </div>
-        <Typography variant="title" weight="black" className="mb-2 uppercase text-white">Squad Optimized</Typography>
+        <Typography variant="title" weight="black" className="mb-2 uppercase text-white text-3xl">Squad Optimized</Typography>
         <Typography className="text-[color:var(--text-secondary)] text-lg">No transfer suggestions required at this time.</Typography>
       </Card>
     );
@@ -136,7 +132,12 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                 </div>
                 <div className="text-center">
                     <Typography weight="black" className="text-base uppercase text-white leading-tight">{suggestion.playerIn.playerName}</Typography>
-                    <Typography variant="caption" className="text-[10px] text-emerald-500/60 font-black tracking-widest">{suggestion.playerIn.team.shortName} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
+                    <div className="flex items-center justify-center gap-2">
+                        <Typography variant="caption" className="text-[10px] text-emerald-500/60 font-black tracking-widest">{suggestion.playerIn.team.shortName} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
+                        {suggestion.playerIn.reasoning.includes('DOUBLE') && (
+                            <div className="bg-emerald-500 text-black text-[7px] font-black px-1 rounded animate-pulse">DGW</div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
