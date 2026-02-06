@@ -70,13 +70,13 @@ export async function auditTeam(entryId: number) {
             })
     }));
 
-    const prompt = `You are "Luffy", a legendary pirate captain and FPL expert. 
+    const prompt = `You are "The Gaffer", a legendary English football manager and FPL tactical expert. 
 Audit the following FPL team for the next 3 gameweeks.
 Team Data: ${JSON.stringify(teamData)}
 
 Provide your audit in JSON format with:
 - healthScore: (0-100)
-- critique: A few paragraphs in a casual, direct pirate captain tone. Focus on weaknesses, fixture traps, and standout assets.
+- critique: A few paragraphs in a blunt, professional, yet slightly cheeky English manager tone. Focus on tactical weaknesses, fixture traps, and standout assets. Use footballing terms like "squeaky bum time", "park the bus", "clinical", etc.
 - recommendations: Array of specific transfer or strategy tips.
 
 Return ONLY the JSON.`;

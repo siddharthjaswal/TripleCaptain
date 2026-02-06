@@ -11,6 +11,7 @@ import { ProfileCard } from "@/components/cards/ProfileCard";
 import { TotalsCard } from "@/components/cards/TotalsCard";
 import { LatestGwCard } from "@/components/cards/LatestGwCard";
 import { TeamAuditor } from "@/components/TeamAuditor";
+import { AccountStatus } from "@/components/AccountStatus";
 import { Card, Typography, Button } from "@/components/ui";
 import { Anchor, Sparkles } from "lucide-react";
 
@@ -79,7 +80,10 @@ export default async function EntryPage({
               </svg>
               Change Manager
             </Link>
-            <ThemeToggle />
+            <div className="flex items-center gap-6">
+                <AccountStatus entryId={entryId} />
+                <ThemeToggle />
+            </div>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex-1">
@@ -117,7 +121,7 @@ export default async function EntryPage({
             <div className="space-y-4 animate-fade-in">
                 <div className="flex items-center gap-2 px-2">
                     <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs font-black uppercase tracking-widest text-emerald-500">Live Voyage In Progress</span>
+                    <span className="text-xs font-black uppercase tracking-widest text-emerald-500">Matchday Live: Campaign In Progress</span>
                 </div>
                 <GameweekPitchCard latest={summary.latest} />
             </div>
@@ -129,7 +133,7 @@ export default async function EntryPage({
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                         <path fillRule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-xs font-black uppercase tracking-widest">The Debrief: Luffy's Review</span>
+                    <span className="text-xs font-black uppercase tracking-widest">Tactical Debrief: Gaffer&apos;s Review</span>
                 </div>
                 <TeamAuditor entryId={summary.profile.entryId} />
             </div>

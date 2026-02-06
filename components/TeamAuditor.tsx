@@ -44,8 +44,8 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
                     <Anchor className="h-6 w-6 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[color:var(--accent)]" />
                 </div>
                 <div className="space-y-2">
-                    <Typography variant="title" weight="black">Luffy is inspecting your ship...</Typography>
-                    <Typography className="italic">&quot;Checking the tangerines and counting the berries!&quot;</Typography>
+                    <Typography variant="title" weight="black">The Gaffer is inspecting the squad...</Typography>
+                    <Typography className="italic">&quot;Checking the fitness levels and tactical shapes!&quot;</Typography>
                 </div>
             </Card>
         );
@@ -53,17 +53,17 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
 
     if (!audit) {
         return (
-            <Card className="p-12 text-center bg-gradient-to-br from-[color:var(--accent)]/10 to-transparent border-dashed border-2">
-                <Sparkles className="h-16 w-16 mx-auto text-[color:var(--accent)] mb-6 animate-pulse" />
-                <Typography variant="title" weight="black" className="mb-2">Team Auditor</Typography>
-                <Typography className="mb-8 max-w-md mx-auto text-[color:var(--text-secondary)]">
-                    Let Captain Luffy critique your squad and find the hidden traps in your formation.
-                </Typography>
-                <Button onClick={runAudit} size="lg" className="shadow-lg">
-                    <Anchor className="mr-2 h-5 w-5" />
-                    Audit My Team
-                </Button>
-            </Card>
+                <Card className="p-12 text-center bg-gradient-to-br from-[color:var(--accent)]/10 to-transparent border-dashed border-2">
+                    <Sparkles className="h-16 w-16 mx-auto text-[color:var(--accent)] mb-6 animate-pulse" />
+                    <Typography variant="title" weight="black" className="mb-2">The Gaffer&apos;s Team Auditor</Typography>
+                    <Typography className="mb-8 max-w-md mx-auto text-[color:var(--text-secondary)]">
+                        Let The Gaffer critique your squad and find the hidden tactical gaps in your formation.
+                    </Typography>
+                    <Button onClick={runAudit} size="lg" className="shadow-lg">
+                        <Anchor className="mr-2 h-5 w-5" />
+                        Audit My Squad
+                    </Button>
+                </Card>
         );
     }
 
@@ -73,7 +73,7 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
                 {/* Health Score */}
                 <Card className="p-8 flex flex-col items-center justify-center text-center relative overflow-hidden" glass>
                     <div className="absolute inset-0 bg-[color:var(--accent)]/5 pointer-events-none" />
-                    <Typography variant="caption" className="mb-6">Ship Condition</Typography>
+                    <Typography variant="caption" className="mb-6">Squad Fitness</Typography>
                     <div className="relative h-40 w-40 flex items-center justify-center">
                         <svg className="h-full w-full transform -rotate-90">
                             <circle
@@ -112,8 +112,8 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
                     </div>
                     <div className="relative h-full flex flex-col">
                         <div className="flex items-center gap-3 mb-6">
-                            <Badge variant="primary" className="px-3 py-1">Captain&apos;s Log</Badge>
-                            <Typography variant="title" weight="bold">Luffy&apos;s Critique</Typography>
+                            <Badge variant="primary" className="px-3 py-1">Gaffer&apos;s Notes</Badge>
+                            <Typography variant="title" weight="bold">The Gaffer&apos;s Critique</Typography>
                         </div>
                         <Typography className="text-lg leading-relaxed italic text-[color:var(--text-secondary)] flex-1">
                             &quot;{audit.critique}&quot;
@@ -153,7 +153,7 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
             <div className="flex justify-center pt-4">
                 <Button variant="outline" onClick={runAudit} size="md">
                     <Anchor className="mr-2 h-4 w-4" />
-                    Re-Audit Team
+                    Re-Audit Squad
                 </Button>
             </div>
         </div>

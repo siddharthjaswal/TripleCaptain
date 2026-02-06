@@ -48,8 +48,8 @@ export default function Home() {
             />
             <FeatureHighlight
               icon={<Sparkles className="w-6 h-6" />}
-              title="Luffy's AI Auditor"
-              description="Our legendary Pirate AI critiques your squad, finding hidden traps and golden opportunities."
+              title="Tactical AI Auditor"
+              description="Our legendary Gaffer critiques your squad, finding hidden tactical traps and golden signing opportunities."
               color="purple"
             />
             <FeatureHighlight
@@ -86,7 +86,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="w-full border-t border-[color:var(--surface-border)] pt-12 pb-24 flex flex-col items-center gap-8">
-        <Typography variant="caption" weight="black">Built for the Grand Line of FPL</Typography>
+        <Typography variant="caption" weight="black">Built for the Premier League</Typography>
         <div className="flex flex-wrap items-center justify-center gap-4">
             <Badge variant="secondary">Next.js 16</Badge>
             <Badge variant="secondary">React 19</Badge>

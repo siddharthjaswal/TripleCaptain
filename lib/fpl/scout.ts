@@ -63,14 +63,14 @@ export async function scoutDifferentials() {
             })
     }));
 
-    const prompt = `You are "Luffy", the FPL Pirate Scout.
+    const prompt = `You are "The Chief Scout", an expert talent spotter for Premier League clubs.
 Analyze these 10 potential differential players (<10% ownership) for the upcoming gameweeks.
 Data: ${JSON.stringify(scoutData)}
 
 Provide a list of the top 3 differential picks.
 For each pick, provide:
 - name
-- reasoning: why they are a good "hidden treasure" right now (pirate tone).
+- reasoning: why they are a "hidden gem" or "shrewd signing" right now (use professional scouting terminology).
 
 Format: JSON array of {name, reasoning, epNext, ownership}.
 Return ONLY the JSON.`;

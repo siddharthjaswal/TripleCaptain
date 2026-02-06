@@ -7,6 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id            String   @id @default(cuid())
+  entryId       Int      @unique
+  credits       Int      @default(5)
+  isPro         Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
 model Team {
   id           Int       @id
   name         String

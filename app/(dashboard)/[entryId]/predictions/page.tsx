@@ -12,6 +12,7 @@ import { DifferentialPicksCard } from "@/components/DifferentialPicksCard";
 import { FixtureAnalysisCard } from "@/components/FixtureAnalysisCard";
 import { DifferentialScout } from "@/components/DifferentialScout";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
+import { AccountStatus } from "@/components/AccountStatus";
 import { loadPredictions, parseEntryId } from "@/lib/fpl/service";
 
 type PredictionsPageParams = {
@@ -149,7 +150,10 @@ export default async function PredictionsPage({
               </svg>
               Change Manager
             </Link>
-            <ThemeToggle />
+            <div className="flex items-center gap-6">
+                <AccountStatus entryId={parsedEntryId} />
+                <ThemeToggle />
+            </div>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex-1">

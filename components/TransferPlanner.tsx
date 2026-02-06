@@ -145,10 +145,10 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                             setBank(initialBank);
                             setTransfers([]);
                             setVerdict(null);
-                        }}>Reset Voyage</Button>
+                        }}>Reset Squad</Button>
                         <Button size="sm" onClick={getAiVerdict} loading={isAnalyzing} className="shadow-glow">
                             <Sparkles className="mr-2 h-4 w-4" />
-                            Luffy's Verdict
+                            Gaffer&apos;s Verdict
                         </Button>
                     </div>
                 </Card>
@@ -168,7 +168,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                 {/* Bench */}
                 <Card className="p-6" glass hover={false}>
                     <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
-                        <Typography variant="caption" weight="black" className="opacity-50">The Crew Deck (Bench)</Typography>
+                        <Typography variant="caption" weight="black" className="opacity-50">Squad Bench</Typography>
                         <div className="flex gap-4">
                             <div className="flex items-center gap-1.5">
                                 <div className="w-2.5 h-2.5 rounded-full bg-red-500/50 border border-red-500" />
@@ -215,7 +215,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                                 <input 
                                     className="tc-input pl-11 h-12 text-sm font-bold"
-                                    placeholder="Search new recruit..."
+                                    placeholder="Search new signing..."
                                     value={searchQuery}
                                     onChange={(e) => handleSearch(e.target.value)}
                                     autoFocus
@@ -253,9 +253,8 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                         </div>
                     ) : (
                         <div className="text-center py-12 space-y-4">
-                            <Anchor className="h-12 w-12 mx-auto text-[color:var(--text-tertiary)] opacity-20" />
                             <Typography className="text-sm text-[color:var(--text-secondary)] italic leading-relaxed">
-                                Tap a player on the pitch to start planning your next move, Captain!
+                                Select a player on the pitch to simulate a transfer.
                             </Typography>
                         </div>
                     )}
@@ -269,7 +268,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                         </div>
                         <div className="relative">
                             <div className="flex items-center gap-2 mb-4">
-                                <Badge variant="primary" className="bg-indigo-500 text-white text-[10px]">Captain&apos;s Verdict</Badge>
+                                <Badge variant="primary" className="bg-indigo-500 text-white text-[10px]">Gaffer&apos;s Verdict</Badge>
                             </div>
                             <Typography className="text-sm leading-relaxed italic text-[color:var(--text-secondary)]">
                                 &quot;{verdict}&quot;

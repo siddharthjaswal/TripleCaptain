@@ -4,6 +4,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { TransferPlanner } from "@/components/TransferPlanner";
 import { loadPlannerData, parseEntryId } from "@/lib/fpl/service";
 import { Typography } from "@/components/ui";
+import { AccountStatus } from "@/components/AccountStatus";
 import Link from "next/link";
 import { Anchor } from "lucide-react";
 
@@ -50,7 +51,10 @@ export default async function PlannerPage({
               </svg>
               Change Manager
             </Link>
-            <ThemeToggle />
+            <div className="flex items-center gap-6">
+                <AccountStatus entryId={entryId} />
+                <ThemeToggle />
+            </div>
           </div>
           
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

@@ -41,7 +41,7 @@ export function DifferentialScout() {
                     <Compass className="h-16 w-16 animate-spin text-[color:var(--accent)]" />
                     <Sparkles className="h-6 w-6 absolute top-0 right-0 text-yellow-500 animate-pulse" />
                 </div>
-                <Typography variant="title" weight="black" className="animate-pulse">Scouting for hidden treasures...</Typography>
+                <Typography variant="title" weight="black" className="animate-pulse">The Chief Scout is looking for gems...</Typography>
             </Card>
         );
     }
@@ -54,8 +54,8 @@ export function DifferentialScout() {
                         <Compass className="h-6 w-6" />
                     </div>
                     <div>
-                        <Typography variant="title" weight="black">Differential Scout</Typography>
-                        <Typography variant="caption">Hidden Gems & Low Ownership High-Upside Players</Typography>
+                        <Typography variant="title" weight="black">Chief Scout</Typography>
+                        <Typography variant="caption">Hidden Gems & Low Ownership High-Upside Picks</Typography>
                     </div>
                 </div>
                 <Button variant="ghost" size="sm" onClick={scout}>
