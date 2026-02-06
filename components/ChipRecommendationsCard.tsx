@@ -1,6 +1,17 @@
 "use client";
 
+import React from "react";
 import type { ChipRecommendationDTO } from "@/lib/fpl/dto";
+import { Card, Typography, Badge } from "./ui";
+import { 
+    Zap, 
+    Trophy, 
+    Rocket, 
+    Target, 
+    Clock,
+    Sparkles,
+    TrendingUp
+} from "lucide-react";
 
 type ChipRecommendationsCardProps = {
   recommendations: ChipRecommendationDTO[];
@@ -11,49 +22,29 @@ export function ChipRecommendationsCard({
 }: ChipRecommendationsCardProps) {
   if (recommendations.length === 0) {
     return (
-      <section className="tc-card rounded-3xl p-6 shadow-lg">
-        <header className="mb-6">
-          <h2 className="text-xl font-semibold">Chip Strategy 🎯</h2>
-          <p className="tc-text-muted text-sm mt-1">
-            Timing recommendations for using your chips effectively
-          </p>
-        </header>
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--surface-elevated)]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="h-8 w-8 tc-text-muted"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold mb-2">All Chips Used!</h3>
-          <p className="tc-text-muted max-w-md">
-            You&rsquo;ve already used all your chips this season. Great job strategizing!
-          </p>
+      <Card className="p-20 text-center" glass>
+        <div className="p-5 w-20 h-20 rounded-3xl bg-[color:var(--accent)]/10 text-[color:var(--accent)] mx-auto mb-8 flex items-center justify-center">
+             <Trophy className="w-10 h-10" />
         </div>
-      </section>
+        <Typography variant="title" weight="black" className="mb-3 uppercase text-3xl">All Chips Deployed</Typography>
+        <Typography className="text-[color:var(--text-secondary)] text-lg">Every tactical chip has been spent. Your season strategy is complete!</Typography>
+      </Card>
     );
   }
 
   return (
-    <section className="tc-card rounded-3xl p-6 shadow-lg">
-      <header className="mb-8">
-        <h2 className="text-xl font-semibold">Chip Strategy 🎯</h2>
-        <p className="tc-text-muted text-sm mt-1">
-          Timing recommendations for using your chips effectively
-        </p>
-      </header>
+    <section className="space-y-8 animate-fade-in">
+        <div className="flex items-center gap-4">
+            <div className="p-3.5 rounded-2xl bg-indigo-500 text-white shadow-xl shadow-indigo-500/20">
+                <Rocket className="h-7 w-7" />
+            </div>
+            <div>
+                <Typography variant="title" weight="black" className="uppercase tracking-tight text-3xl">Chip Strategy</Typography>
+                <Typography variant="caption" weight="black" className="opacity-40 text-[11px] tracking-[0.2em]">TACTICAL DEPLOYMENT TIMING</Typography>
+            </div>
+        </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-8 md:grid-cols-2">
         {recommendations.map((rec) => (
           <ChipRecommendationItem
             key={rec.chipName}
@@ -65,85 +56,83 @@ export function ChipRecommendationsCard({
   );
 }
 
-type ChipRecommendationItemProps = {
-  recommendation: ChipRecommendationDTO;
-};
-
 function ChipRecommendationItem({
   recommendation,
-}: ChipRecommendationItemProps) {
-  const chipEmojis: Record<string, string> = {
-    "Triple Captain": "3️⃣",
-    "Bench Boost": "💪",
-    "Free Hit": "🎯",
-    "Wildcard": "🃏",
+}: {
+  recommendation: ChipRecommendationDTO;
+}) {
+  const chipIcons: Record<string, React.ReactNode> = {
+    "Triple Captain": <Sparkles className="w-6 h-6" />,
+    "Bench Boost": <Zap className="w-6 h-6" />,
+    "Free Hit": <Target className="w-6 h-6" />,
+    "Wildcard": <ActivityIcon />,
   };
 
   const isRecommended = recommendation.recommend;
 
   return (
-    <div
-      className={`flex flex-col tc-card rounded-3xl p-6 border-2 transition shadow-sm hover:shadow-md ${
-        isRecommended
-          ? "border-green-500/50 bg-green-500/5"
-          : "border-[color:var(--surface-border)] hover:border-[color:var(--accent)]"
-      }`}
+    <Card 
+        className={`relative overflow-hidden flex flex-col h-full border-white/5 transition-all duration-500 hover:scale-[1.01] ${isRecommended ? 'ring-2 ring-emerald-500/30' : ''}`} 
+        glass
     >
-      {/* Chip Header */}
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-3">
-          <div
-            className={`flex h-12 w-12 items-center justify-center rounded-xl text-2xl ${
-              isRecommended
-                ? "bg-green-500/20"
-                : "bg-[color:var(--surface-elevated)]"
-            }`}
-          >
-            {chipEmojis[recommendation.chipName] || "🎮"}
-          </div>
-          <div>
-            <h3 className="font-bold text-lg text-[color:var(--text-primary)]">
-              {recommendation.chipName}
-            </h3>
-            {recommendation.bestGameweek && (
-              <p className="text-sm tc-text-muted">
-                Use in GW {recommendation.bestGameweek}
-              </p>
-            )}
-          </div>
+      {/* Visual Accent */}
+      <div className={`absolute top-0 left-0 right-0 h-1 ${isRecommended ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-white/5'}`} />
+      
+      <div className="p-10 space-y-8 flex-1 flex flex-col">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-6">
+            <div className="flex items-center gap-5">
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl ${isRecommended ? 'bg-emerald-500 text-black' : 'bg-white/5 text-white/40'}`}>
+                    {chipIcons[recommendation.chipName] || <Zap className="w-6 h-6" />}
+                </div>
+                <div>
+                    <Typography variant="title" weight="black" className="text-2xl uppercase leading-none mb-1">{recommendation.chipName}</Typography>
+                    {recommendation.bestGameweek && (
+                        <div className="flex items-center gap-1.5 opacity-40">
+                            <Clock className="w-3 h-3" />
+                            <Typography variant="caption" weight="black" className="text-[10px]">OPTIMAL IN GW {recommendation.bestGameweek}</Typography>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <Badge variant={isRecommended ? 'success' : 'warning'} className="px-4 py-1.5 font-black text-[10px]">
+                {isRecommended ? '✓ DEPLOY NOW' : '⚠ HOLD CHIP'}
+            </Badge>
         </div>
 
-        <div
-          className={`flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-bold ${
-            isRecommended
-              ? "bg-green-500/20 text-green-700 dark:text-green-300"
-              : "bg-orange-500/20 text-orange-700 dark:text-orange-300"
-          }`}
-        >
-          {isRecommended ? "✓ Use Now" : "✗ Wait"}
+        {/* Tactical Reasoning */}
+        <div className="flex-1">
+             <div className={`p-6 rounded-3xl border ${isRecommended ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-white/5 border-white/5'}`}>
+                <Typography className="text-base leading-relaxed text-white/80 italic">
+                    &quot;{recommendation.reasoning}&quot;
+                </Typography>
+            </div>
         </div>
+
+        {/* Upside Metrics */}
+        {recommendation.potentialPoints !== undefined && (
+            <div className="grid grid-cols-1 gap-4">
+                 <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 flex items-center justify-between shadow-inner">
+                    <div>
+                        <Typography variant="caption" weight="black" className="text-[10px] text-emerald-500/60 uppercase tracking-widest mb-1">Estimated Return</Typography>
+                        <Typography variant="title" weight="black" className="text-3xl text-emerald-400 leading-none">+{recommendation.potentialPoints.toFixed(1)} <span className="text-sm font-black opacity-60">PTS</span></Typography>
+                    </div>
+                    <div className="p-3 rounded-full bg-emerald-500/20 text-emerald-500 animate-pulse">
+                        <TrendingUp className="w-6 h-6" />
+                    </div>
+                 </div>
+            </div>
+        )}
       </div>
-
-      {/* Reasoning */}
-      <div className="mb-5 rounded-2xl bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-4">
-        <p className="text-sm tc-text-muted leading-relaxed">
-          {recommendation.reasoning}
-        </p>
-      </div>
-
-      {/* Potential Points */}
-      {recommendation.potentialPoints !== undefined && (
-        <div className="mt-auto rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-green-700 dark:text-green-300">
-              Potential Points
-            </span>
-            <span className="text-2xl font-bold text-green-700 dark:text-green-300">
-              {recommendation.potentialPoints.toFixed(1)} pts
-            </span>
-          </div>
-        </div>
-      )}
-    </div>
+    </Card>
   );
+}
+
+function ActivityIcon() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-activity">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+    )
 }

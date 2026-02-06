@@ -4,8 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import type { DifferentialPickDTO } from "@/lib/fpl/dto";
 import { getPlayerPhotoUrl } from "@/lib/fpl/images";
-import { Card, Typography, Badge } from "./ui";
-import { Gem, Zap, TrendingUp, Users } from "lucide-react";
+import { Card, Typography } from "./ui";
+import { Gem } from "lucide-react";
 
 type DifferentialPicksCardProps = {
   differentials: DifferentialPickDTO[];
@@ -50,7 +50,7 @@ export function DifferentialPicksCard({
 
 function DifferentialPickItem({ differential, rank }: { differential: DifferentialPickDTO; rank: number }) {
   const photoUrl = getPlayerPhotoUrl(differential.playerPhoto);
-  const [imageError, setImageError] = useState(false);
+  const [, setImageError] = useState(false);
   const rankColors = ["bg-yellow-500 text-black", "bg-slate-300 text-black", "bg-orange-600 text-white"];
 
   return (

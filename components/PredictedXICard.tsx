@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import type { PlayerPredictionDTO, PredictedXIDTO } from "@/lib/fpl/dto";
-import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
-import { Card, Typography, Badge } from "./ui";
+import { getPlayerPhotoUrl } from "@/lib/fpl/images";
+import { Card, Typography } from "./ui";
 import { Target, Zap } from "lucide-react";
 
 type PredictedXICardProps = {

@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { CaptainPickDTO } from "@/lib/fpl/dto";
 import { getPlayerPhotoUrl } from "@/lib/fpl/images";
 import { Card, Typography, Badge } from "./ui";
-import { Crown, Zap, TrendingUp, Target } from "lucide-react";
+import { Crown } from "lucide-react";
 
 type CaptainPicksCardProps = {
   picks: CaptainPickDTO[];
