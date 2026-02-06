@@ -3,7 +3,7 @@ import { DashboardNav } from "@/components/DashboardNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { TransferPlanner } from "@/components/TransferPlanner";
 import { loadPlannerData, parseEntryId } from "@/lib/fpl/service";
-import { Typography, Badge } from "@/components/ui";
+import { Typography } from "@/components/ui";
 import Link from "next/link";
 import { Anchor } from "lucide-react";
 
@@ -29,7 +29,7 @@ export default async function PlannerPage({
 
   return (
     <main className="tc-surface min-h-dvh px-4 pb-16 pt-8">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
         <header className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <Link
@@ -77,6 +77,7 @@ export default async function PlannerPage({
             initialSquad={data.squad} 
             initialBank={data.bank}
             nextGw={data.nextGw}
+            bgwDgwMap={data.bgwDgwMap}
         />
       </div>
     </main>

@@ -23,14 +23,23 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { squad, transfers, bank } = body;
 
-        const prompt = `You are "Luffy", the FPL Pirate Captain.
-Analyze this planned transfer for the next gameweek.
-Current Squad: ${JSON.stringify(squad.map((p: any) => ({ name: p.name, team: p.teamCode })))}
-Transfers Planned: ${JSON.stringify(transfers.map((t: any) => ({ out: t.out.name, in: t.in.webName })))}
-Bank Remaining: £${bank}m
+        const prompt = `You are "Luffy", the legendary Pirate King of FPL.
+Analyze these planned transfers for the next gameweek.
+Current Squad Overview: ${JSON.stringify(squad.map((p: any) => ({ name: p.name, team: p.teamCode, pos: p.position })))}
+Transfers Made in Planner: ${JSON.stringify(transfers.map((t: any) => ({ 
+    out: t.out.name, 
+    in: t.in.webName,
+    pointsGain: (t.in.epNext - (t.out.epNext || 0)).toFixed(1)
+})))}
+Bank Remaining: £${bank.toFixed(1)}m
 
-Provide a short, direct pirate-themed verdict on whether this is a "Golden Voyage" or a "Sinking Ship".
-Focus on the logic of the swap and the budget impact.
+Critique this strategy from a competitive FPL perspective:
+1. Is the "loot" (expected points gain) worth the cost?
+2. Are they ignoring any "sea monsters" (injured players or terrible fixtures)?
+3. Is the squad balance (bench strength) still solid?
+
+Provide a detailed, direct pirate-themed verdict. Use "Golden Voyage" for good moves and "Sinking Ship" for bad ones.
+Focus on the specific players being brought in.
 Return ONLY the verdict text.`;
 
         const { GoogleGenerativeAI } = require('@google/generative-ai');

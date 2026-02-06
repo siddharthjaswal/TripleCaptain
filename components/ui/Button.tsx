@@ -1,9 +1,11 @@
 import React from 'react';
+import { Slot } from '@radix-ui/react-slot';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'outline' | 'ghost';
     size?: 'sm' | 'md' | 'lg' | 'icon';
     loading?: boolean;
+    asChild?: boolean;
 }
 
 export function Button({ 
@@ -11,10 +13,12 @@ export function Button({
     variant = 'primary', 
     size = 'md', 
     loading = false,
+    asChild = false,
     className = '',
     disabled,
     ...props 
 }: ButtonProps) {
+    const Component = asChild ? Slot : 'button';
     const baseStyles = 'tc-button';
     
     const variants = {
@@ -33,11 +37,11 @@ export function Button({
     const combinedClassName = `${baseStyles} ${variants[variant]} ${sizes[size]} ${loading || disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`;
 
     return (
-        <button className={combinedClassName} disabled={loading || disabled} {...props}>
+        <Component className={combinedClassName} disabled={loading || disabled} {...props}>
             {loading ? (
                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
             ) : null}
             {children}
-        </button>
+        </Component>
     );
 }

@@ -661,6 +661,8 @@ export async function loadPlannerData(
     bank: number;
     teamValue: number;
     nextGw: number;
+    fixtures: any[];
+    bgwDgwMap: Record<number, Record<number, { count: number; opponents: string[] }>>;
 }> {
     const entryId = typeof entryIdInput === "number" ? entryIdInput : parseEntryId(entryIdInput);
     
@@ -671,7 +673,35 @@ export async function loadPlannerData(
     ]);
 
     const currentEvent = await resolveCurrentEvent(profile.current_event);
+    const nextGw = currentEvent + 1;
     const picks = await getEntryPicks(entryId, currentEvent);
+    
+    // Fetch fixtures for the next 5 gameweeks
+    const gwRange = Array.from({ length: 5 }, (_, i) => nextGw + i);
+    const fixturesPromises = gwRange.map(gw => getFixtures(gw).catch(() => []));
+    const fixturesArrays = await Promise.all(fixturesPromises);
+    const allFixtures = fixturesArrays.flat();
+
+    // Map Team IDs to Short Names for display
+    const teamMap = new Map(bootstrap.teams.map(t => [t.id, t.short_name]));
+
+    // Calculate BGW/DGW Map
+    const bgwDgwMap: Record<number, Record<number, { count: number; opponents: string[] }>> = {};
+    
+    bootstrap.teams.forEach(team => {
+        bgwDgwMap[team.id] = {};
+        gwRange.forEach(gw => {
+            const teamFixtures = allFixtures.filter(f => (f.team_h === team.id || f.team_a === team.id) && f.event === gw);
+            bgwDgwMap[team.id][gw] = {
+                count: teamFixtures.length,
+                opponents: teamFixtures.map(f => {
+                    const isHome = f.team_h === team.id;
+                    const opponentId = isHome ? f.team_a : f.team_h;
+                    return `${teamMap.get(opponentId)}${isHome ? '(H)' : '(A)'}`;
+                })
+            };
+        });
+    });
     
     const latestHistory = history.current[history.current.length - 1];
     
@@ -684,6 +714,8 @@ export async function loadPlannerData(
         squad,
         bank: latestHistory.bank / 10,
         teamValue: latestHistory.value / 10,
-        nextGw: currentEvent + 1,
+        nextGw,
+        fixtures: allFixtures,
+        bgwDgwMap
     };
 }

@@ -11,6 +11,8 @@ import { ProfileCard } from "@/components/cards/ProfileCard";
 import { TotalsCard } from "@/components/cards/TotalsCard";
 import { LatestGwCard } from "@/components/cards/LatestGwCard";
 import { TeamAuditor } from "@/components/TeamAuditor";
+import { Card, Typography, Button } from "@/components/ui";
+import { Anchor, Sparkles } from "lucide-react";
 
 type EntryPageParams = {
   entryId: string;

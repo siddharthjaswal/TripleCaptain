@@ -13,7 +13,9 @@ import {
     Plus,
     Anchor,
     Loader2,
-    Sparkles
+    Sparkles,
+    AlertCircle,
+    Zap
 } from 'lucide-react';
 import type { LatestGwPlayerDTO } from '@/lib/fpl/dto';
 import { getPlayerPhotoUrl } from '@/lib/fpl/images';
@@ -24,6 +26,7 @@ interface PlannerProps {
     initialSquad: LatestGwPlayerDTO[];
     initialBank: number;
     nextGw: number;
+    bgwDgwMap: Record<number, Record<number, { count: number; opponents: string[] }>>;
 }
 
 interface Transfer {
@@ -31,7 +34,7 @@ interface Transfer {
     in: any; // Result from search
 }
 
-export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: PlannerProps) {
+export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bgwDgwMap }: PlannerProps) {
     const [squad, setSquad] = useState(initialSquad);
     const [bank, setBank] = useState(initialBank);
     const [transfers, setTransfers] = useState<Transfer[]>([]);
@@ -78,14 +81,6 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
     const performSwap = (playerIn: any) => {
         if (!selectedForSwap) return;
 
-        const costIn = playerIn.nowCost / 10;
-        const sellPriceOut = selectedForSwap.rawPoints; // Placeholder for sell price logic if needed
-
-        // Simple check
-        if (costIn > bank + (selectedForSwap as any).cost) {
-            // Note: I need the 'cost' of the player out. I'll add it to the DTO.
-        }
-
         const newSquad = squad.map(p => {
             if (p.elementId === selectedForSwap.elementId) {
                 return {
@@ -93,17 +88,21 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
                     elementId: playerIn.id,
                     name: playerIn.webName,
                     photo: playerIn.photo,
-                    points: 0, // Reset for planner
+                    teamId: playerIn.teamId,
+                    points: 0, 
                     rawPoints: 0,
-                    cost: playerIn.nowCost / 10 // Store cost
-                } as any;
+                    epNext: playerIn.epNext,
+                };
             }
             return p;
         });
 
         setSquad(newSquad);
         setTransfers([...transfers, { out: selectedForSwap, in: playerIn }]);
-        setBank(prev => prev + ((selectedForSwap as any).cost || 0) - (playerIn.nowCost / 10));
+        
+        // Estimated bank calculation (simplified)
+        setBank(prev => prev - (playerIn.nowCost / 10) + (10)); // Placeholder for sell price
+        
         setSelectedForSwap(null);
         setSearchQuery('');
         setSearchResults([]);
@@ -112,7 +111,6 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
     const getAiVerdict = async () => {
         setIsAnalyzing(true);
         try {
-            // We'll create an API for this
             const res = await fetch('/api/audit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -128,16 +126,16 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
     };
 
     return (
-        <div className="grid lg:grid-cols-3 gap-8 pb-20 animate-fade-in">
+        <div className="grid lg:grid-cols-4 gap-8 pb-20 animate-fade-in">
             {/* Left: The Pitch (Planner Mode) */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-3 space-y-6">
                 <Card className="p-4 flex items-center justify-between" glass>
                     <div className="flex items-center gap-4">
                         <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
                             <Coins className="h-5 w-5" />
                         </div>
                         <div>
-                            <Typography variant="caption" weight="black">Bank</Typography>
+                            <Typography variant="caption" weight="black">Bank (Est.)</Typography>
                             <Typography variant="title" weight="black" className="text-xl">£{bank.toFixed(1)}m</Typography>
                         </div>
                     </div>
@@ -147,8 +145,8 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
                             setBank(initialBank);
                             setTransfers([]);
                             setVerdict(null);
-                        }}>Reset</Button>
-                        <Button size="sm" onClick={getAiVerdict} loading={isAnalyzing}>
+                        }}>Reset Voyage</Button>
+                        <Button size="sm" onClick={getAiVerdict} loading={isAnalyzing} className="shadow-glow">
                             <Sparkles className="mr-2 h-4 w-4" />
                             Luffy's Verdict
                         </Button>
@@ -160,21 +158,24 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
                     
                     {/* Pitch Rows */}
                     <div className="space-y-12 relative z-10">
-                        <PlannerRow players={gk} label="Goalkeeper" onSelect={setSelectedForSwap} selectedId={selectedForSwap?.elementId} />
-                        <PlannerRow players={def} label="Defence" onSelect={setSelectedForSwap} selectedId={selectedForSwap?.elementId} />
-                        <PlannerRow players={mid} label="Midfield" onSelect={setSelectedForSwap} selectedId={selectedForSwap?.elementId} />
-                        <PlannerRow players={fwd} label="Forwards" onSelect={setSelectedForSwap} selectedId={selectedForSwap?.elementId} />
+                        <PlannerRow players={gk} label="Goalkeeper" onSelect={setSelectedForSwap} selectedId={selectedForSwap?.elementId} bgwDgwMap={bgwDgwMap} nextGw={nextGw} />
+                        <PlannerRow players={def} label="Defence" onSelect={setSelectedForSwap} selectedId={selectedForSwap?.elementId} bgwDgwMap={bgwDgwMap} nextGw={nextGw} />
+                        <PlannerRow players={mid} label="Midfield" onSelect={setSelectedForSwap} selectedId={selectedForSwap?.elementId} bgwDgwMap={bgwDgwMap} nextGw={nextGw} />
+                        <PlannerRow players={fwd} label="Forwards" onSelect={setSelectedForSwap} selectedId={selectedForSwap?.elementId} bgwDgwMap={bgwDgwMap} nextGw={nextGw} />
                     </div>
                 </div>
 
                 {/* Bench */}
                 <Card className="p-6" glass>
                     <Typography variant="caption" weight="black" className="mb-4 block text-center">The Crew Deck (Bench)</Typography>
-                    <div className="flex justify-center gap-4">
+                    <div className="flex justify-around">
                         {bench.map(p => (
-                            <div key={p.elementId} onClick={() => setSelectedForSwap(p)} className={`cursor-pointer transition-all ${selectedForSwap?.elementId === p.elementId ? 'scale-110 ring-2 ring-[color:var(--accent)] rounded-xl p-1' : 'opacity-80 hover:opacity-100'}`}>
+                            <div key={p.elementId} onClick={() => setSelectedForSwap(p)} className={`flex flex-col items-center gap-2 cursor-pointer transition-all ${selectedForSwap?.elementId === p.elementId ? 'scale-110 ring-2 ring-[color:var(--accent)] rounded-xl p-2 bg-[color:var(--accent)]/10' : 'opacity-80 hover:opacity-100'}`}>
                                 <Image src={getPlayerPhotoUrl(p.photo)!} alt={p.name} width={50} height={60} className="object-contain" unoptimized />
-                                <p className="text-[10px] font-black text-center mt-1 truncate w-12 uppercase">{p.name}</p>
+                                <div className="text-center">
+                                    <p className="text-[10px] font-black uppercase truncate w-16 text-white">{p.name}</p>
+                                    <FixtureTimeline teamId={p.teamId!} bgwDgwMap={bgwDgwMap} nextGw={nextGw} />
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -182,18 +183,18 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
             </div>
 
             {/* Right: Search & Verdict */}
-            <div className="space-y-6">
+            <div className="lg:col-span-1 space-y-6">
                 {/* Search / Swap UI */}
-                <Card className="p-8 h-fit flex flex-col gap-6" glass>
+                <Card className="p-6 h-fit flex flex-col gap-6" glass hover={false}>
                     {selectedForSwap ? (
                         <div className="space-y-6">
-                            <div className="flex items-center gap-4 p-4 bg-[color:var(--accent)]/10 rounded-2xl border border-[color:var(--accent)]/20">
-                                <ArrowRightLeft className="h-6 w-6 text-[color:var(--accent)] animate-pulse" />
-                                <div>
-                                    <Typography variant="caption" weight="black">Replacing</Typography>
-                                    <Typography variant="title" weight="black" className="text-xl">{selectedForSwap.name}</Typography>
+                            <div className="flex items-center gap-3 p-4 bg-[color:var(--accent)]/10 rounded-2xl border border-[color:var(--accent)]/20">
+                                <ArrowRightLeft className="h-5 w-5 text-[color:var(--accent)] animate-pulse" />
+                                <div className="flex-1 min-w-0">
+                                    <Typography variant="caption" weight="black" className="text-[10px]">Replacing</Typography>
+                                    <Typography variant="title" weight="black" className="text-sm truncate">{selectedForSwap.name}</Typography>
                                 </div>
-                                <button onClick={() => setSelectedForSwap(null)} className="ml-auto p-2 hover:bg-white/10 rounded-full">
+                                <button onClick={() => setSelectedForSwap(null)} className="p-1.5 hover:bg-white/10 rounded-full">
                                     <Trash2 className="h-4 w-4 opacity-50" />
                                 </button>
                             </div>
@@ -201,7 +202,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
                             <div className="relative">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                                 <input 
-                                    className="tc-input pl-12 h-14 font-bold"
+                                    className="tc-input pl-11 h-12 text-sm font-bold"
                                     placeholder="Search new recruit..."
                                     value={searchQuery}
                                     onChange={(e) => handleSearch(e.target.value)}
@@ -209,7 +210,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
                                 />
                             </div>
 
-                            <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
+                            <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1 scrollbar-hide">
                                 {isSearching ? (
                                     <div className="text-center py-8">
                                         <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary opacity-50" />
@@ -218,20 +219,22 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
                                     <div 
                                         key={p.id} 
                                         onClick={() => performSwap(p)}
-                                        className="flex items-center gap-4 p-3 rounded-xl hover:bg-[color:var(--surface-hover)] border border-transparent hover:border-[color:var(--surface-border)] cursor-pointer transition-all group"
+                                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-[color:var(--surface-hover)] border border-transparent hover:border-[color:var(--surface-border)] cursor-pointer transition-all group"
                                     >
-                                        <div className="w-10 h-10 relative overflow-hidden rounded-lg bg-slate-800">
+                                        <div className="w-10 h-10 relative overflow-hidden rounded-lg bg-slate-800 shrink-0">
                                             <Image src={getPlayerPhotoUrl(p.photo)!} alt={p.webName} fill className="object-cover" unoptimized />
                                         </div>
-                                        <div className="flex-1">
-                                            <Typography weight="black" className="text-sm uppercase">{p.webName}</Typography>
-                                            <Typography variant="caption" className="text-[9px]">{p.team.shortName} • £{(p.nowCost/10).toFixed(1)}m</Typography>
+                                        <div className="flex-1 min-w-0">
+                                            <Typography weight="black" className="text-xs uppercase truncate">{p.webName}</Typography>
+                                            <div className="flex items-center gap-2">
+                                                <Typography variant="caption" className="text-[9px]">{p.team.shortName}</Typography>
+                                                <Typography variant="caption" className="text-[9px] font-bold text-[color:var(--brand-gold)]">£{(p.nowCost/10).toFixed(1)}m</Typography>
+                                            </div>
                                         </div>
-                                        <div className="text-right">
-                                            <Typography weight="black" className="text-sm text-emerald-500">{p.epNext}</Typography>
-                                            <Typography variant="caption" className="text-[9px]">Exp. Pts</Typography>
+                                        <div className="text-right shrink-0">
+                                            <Typography weight="black" className="text-xs text-emerald-500">{p.epNext}</Typography>
+                                            <Typography variant="caption" className="text-[8px]">Exp. Pts</Typography>
                                         </div>
-                                        <Plus className="h-4 w-4 opacity-0 group-hover:opacity-100 text-[color:var(--accent)] transition-opacity" />
                                     </div>
                                 ))}
                             </div>
@@ -239,7 +242,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
                     ) : (
                         <div className="text-center py-12 space-y-4">
                             <Anchor className="h-12 w-12 mx-auto text-[color:var(--text-tertiary)] opacity-20" />
-                            <Typography className="text-[color:var(--text-secondary)] italic">
+                            <Typography className="text-sm text-[color:var(--text-secondary)] italic leading-relaxed">
                                 Tap a player on the pitch to start planning your next move, Captain!
                             </Typography>
                         </div>
@@ -248,13 +251,13 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
 
                 {/* Verdict Box */}
                 {verdict && (
-                    <Card className="p-8 bg-indigo-500/5 border-indigo-500/20 relative overflow-hidden" glass>
+                    <Card className="p-6 bg-indigo-500/5 border-indigo-500/20 relative overflow-hidden" glass hover={false}>
                         <div className="absolute -bottom-8 -right-8 opacity-5">
                             <Sparkles className="h-32 w-32" />
                         </div>
                         <div className="relative">
                             <div className="flex items-center gap-2 mb-4">
-                                <Badge variant="primary" className="bg-indigo-500 text-white">Luffy&apos;s Verdict</Badge>
+                                <Badge variant="primary" className="bg-indigo-500 text-white text-[10px]">Captain&apos;s Verdict</Badge>
                             </div>
                             <Typography className="text-sm leading-relaxed italic text-[color:var(--text-secondary)]">
                                 &quot;{verdict}&quot;
@@ -267,21 +270,23 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw }: 
     );
 }
 
-function PlannerRow({ players, label, onSelect, selectedId }: { 
+function PlannerRow({ players, label, onSelect, selectedId, bgwDgwMap, nextGw }: { 
     players: LatestGwPlayerDTO[], 
     label: string, 
     onSelect: (p: LatestGwPlayerDTO) => void,
-    selectedId?: number 
+    selectedId?: number,
+    bgwDgwMap: Record<number, Record<number, { count: number; opponents: string[] }>>,
+    nextGw: number
 }) {
     return (
-        <div className="flex flex-col gap-4">
-            <Typography variant="caption" weight="black" className="text-center opacity-30 tracking-[0.5em]">{label}</Typography>
-            <div className="flex justify-around items-end w-full">
+        <div className="flex flex-col gap-6">
+            <Typography variant="caption" weight="black" className="text-center opacity-30 tracking-[0.5em] text-[10px]">{label}</Typography>
+            <div className="flex justify-around items-end w-full px-4">
                 {players.map(p => (
                     <div 
                         key={p.elementId} 
                         onClick={() => onSelect(p)}
-                        className={`flex flex-col items-center gap-2 transition-all duration-300 group cursor-pointer ${selectedId === p.elementId ? 'scale-110' : 'hover:-translate-y-2'}`}
+                        className={`flex flex-col items-center gap-3 transition-all duration-500 group cursor-pointer ${selectedId === p.elementId ? 'scale-110' : 'hover:-translate-y-2'}`}
                     >
                         <div className="relative">
                             <Image 
@@ -289,19 +294,57 @@ function PlannerRow({ players, label, onSelect, selectedId }: {
                                 alt={p.name} 
                                 width={selectedId === p.elementId ? 80 : 60} 
                                 height={selectedId === p.elementId ? 100 : 75} 
-                                className={`object-contain transition-all filter drop-shadow-lg ${selectedId === p.elementId ? 'brightness-125' : 'group-hover:brightness-110'}`}
+                                className={`object-contain transition-all filter drop-shadow-xl ${selectedId === p.elementId ? 'brightness-125' : 'group-hover:brightness-110'}`}
                                 unoptimized 
                             />
                             {selectedId === p.elementId && (
-                                <div className="absolute inset-0 bg-[color:var(--accent)]/20 blur-xl -z-10 rounded-full" />
+                                <div className="absolute inset-0 bg-[color:var(--accent)]/30 blur-2xl -z-10 rounded-full animate-pulse" />
                             )}
                         </div>
-                        <div className={`px-3 py-1 rounded-lg backdrop-blur-md border border-white/10 shadow-xl transition-colors ${selectedId === p.elementId ? 'bg-[color:var(--accent)]' : 'bg-black/40'}`}>
-                            <p className="text-[10px] font-black text-center text-white uppercase truncate w-16">{p.name}</p>
+                        <div className="flex flex-col items-center gap-1 w-full max-w-[90px]">
+                            <div className={`px-2 py-1 rounded-md backdrop-blur-md border border-white/10 shadow-lg transition-all w-full text-center ${selectedId === p.elementId ? 'bg-[color:var(--accent)]' : 'bg-black/60 group-hover:bg-black/80'}`}>
+                                <p className="text-[10px] font-black text-white uppercase truncate">{p.name}</p>
+                            </div>
+                            {/* Fixture Info */}
+                            <FixtureTimeline teamId={p.teamId!} bgwDgwMap={bgwDgwMap} nextGw={nextGw} />
                         </div>
                     </div>
                 ))}
             </div>
+        </div>
+    );
+}
+
+function FixtureTimeline({ teamId, bgwDgwMap, nextGw }: { 
+    teamId: number, 
+    bgwDgwMap: Record<number, Record<number, { count: number; opponents: string[] }>>,
+    nextGw: number 
+}) {
+    const teamFixtures = bgwDgwMap[teamId] || {};
+    const weeks = Array.from({ length: 3 }, (_, i) => nextGw + i);
+
+    return (
+        <div className="flex gap-1 justify-center">
+            {weeks.map(gw => {
+                const f = teamFixtures[gw];
+                const isBlank = !f || f.count === 0;
+                const isDouble = f && f.count >= 2;
+                
+                return (
+                    <div key={gw} className="flex flex-col items-center">
+                        <div 
+                            title={isBlank ? "Blank Gameweek" : f.opponents.join(', ')}
+                            className={`w-4 h-4 rounded-sm flex items-center justify-center text-[8px] font-black transition-all ${
+                                isBlank ? 'bg-red-500/20 text-red-500 border border-red-500/50' :
+                                isDouble ? 'bg-emerald-500 text-black shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
+                                'bg-white/10 text-white/60 border border-white/5'
+                            }`}
+                        >
+                            {isBlank ? 'B' : isDouble ? 'D' : f.opponents[0]?.substring(0, 3)}
+                        </div>
+                    </div>
+                );
+            })}
         </div>
     );
 }
