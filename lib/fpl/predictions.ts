@@ -393,6 +393,7 @@ export function calculateTransferSuggestions(
         form,
         reasoning: reasons.join(" • ") || "Consider replacing",
         negativeScore,
+        teamId: player.team,
       };
     })
     .filter((p): p is NonNullable<typeof p> => p !== null);
@@ -525,6 +526,7 @@ export function calculateTransferSuggestions(
           expectedPoints: playerOut.expectedPoints,
           form: playerOut.form,
           reasoning: playerOut.reasoning,
+          teamId: playerOut.teamId,
         },
         playerIn: {
           playerId: playerIn.playerId,
@@ -537,6 +539,10 @@ export function calculateTransferSuggestions(
           upcomingFixtures: playerIn.upcomingFixtures,
           selectedByPercent: playerIn.selectedByPercent,
           reasoning: playerIn.reasoning,
+          teamId: el.team,
+          team: {
+              shortName: teamShortNameMap.get(el.team) ?? "UNK"
+          }
         },
         netCost,
       });

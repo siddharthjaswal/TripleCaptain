@@ -219,6 +219,7 @@ export type TransferPlayerOutDTO = {
   expectedPoints: number;
   form: number;
   reasoning: string;
+  teamId: number;
 };
 
 export type TransferPlayerInDTO = {
@@ -232,6 +233,10 @@ export type TransferPlayerInDTO = {
   upcomingFixtures: FixtureDifficultyDTO[];
   selectedByPercent: number;
   reasoning: string;
+  teamId: number;
+  team: {
+      shortName: string;
+  };
 };
 
 export type TransferSuggestionDTO = {
