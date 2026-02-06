@@ -2,7 +2,8 @@
 
 import type { FixtureAnalysisDTO, TeamFixtureRunDTO } from "@/lib/fpl/dto";
 import { Card, Typography, Badge } from "./ui";
-import { BarChart3, CheckCircle2, XCircle } from "lucide-react";
+import { BarChart3, CheckCircle2, XCircle, Shield, Info } from "lucide-react";
+import Image from "next/image";
 
 type FixtureAnalysisCardProps = {
   analysis: FixtureAnalysisDTO;
@@ -11,30 +12,41 @@ type FixtureAnalysisCardProps = {
 export function FixtureAnalysisCard({ analysis }: FixtureAnalysisCardProps) {
   return (
     <section className="space-y-12 animate-fade-in pb-20">
-      <div className="flex items-center gap-3">
-        <div className="p-3 rounded-2xl bg-blue-500 text-white shadow-lg shadow-blue-500/20">
-          <BarChart3 className="h-6 w-6" />
+      {/* Header Area */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
+        <div className="flex items-center gap-4">
+            <div className="p-4 rounded-2xl bg-blue-500 text-white shadow-xl shadow-blue-500/30">
+                <BarChart3 className="h-7 w-7" />
+            </div>
+            <div>
+                <Typography variant="display" className="text-3xl md:text-5xl text-white">Fixture Analysis</Typography>
+                <Typography variant="caption" weight="black" className="opacity-40 tracking-[0.3em] text-[10px]">UPCOMING BATTLEGROUNDS</Typography>
+            </div>
         </div>
-        <div>
-          <Typography variant="title" weight="black">Fixture Analysis</Typography>
-          <Typography variant="caption">Next {analysis.gameweeksAnalyzed} GWs difficulty ratings</Typography>
-        </div>
+
+        <Card className="px-8 py-4 border-blue-500/20 bg-blue-500/5 flex items-center gap-4" glass hover={false}>
+            <Info className="w-5 h-5 text-blue-400 opacity-50" />
+            <Typography variant="caption" weight="black" className="text-[10px] opacity-60 leading-tight">
+                ANALYZING THE NEXT<br/>
+                <span className="text-white text-base">{analysis.gameweeksAnalyzed} GAMEWEEKS</span>
+            </Typography>
+        </Card>
       </div>
 
       <div className="grid gap-12 lg:grid-cols-2">
         {/* Best Fixtures */}
         <div className="space-y-8">
-            <div className="flex items-center gap-3 px-2">
-                <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                    <CheckCircle2 className="w-6 h-6" />
+            <div className="flex items-center gap-3 px-4">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500 text-black flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <CheckCircle2 className="w-7 h-7" />
                 </div>
                 <div>
-                    <Typography weight="black" className="uppercase tracking-tight">Prime Targets</Typography>
-                    <Typography variant="caption" className="text-[10px]">Teams with the easiest voyages ahead</Typography>
+                    <Typography variant="title" weight="black" className="uppercase">Prime Targets</Typography>
+                    <Typography variant="caption" className="text-[10px] font-bold opacity-40">Easiest voyages for max plundering</Typography>
                 </div>
             </div>
 
-            <div className="grid gap-4">
+            <div className="grid gap-6">
                 {analysis.bestFixtureRuns.map((team) => (
                     <TeamFixtureRun key={team.teamId} team={team} type="best" />
                 ))}
@@ -43,17 +55,17 @@ export function FixtureAnalysisCard({ analysis }: FixtureAnalysisCardProps) {
 
         {/* Worst Fixtures */}
         <div className="space-y-8">
-             <div className="flex items-center gap-3 px-2">
-                <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-500">
-                    <XCircle className="w-6 h-6" />
+             <div className="flex items-center gap-3 px-4">
+                <div className="w-12 h-12 rounded-2xl bg-red-500 text-white flex items-center justify-center shadow-lg shadow-red-500/20">
+                    <XCircle className="w-7 h-7" />
                 </div>
                 <div>
-                    <Typography weight="black" className="uppercase tracking-tight">Fixture Traps</Typography>
-                    <Typography variant="caption" className="text-[10px]">Teams facing rough seas and heavy weather</Typography>
+                    <Typography variant="title" weight="black" className="uppercase">Fixture Traps</Typography>
+                    <Typography variant="caption" className="text-[10px] font-bold opacity-40">Rough seas ahead - consider selling</Typography>
                 </div>
             </div>
 
-            <div className="grid gap-4">
+            <div className="grid gap-6">
                 {analysis.worstFixtureRuns.map((team) => (
                     <TeamFixtureRun key={team.teamId} team={team} type="worst" />
                 ))}
@@ -66,44 +78,97 @@ export function FixtureAnalysisCard({ analysis }: FixtureAnalysisCardProps) {
 
 function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" | "worst" }) {
   return (
-    <Card className="p-6 relative overflow-hidden group border-white/5" glass>
-      <div className={`absolute top-0 left-0 bottom-0 w-1 ${type === 'best' ? 'bg-emerald-500' : 'bg-red-500'} opacity-20`} />
+    <Card className="relative overflow-hidden group border-white/5" glass hover={false}>
+      {/* Dynamic Background Accent */}
+      <div className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full blur-[60px] opacity-10 ${type === 'best' ? 'bg-emerald-500' : 'bg-red-500'}`} />
       
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-            <div className="w-12 h-12 relative flex items-center justify-center rounded-xl bg-white/5 border border-white/5 shadow-inner">
-                 <img 
-                    src={`https://resources.premierleague.com/premierleague/badges/t${team.teamId}.png`} 
-                    alt={team.teamShort}
-                    className="w-8 h-8 object-contain"
-                />
+      <div className="p-8 space-y-8">
+        <div className="flex items-center justify-between">
+            <div className="flex items-center gap-5">
+                <div className="w-16 h-16 relative flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 shadow-2xl shrink-0 p-3">
+                    <Image 
+                        src={`https://resources.premierleague.com/premierleague/badges/t${team.teamId}.png`} 
+                        alt={team.teamShort}
+                        fill
+                        className="object-contain p-2"
+                        unoptimized
+                    />
+                </div>
+                <div>
+                    <Typography variant="title" weight="black" className="text-2xl uppercase leading-none mb-2">{team.teamName}</Typography>
+                    <div className="flex items-center gap-3">
+                         <Badge variant={type === 'best' ? 'success' : 'error'} className="font-black text-[9px] px-3 py-1 tracking-widest">
+                            {type === 'best' ? 'TARGET' : 'AVOID'}
+                         </Badge>
+                         <Typography variant="caption" className="text-[10px] font-black opacity-30 uppercase tracking-tighter">AVG DIFF: {team.averageDifficulty.toFixed(2)}</Typography>
+                    </div>
+                </div>
             </div>
-            <div>
-                <Typography weight="black" className="text-lg uppercase leading-none mb-1">{team.teamName}</Typography>
-                <Typography variant="caption" className="text-[9px] font-black opacity-40">AVG DIFFICULTY: {team.averageDifficulty.toFixed(2)}</Typography>
+            
+            {/* Diff Gauge (Visual) */}
+            <div className="hidden sm:block">
+                <DifficultyIndicator difficulty={team.averageDifficulty} type={type} />
             </div>
         </div>
-        <Badge variant={type === 'best' ? 'success' : 'error'} className="font-black text-[9px] px-3">{type === 'best' ? 'TARGET' : 'AVOID'}</Badge>
-      </div>
 
-      <div className="grid grid-cols-5 gap-3">
-        {team.fixtures.map((f, i) => (
-          <div key={i} className="space-y-2">
-             <div className={`p-3 rounded-xl border text-center transition-transform group-hover:scale-105 ${getDiffStyle(f.difficulty)}`}>
-                <Typography weight="black" className="text-[10px] mb-0.5">{f.opponentShort}</Typography>
-                <Typography variant="caption" className="text-[8px] font-black opacity-60">{f.isHome ? 'H' : 'A'}</Typography>
+        {/* Fixture Timeline */}
+        <div className="space-y-4">
+             <div className="flex items-center justify-between px-1">
+                <Typography variant="caption" weight="black" className="text-[9px] opacity-30 tracking-[0.3em] uppercase">Tactical Timeline</Typography>
+                <div className="h-px flex-1 mx-4 bg-white/5" />
              </div>
-             <Typography variant="caption" className="text-center block font-black opacity-20">GW{f.gameweek}</Typography>
-          </div>
-        ))}
+
+             <div className="grid grid-cols-5 gap-4">
+                {team.fixtures.map((f, i) => (
+                    <div key={i} className="space-y-3 group/fix cursor-help">
+                        <div className={`p-4 rounded-2xl border-2 transition-all duration-300 group-hover/fix:scale-105 text-center shadow-xl ${getDiffStyle(f.difficulty)}`}>
+                            <Typography weight="black" className="text-sm mb-1 uppercase tracking-tighter leading-none">{f.opponentShort}</Typography>
+                            <Typography variant="caption" className="text-[9px] font-black opacity-50 uppercase leading-none">{f.isHome ? 'HOME' : 'AWAY'}</Typography>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                            <Typography variant="caption" className="text-[8px] font-black opacity-20 uppercase">GW{f.gameweek}</Typography>
+                            <div className={`h-1 w-full rounded-full ${getDiffStyleLine(f.difficulty)}`} />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
       </div>
     </Card>
   );
 }
 
+function DifficultyIndicator({ difficulty, type }: { difficulty: number, type: "best" | "worst" }) {
+    // 1-5 scale, 1 is best. 
+    // Best run = low difficulty. Worst run = high difficulty.
+    const percent = ((difficulty - 1) / 4) * 100;
+    
+    return (
+        <div className="w-24 space-y-2">
+            <div className="flex justify-between items-center text-[8px] font-black opacity-30 uppercase tracking-widest">
+                <span>Safe</span>
+                <span>Trap</span>
+            </div>
+            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5 p-[1px]">
+                <div 
+                    className={`h-full rounded-full transition-all duration-1000 ${type === 'best' ? 'bg-emerald-500' : 'bg-red-500'}`} 
+                    style={{ width: `${percent}%` }}
+                />
+            </div>
+        </div>
+    )
+}
+
 function getDiffStyle(diff: number) {
-    if (diff <= 2) return "bg-emerald-500/20 border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]";
-    if (diff === 3) return "bg-white/5 border-white/10 text-white/50";
-    if (diff === 4) return "bg-amber-500/20 border-amber-500/40 text-amber-400";
-    return "bg-red-500/20 border-red-500/40 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.1)]";
+    if (diff <= 2) return "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 shadow-emerald-500/10";
+    if (diff === 3) return "border-white/10 bg-white/5 text-white/60 shadow-white/5";
+    if (diff === 4) return "border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-amber-500/10";
+    return "border-red-500/30 bg-red-500/10 text-red-400 shadow-red-500/10";
+}
+
+function getDiffStyleLine(diff: number) {
+    if (diff <= 2) return "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]";
+    if (diff === 3) return "bg-white/10";
+    if (diff === 4) return "bg-amber-500";
+    return "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]";
 }
