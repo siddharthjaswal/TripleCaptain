@@ -166,8 +166,20 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                 </div>
 
                 {/* Bench */}
-                <Card className="p-6" glass>
-                    <Typography variant="caption" weight="black" className="mb-4 block text-center">The Crew Deck (Bench)</Typography>
+                <Card className="p-6" glass hover={false}>
+                    <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                        <Typography variant="caption" weight="black" className="opacity-50">The Crew Deck (Bench)</Typography>
+                        <div className="flex gap-4">
+                            <div className="flex items-center gap-1.5">
+                                <div className="w-2.5 h-2.5 rounded-full bg-red-500/50 border border-red-500" />
+                                <Typography variant="caption" className="text-[9px]">Blank GW</Typography>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
+                                <Typography variant="caption" className="text-[9px]">Double GW</Typography>
+                            </div>
+                        </div>
+                    </div>
                     <div className="flex justify-around">
                         {bench.map(p => (
                             <div key={p.elementId} onClick={() => setSelectedForSwap(p)} className={`flex flex-col items-center gap-2 cursor-pointer transition-all ${selectedForSwap?.elementId === p.elementId ? 'scale-110 ring-2 ring-[color:var(--accent)] rounded-xl p-2 bg-[color:var(--accent)]/10' : 'opacity-80 hover:opacity-100'}`}>
