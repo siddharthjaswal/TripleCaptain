@@ -154,19 +154,16 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
   const handleImageError = () => {
     if (!imgUrl) return;
     
-    // Fallback 1: Try 110x140 instead of 250x250
     if (imgUrl.includes('250x250')) {
       setImgUrl(imgUrl.replace('250x250', '110x140'));
       return;
     }
 
-    // Fallback 2: Try .jpg instead of .png
     if (imgUrl.endsWith('.png')) {
       setImgUrl(imgUrl.replace('.png', '.jpg'));
       return;
     }
     
-    // Fallback 3: Use Team Shirt
     setUseShirtFallback(true);
     setImageError(true);
   };
