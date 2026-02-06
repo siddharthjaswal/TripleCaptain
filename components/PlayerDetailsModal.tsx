@@ -1,19 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import type { PlayerDetailsDTO, FixtureDifficultyDTO } from "@/lib/fpl/dto";
+import type { PlayerDetailsDTO } from "@/lib/fpl/dto";
 import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
 import { Card, Typography, Badge, Button } from "./ui";
 import { 
     X, 
-    Activity, 
     Target, 
     TrendingUp, 
     Users, 
-    Clock, 
     Zap, 
-    Shield, 
     Calendar,
     AlertTriangle,
     Loader2
@@ -244,8 +241,8 @@ function PriceTag({ label, value }: { label: string, value: string }) {
     )
 }
 
-function StatBox({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: any, color: string }) {
-    const colors: any = {
+function StatBox({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: string | number, color: string }) {
+    const colors: Record<string, string> = {
         emerald: 'text-emerald-500 bg-emerald-500/10',
         blue: 'text-blue-500 bg-blue-500/10',
         purple: 'text-purple-500 bg-purple-500/10',
@@ -254,7 +251,7 @@ function StatBox({ icon, label, value, color }: { icon: React.ReactNode, label: 
     return (
         <div className="p-4 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2">
             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center mx-auto ${colors[color]}`}>
-                {React.cloneElement(icon as React.ReactElement, { className: 'w-5 h-5' })}
+                {React.isValidElement(icon) ? React.cloneElement(icon, { className: 'w-5 h-5' } as React.HTMLAttributes<HTMLElement>) : icon}
             </div>
             <div>
                 <Typography variant="caption" className="text-[9px] opacity-40">{label}</Typography>
@@ -264,7 +261,7 @@ function StatBox({ icon, label, value, color }: { icon: React.ReactNode, label: 
     )
 }
 
-function DataRow({ label, value }: { label: string, value: any }) {
+function DataRow({ label, value }: { label: string, value: string | number }) {
     return (
         <div className="flex justify-between items-center py-3 border-b border-white/5">
             <Typography className="text-sm opacity-60">{label}</Typography>
@@ -300,6 +297,6 @@ function SmallStat({ label, value }: { label: string, value: string }) {
 function getDiffColor(diff: number) {
     if (diff <= 2) return "bg-emerald-500/20 text-emerald-500";
     if (diff === 3) return "bg-slate-500/20 text-slate-400";
-    if (diff === 4) return "bg-amber-500/20 text-amber-500";
+    if (diff === 4) return "bg-amber-500/20 text-amber-400";
     return "bg-red-500/20 text-red-500";
 }

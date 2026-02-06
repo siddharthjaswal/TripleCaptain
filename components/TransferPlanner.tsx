@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, Button, Typography, Badge } from './ui';
 import { 
     Search, 
