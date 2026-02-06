@@ -62,6 +62,21 @@ export function TransferSuggestionsCard({
 
 function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSuggestionDTO; rank: number }) {
   const rankColors = ["from-yellow-400 to-amber-600", "from-slate-300 to-slate-500", "from-orange-400 to-orange-600"];
+  
+  const photoOut = getPlayerPhotoUrl(suggestion.playerOut.playerPhoto);
+  const photoIn = getPlayerPhotoUrl(suggestion.playerIn.playerPhoto);
+  
+  const [imgOut, setImgOut] = React.useState(photoOut);
+  const [imgIn, setImgIn] = React.useState(photoIn);
+  
+  const handleImgError = (url: string | null, setter: (val: string | null) => void) => {
+    if (!url) return;
+    if (url.includes('250x250')) {
+        setter(url.replace('250x250', '110x140'));
+        return;
+    }
+    setter(null); // Fallback to team shirt or icon
+  };
 
   return (
     <Card className="relative overflow-hidden flex flex-col h-full border-white/5 shadow-2xl transition-all duration-500 hover:scale-[1.02]" glass>
@@ -87,15 +102,21 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
             <div className="relative">
                 <div className="flex items-center gap-5 p-5 rounded-3xl bg-red-500/5 border border-red-500/10 hover:bg-red-500/10 transition-all duration-300">
                     <div className="relative w-16 h-16 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl shrink-0 border border-white/5">
-                        <Image src={getPlayerPhotoUrl(suggestion.playerOut.playerPhoto) || ''} alt="Out" fill className="object-contain" unoptimized />
+                        {imgOut ? (
+                            <Image src={imgOut} alt="Out" fill className="object-contain" unoptimized onError={() => handleImgError(imgOut, setImgOut)} />
+                        ) : (
+                            <div className="flex items-center justify-center w-full h-full bg-slate-800">
+                                <ArrowDownRight className="w-6 h-6 text-red-500 opacity-20" />
+                            </div>
+                        )}
                     </div>
                     <div className="min-w-0 flex-1 space-y-1.5">
                          <div className="flex items-center gap-1.5">
                             <ArrowDownRight className="w-3 h-3 text-red-500" />
                             <Typography variant="caption" weight="black" className="text-[9px] text-red-500 tracking-widest uppercase">Sell Analysis</Typography>
                          </div>
-                         <Typography weight="black" className="text-base uppercase truncate leading-none text-white">{suggestion.playerOut.playerName}</Typography>
-                         <Typography className="text-[11px] text-white/40 italic leading-snug line-clamp-2">&quot;{suggestion.playerOut.reasoning}&quot;</Typography>
+                         <Typography weight="black" className="text-lg uppercase text-white leading-tight break-words">{suggestion.playerOut.playerName}</Typography>
+                         <Typography className="text-[11px] text-white/40 italic leading-snug line-clamp-3">&quot;{suggestion.playerOut.reasoning}&quot;</Typography>
                     </div>
                     <div className="text-right">
                          <Typography weight="black" className="text-sm text-red-400 font-mono">£{suggestion.playerOut.cost.toFixed(1)}m</Typography>
@@ -114,14 +135,20 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                 <div className="p-6 rounded-3xl bg-emerald-500/5 border border-emerald-500/20 hover:bg-emerald-500/10 transition-all duration-300 space-y-6">
                     <div className="flex items-center gap-5">
                         <div className="relative w-20 h-20 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl shrink-0 border border-emerald-500/20">
-                            <Image src={getPlayerPhotoUrl(suggestion.playerIn.playerPhoto) || ''} alt="In" fill className="object-contain" unoptimized />
+                             {imgIn ? (
+                                <Image src={imgIn} alt="In" fill className="object-contain" unoptimized onError={() => handleImgError(imgIn, setImgIn)} />
+                            ) : (
+                                <div className="flex items-center justify-center w-full h-full bg-slate-800">
+                                    <ArrowUpRight className="w-8 h-8 text-emerald-500 opacity-20" />
+                                </div>
+                            )}
                         </div>
                         <div className="min-w-0 flex-1 space-y-1.5">
                             <div className="flex items-center gap-1.5">
                                 <ArrowUpRight className="w-3 h-3 text-emerald-500" />
                                 <Typography variant="caption" weight="black" className="text-[9px] text-emerald-500 tracking-widest uppercase">Chief Scout Verdict</Typography>
                             </div>
-                            <Typography weight="black" className="text-xl uppercase truncate leading-none text-white">{suggestion.playerIn.playerName}</Typography>
+                            <Typography weight="black" className="text-xl uppercase text-white leading-tight break-words">{suggestion.playerIn.playerName}</Typography>
                             <Typography className="text-[11px] text-white/50 font-bold">{suggestion.playerIn.team?.shortName || 'UNK'} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
                         </div>
                         <div className="text-right">
