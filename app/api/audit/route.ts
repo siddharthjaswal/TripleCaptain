@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auditTeam } from '@/lib/fpl/auditor';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -10,7 +11,24 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const audit = await auditTeam(parseInt(entryId));
+        const id = parseInt(entryId);
+        
+        // Check credits
+        const account = await prisma.account.findUnique({ where: { entryId: id } });
+        if (account && !account.isPro && account.credits <= 0) {
+            return NextResponse.json({ error: 'Out of credits', needsUpgrade: true }, { status: 402 });
+        }
+
+        const audit = await auditTeam(id);
+
+        // Deduct credit if not pro
+        if (account && !account.isPro) {
+            await prisma.account.update({
+                where: { entryId: id },
+                data: { credits: { decrement: 1 } }
+            });
+        }
+
         return NextResponse.json({ success: true, audit });
     } catch (error) {
         console.error('Audit API error:', error);
@@ -21,7 +39,15 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { squad, transfers, bank } = body;
+        const { squad, transfers, bank, entryId } = body;
+
+        // Check credits if entryId is provided
+        if (entryId) {
+            const account = await prisma.account.findUnique({ where: { entryId: parseInt(entryId) } });
+            if (account && !account.isPro && account.credits <= 0) {
+                return NextResponse.json({ error: 'Out of credits', needsUpgrade: true }, { status: 402 });
+            }
+        }
 
         const prompt = `You are "The Gaffer", a tactical FPL genius.
 Analyze this planned transfer for the next gameweek.
@@ -43,6 +69,17 @@ Return ONLY the verdict text.`;
         
         const result = await model.generateContent(prompt);
         const verdict = result.response.text();
+
+        // Deduct credit
+        if (entryId) {
+            const account = await prisma.account.findUnique({ where: { entryId: parseInt(entryId) } });
+            if (account && !account.isPro) {
+                await prisma.account.update({
+                    where: { entryId: parseInt(entryId) },
+                    data: { credits: { decrement: 1 } }
+                });
+            }
+        }
 
         return NextResponse.json({ success: true, audit: { critique: verdict } });
     } catch (error) {

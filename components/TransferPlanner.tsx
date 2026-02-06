@@ -114,12 +114,28 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
             const res = await fetch('/api/audit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ squad, transfers, bank })
+                body: JSON.stringify({ 
+                    entryId,
+                    squad: squad.map(p => ({
+                        name: p.name,
+                        teamCode: p.teamCode,
+                        position: p.position,
+                        epNext: (p as any).epNext
+                    })), 
+                    transfers, 
+                    bank 
+                })
             });
             const data = await res.json();
+            
+            if (res.status === 402) {
+                setVerdict("You're out of tactical credits, Manager! Upgrade to the Locker Room for unlimited insights.");
+                return;
+            }
+            
             setVerdict(data.audit.critique);
         } catch (e) {
-            setVerdict("The sea is too rough to think, Captain! (AI Error)");
+            setVerdict("The tactical board is frozen! (AI Error)");
         } finally {
             setIsAnalyzing(false);
         }

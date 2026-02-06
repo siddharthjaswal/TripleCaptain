@@ -26,6 +26,12 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
         try {
             const res = await fetch(`/api/audit?entryId=${entryId}`);
             const data = await res.json();
+            
+            if (res.status === 402) {
+                alert("You're out of tactical credits! Upgrade to the Locker Room to get more insights from The Gaffer.");
+                return;
+            }
+
             if (data.success) {
                 setAudit(data.audit);
             }
