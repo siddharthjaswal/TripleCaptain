@@ -33,11 +33,14 @@ export type GameweekDeadlineDTO = {
   isBeforeDeadline: boolean;
 };
 
+export type FplPhase = "LIVE" | "DEBRIEF" | "STRATEGY";
+
 export type SummaryDTO = {
   profile: ProfileDTO;
   totals: TotalsDTO;
   latest: LatestGwDTO;
   nextDeadline: GameweekDeadlineDTO | null;
+  phase: FplPhase;
 };
 
 export type LatestGwPlayerDTO = {

@@ -128,7 +128,7 @@ function findHistoryRecord(
   return matched ?? history[history.length - 1];
 }
 
-function mapLatestGameweekPlayers(params: {
+export function mapLatestGameweekPlayers(params: {
   picks: EntryPicks;
   liveData?: EventLive | null;
   elements?: BootstrapElement[];

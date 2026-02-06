@@ -23,6 +23,7 @@ import {
   mapClassicLeagueSummaries,
   mapFixtures,
   mapLatestGameweek,
+  mapLatestGameweekPlayers,
   mapProfile,
   mapTotals,
 } from "./mappers";
@@ -98,6 +99,7 @@ export async function loadEntrySummary(
     const isFinished = currentEventMeta?.finished ?? true;
 
     const nextDeadline = calculateNextDeadline(bootstrap.events);
+    const phase = calculateFplPhase(bootstrap.events, nextDeadline);
 
     return {
       profile: mapProfile(profile),
@@ -113,6 +115,7 @@ export async function loadEntrySummary(
         elements: bootstrap.elements,
       }),
       nextDeadline,
+      phase,
     };
   } catch (error) {
     if (error instanceof FplError && error.status === 404) {
@@ -323,6 +326,32 @@ function calculateNextDeadline(
   };
 }
 
+function calculateFplPhase(
+  events: BootstrapStatic["events"],
+  nextDeadline: GameweekDeadlineDTO | null
+): import("./dto").FplPhase {
+  const currentGw = events.find((e) => e.is_current);
+  
+  // 1. LIVE Phase: Current GW is active and not finished
+  if (currentGw && !currentGw.finished) {
+    return "LIVE";
+  }
+
+  // 2. STRATEGY Phase: Next deadline is within 48 hours
+  if (nextDeadline) {
+    const now = new Date();
+    const deadline = new Date(nextDeadline.deadline);
+    const hoursToDeadline = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
+    
+    if (hoursToDeadline <= 48) {
+      return "STRATEGY";
+    }
+  }
+
+  // 3. DEBRIEF Phase: Default for when GW is finished but next isn't close
+  return "DEBRIEF";
+}
+
 export async function loadFixtures(
   entryIdInput: string | number,
   options: { event?: string | number | null } = {},
@@ -507,7 +536,6 @@ export async function loadGameweek(
   }
 }
 
-
 export async function loadPredictions(
   entryIdInput: string | number,
 ): Promise<PredictionsDTO> {
@@ -624,4 +652,38 @@ export async function loadPredictions(
     }
     throw error;
   }
+}
+
+export async function loadPlannerData(
+    entryIdInput: string | number,
+): Promise<{
+    squad: import("./dto").LatestGwPlayerDTO[];
+    bank: number;
+    teamValue: number;
+    nextGw: number;
+}> {
+    const entryId = typeof entryIdInput === "number" ? entryIdInput : parseEntryId(entryIdInput);
+    
+    const [profile, history, bootstrap] = await Promise.all([
+        getEntryProfile(entryId),
+        getEntryHistory(entryId),
+        getBootstrap(),
+    ]);
+
+    const currentEvent = await resolveCurrentEvent(profile.current_event);
+    const picks = await getEntryPicks(entryId, currentEvent);
+    
+    const latestHistory = history.current[history.current.length - 1];
+    
+    const squad = mapLatestGameweekPlayers({
+        picks,
+        elements: bootstrap.elements
+    });
+
+    return {
+        squad,
+        bank: latestHistory.bank / 10,
+        teamValue: latestHistory.value / 10,
+        nextGw: currentEvent + 1,
+    };
 }
