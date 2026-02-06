@@ -495,17 +495,17 @@ body {
 }
 
 .tc-player-chip-vertical--compact {
-  min-height: 160px;
-  max-width: 80px;
+  min-height: 200px;
+  max-width: 110px;
 }
 
 .tc-player-chip-vertical--compact .tc-player-chip-vertical__image {
-  width: 44px;
-  height: 55px;
+  width: 66px;
+  height: 82px;
 }
 
 .tc-player-chip-vertical--compact .tc-player-chip-vertical__points {
-  font-size: 1.2rem;
+  font-size: 2.2rem;
 }
 
 /* --- ANIMATIONS --- */

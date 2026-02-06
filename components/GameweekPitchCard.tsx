@@ -75,11 +75,11 @@ export function GameweekPitchCard({ latest }: GameweekPitchCardProps) {
           })}
         </div>
         {bench.length > 0 ? (
-          <div>
-            <p className="tc-text-muted text-xs font-semibold uppercase tracking-wide">
-              Bench
+          <div className="pt-6 border-t border-[color:var(--surface-border)] border-dashed">
+            <p className="tc-text-muted text-[10px] font-black uppercase tracking-[0.3em] text-center mb-6 opacity-50">
+              The Substitutes Bench
             </p>
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="flex justify-around items-start gap-2 w-full px-4">
               {bench.map((player) => (
                 <PlayerChip
                   key={player.elementId}
