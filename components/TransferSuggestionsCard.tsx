@@ -122,19 +122,26 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                              <Typography variant="caption" weight="black" className="text-red-500 tracking-[0.2em]">THROW OVERBOARD</Typography>
                         </div>
                         
-                        <div className="p-6 rounded-3xl bg-red-500/[0.03] border border-red-500/10 flex items-center gap-6">
-                            <div className="relative w-20 h-20 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl shrink-0 border border-white/5">
-                                {imgOut ? (
-                                    <Image src={imgOut} alt="Out" fill className="object-contain" unoptimized onError={() => handleImgError(imgOut, setImgOut)} />
-                                ) : (
-                                    <div className="flex items-center justify-center w-full h-full text-red-500/20"><ShieldAlert className="w-8 h-8" /></div>
-                                )}
+                        <div className="p-6 rounded-3xl bg-red-500/[0.03] border border-red-500/10 space-y-6">
+                            {/* Full Width Name Row */}
+                            <div className="border-b border-white/5 pb-4">
+                                <Typography weight="black" className="text-xl uppercase leading-tight text-white block w-full">{suggestion.playerOut.playerName}</Typography>
+                                <Typography variant="caption" className="text-[10px] font-bold text-white/30 uppercase mt-1">{suggestion.playerOut.position} • £{suggestion.playerOut.cost.toFixed(1)}m</Typography>
                             </div>
-                            <div className="min-w-0 flex-1">
-                                <Typography weight="black" className="text-xl uppercase truncate text-white mb-1">{suggestion.playerOut.playerName}</Typography>
-                                <Typography variant="caption" className="text-[10px] font-bold text-white/30 uppercase mb-3">{suggestion.playerOut.position} • £{suggestion.playerOut.cost.toFixed(1)}m</Typography>
-                                <div className="p-3 rounded-xl bg-black/40 border border-white/5">
-                                    <Typography className="text-[10px] text-red-400/80 italic leading-relaxed">&quot;{suggestion.playerOut.reasoning}&quot;</Typography>
+
+                            <div className="flex items-center gap-6">
+                                <div className="relative w-16 h-16 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl shrink-0 border border-white/5">
+                                    {imgOut ? (
+                                        <Image src={imgOut} alt="Out" fill className="object-contain" unoptimized onError={() => handleImgError(imgOut, setImgOut)} />
+                                    ) : (
+                                        <div className="flex items-center justify-center w-full h-full text-red-500/20"><ShieldAlert className="w-8 h-8" /></div>
+                                    )}
+                                </div>
+                                <div className="flex-1">
+                                    <div className="p-4 rounded-2xl bg-black/40 border border-white/5 relative">
+                                        <div className="absolute -top-2 left-4 px-2 bg-[#0a0f1e] text-[8px] font-black text-red-500 tracking-widest border border-red-500/20 rounded">REASON</div>
+                                        <Typography className="text-xs text-red-400/80 italic leading-relaxed">&quot;{suggestion.playerOut.reasoning}&quot;</Typography>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -155,7 +162,13 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                         </div>
                         
                         <div className="p-8 rounded-[2rem] bg-emerald-500/[0.04] border border-emerald-500/20 space-y-8 relative group-hover:bg-emerald-500/[0.08] transition-colors">
-                            <div className="flex items-start gap-6">
+                            {/* Full Width Name Row */}
+                            <div className="border-b border-white/5 pb-4">
+                                <Typography weight="black" className="text-3xl uppercase leading-tight text-white block w-full">{suggestion.playerIn.playerName}</Typography>
+                                <Typography variant="caption" className="text-xs font-black text-emerald-500/60 uppercase tracking-widest mt-1">{suggestion.playerIn.team?.shortName || 'UNK'} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
+                            </div>
+
+                            <div className="flex items-center gap-8">
                                 <div className="relative w-24 h-24 bg-slate-900 rounded-3xl overflow-hidden shadow-2xl shrink-0 border border-emerald-500/30">
                                     {imgIn ? (
                                         <Image src={imgIn} alt="In" fill className="object-contain" unoptimized onError={() => handleImgError(imgIn, setImgIn)} />
@@ -163,16 +176,10 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                                         <div className="flex items-center justify-center w-full h-full text-emerald-500/20"><Search className="w-10 h-10" /></div>
                                     )}
                                 </div>
-                                <div className="flex-1 min-w-0 space-y-4 pt-1">
-                                    <div className="min-w-0">
-                                        <Typography weight="black" className="text-2xl uppercase leading-[0.9] text-white break-words mb-2">{suggestion.playerIn.playerName}</Typography>
-                                        <Typography variant="caption" className="text-xs font-black text-emerald-500/60 uppercase tracking-widest">{suggestion.playerIn.team?.shortName || 'UNK'} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <div className="px-3 py-1 bg-emerald-500/20 rounded-lg border border-emerald-500/30">
-                                            <Typography weight="black" className="text-2xl text-emerald-400 leading-none">{suggestion.playerIn.expectedPoints.toFixed(1)}</Typography>
-                                            <Typography variant="caption" className="text-[8px] font-black opacity-40 uppercase tracking-tighter">Exp Pts</Typography>
-                                        </div>
+                                <div className="flex-1 space-y-4">
+                                    <div className="px-5 py-3 bg-emerald-500/20 rounded-2xl border border-emerald-500/30 inline-block">
+                                        <Typography variant="caption" weight="black" className="text-[10px] font-black opacity-40 uppercase tracking-tighter mb-1 block">Expected Points</Typography>
+                                        <Typography weight="black" className="text-4xl text-emerald-400 leading-none">{suggestion.playerIn.expectedPoints.toFixed(1)}</Typography>
                                     </div>
                                 </div>
                             </div>
