@@ -8,7 +8,6 @@ import { useLeagueTeamPicks } from "@/hooks/useLeagueTeamPicks";
 import { TeamPitchModal } from "./TeamPitchModal";
 import { Card, Typography, Badge, Button } from "./ui";
 import { Eye, Trophy, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import { formatNumber } from "@/lib/format";
 
 type LeagueTableProps = {
   league: LeagueStandingDTO;
