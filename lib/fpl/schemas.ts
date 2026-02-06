@@ -254,7 +254,7 @@ export const FixtureSchema = z
     team_a_difficulty: z.number().optional(), // 1-5 difficulty rating
     kickoff_time: z.string().nullable(),
     finished: z.boolean(),
-    started: z.boolean().optional(),
+    started: z.boolean().nullable().optional(),
   })
   .passthrough();
 
