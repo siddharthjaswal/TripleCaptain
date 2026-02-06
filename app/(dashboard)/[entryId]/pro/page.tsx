@@ -78,7 +78,7 @@ export default function PricingPage({ params }: { params: { entryId: string } })
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-8">
-                    {plans.map((plan, i) => (
+                    {plans.map((plan) => (
                         <Card 
                             key={plan.name} 
                             className={`p-10 flex flex-col gap-8 relative overflow-hidden transition-all duration-500 ${plan.highlight ? 'border-[color:var(--accent)] ring-2 ring-[color:var(--accent)]/20 scale-105' : ''}`}

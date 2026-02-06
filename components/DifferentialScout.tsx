@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Compass, Gem, Loader2, Sparkles } from 'lucide-react';
+import { Compass, Gem, Sparkles } from 'lucide-react';
 import { Button, Card, Badge, Typography } from './ui';
 
 interface Pick {

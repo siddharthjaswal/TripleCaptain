@@ -661,7 +661,7 @@ export async function loadPlannerData(
     bank: number;
     teamValue: number;
     nextGw: number;
-    fixtures: any[];
+    fixtures: import("./schemas").Fixture[];
     bgwDgwMap: Record<number, Record<number, { count: number; opponents: string[] }>>;
 }> {
     const entryId = typeof entryIdInput === "number" ? entryIdInput : parseEntryId(entryIdInput);

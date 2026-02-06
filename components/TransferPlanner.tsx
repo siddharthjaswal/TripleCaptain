@@ -1,21 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, Button, Typography, Badge } from './ui';
 import { 
     Search, 
     ArrowRightLeft, 
-    TrendingUp, 
     Coins, 
-    ChevronRight, 
-    ChevronLeft,
     Trash2,
-    Plus,
-    Anchor,
     Loader2,
-    Sparkles,
-    AlertCircle,
-    Zap
+    Sparkles
 } from 'lucide-react';
 import type { LatestGwPlayerDTO } from '@/lib/fpl/dto';
 import { getPlayerPhotoUrl } from '@/lib/fpl/images';
@@ -31,7 +24,17 @@ interface PlannerProps {
 
 interface Transfer {
     out: LatestGwPlayerDTO;
-    in: any; // Result from search
+    in: {
+        id: number;
+        webName: string;
+        photo: string;
+        teamId: number;
+        nowCost: number;
+        epNext: number;
+        team: {
+            shortName: string;
+        };
+    };
 }
 
 export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bgwDgwMap }: PlannerProps) {
@@ -39,7 +42,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
     const [bank, setBank] = useState(initialBank);
     const [transfers, setTransfers] = useState<Transfer[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [searchResults, setSearchResults] = useState<Transfer['in'][]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [selectedForSwap, setSelectedForSwap] = useState<LatestGwPlayerDTO | null>(null);
     const [verdict, setVerdict] = useState<string | null>(null);
@@ -71,14 +74,14 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
             if (data.success) {
                 setSearchResults(data.players);
             }
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            console.error('Player search error:', error);
         } finally {
             setIsSearching(false);
         }
     };
 
-    const performSwap = (playerIn: any) => {
+    const performSwap = (playerIn: Transfer['in']) => {
         if (!selectedForSwap) return;
 
         const newSquad = squad.map(p => {
@@ -92,7 +95,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                     points: 0, 
                     rawPoints: 0,
                     epNext: playerIn.epNext,
-                };
+                } as LatestGwPlayerDTO;
             }
             return p;
         });
@@ -120,9 +123,12 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                         name: p.name,
                         teamCode: p.teamCode,
                         position: p.position,
-                        epNext: (p as any).epNext
+                        epNext: p.rawPoints // rawPoints is used as epNext in some DTOs
                     })), 
-                    transfers, 
+                    transfers: transfers.map(t => ({
+                        out: { name: t.out.name, epNext: t.out.rawPoints },
+                        in: { webName: t.in.webName, epNext: t.in.epNext }
+                    })), 
                     bank 
                 })
             });
@@ -134,7 +140,8 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
             }
             
             setVerdict(data.audit.critique);
-        } catch (e) {
+        } catch (error) {
+            console.error('AI Verdict error:', error);
             setVerdict("The tactical board is frozen! (AI Error)");
         } finally {
             setIsAnalyzing(false);
@@ -269,7 +276,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                         </div>
                     ) : (
                         <div className="text-center py-12 space-y-4">
-                            <Typography className="text-sm text-[color:var(--text-secondary)] italic leading-relaxed">
+                            <Typography className="text-sm text-[color:var(--text-secondary)] italic leading-relaxed text-center w-full">
                                 Select a player on the pitch to simulate a transfer.
                             </Typography>
                         </div>

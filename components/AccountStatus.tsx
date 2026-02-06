@@ -1,12 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, Typography, Badge, Button } from './ui';
+import { Card, Typography, Badge } from './ui';
 import { Zap, Coins, Star, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
+interface Account {
+    isPro: boolean;
+    credits: number;
+}
+
 export function AccountStatus({ entryId }: { entryId: number }) {
-    const [account, setAccount] = useState<any>(null);
+    const [account, setAccount] = useState<Account | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

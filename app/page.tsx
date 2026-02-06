@@ -70,7 +70,7 @@ export default function Home() {
       {/* Badge Reel */}
       <section className="w-full overflow-hidden mb-32 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
         <div className="flex flex-wrap items-center justify-center gap-12">
-          {[3, 7, 90, 91, 94, 36, 8, 31, 11, 54, 2, 14, 43, 1, 4, 17, 56, 6, 21, 39].map((teamCode, index) => (
+          {[3, 7, 90, 91, 94, 36, 8, 31, 11, 54, 2, 14, 43, 1, 4, 17, 56, 6, 21, 39].map((teamCode) => (
             <div key={teamCode} className="w-10 h-10 relative">
               <Image
                 src={`https://resources.premierleague.com/premierleague/badges/t${teamCode}.png`}
