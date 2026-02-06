@@ -528,11 +528,117 @@ body {
   animation: glow 3s ease-in-out infinite;
 }
 
-/* Hide scrollbar but keep functionality */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+/* Mobile Pitch Scaling */
+@media (max-width: 768px) {
+  .tc-pitch {
+    padding: 2.5rem 0.5rem;
+    gap: 2.5rem;
+    border-radius: 1.5rem;
+    border-width: 4px;
+    /* Allow horizontal scroll for rows if they exceed width */
+    overflow-x: hidden;
+  }
+
+  .tc-pitch-row {
+    gap: 1rem;
+  }
+
+  .tc-pitch-row__players {
+    gap: 0.25rem;
+    padding: 0 0.25rem;
+  }
+
+  .tc-player-chip-vertical {
+    min-height: 140px;
+    max-width: 75px; /* Tighter on mobile */
+  }
+
+  .tc-player-chip-vertical__image {
+    width: 48px;
+    height: 60px;
+    margin-bottom: -10px;
+  }
+
+  .tc-player-shirt-img {
+    height: 60px;
+  }
+
+  .tc-player-chip-vertical__info {
+    padding: 18px 4px 10px 4px;
+    border-radius: 12px;
+  }
+
+  .tc-player-chip-vertical__name {
+    font-size: 0.65rem;
+    margin-bottom: 2px;
+  }
+
+  .tc-player-chip-vertical__position {
+    font-size: 0.55rem;
+    gap: 2px;
+  }
+
+  .tc-player-chip-vertical__points {
+    font-size: 1.5rem;
+    margin-top: 4px;
+  }
+
+  .tc-player-chip-vertical__badge {
+    width: 18px;
+    height: 18px;
+    font-size: 0.6rem;
+    top: -6px;
+    right: -6px;
+  }
+
+  .tc-impact-badge-inline {
+    font-size: 9px;
+    padding: 1px 4px;
+    margin-left: 2px;
+  }
+
+  .tc-player-chip-vertical--halo .tc-player-chip-vertical__image::after {
+    inset: -8px;
+  }
 }
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+/* Bottom Navigation for Mobile */
+.tc-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: var(--surface-glass);
+  backdrop-filter: var(--surface-blur);
+  -webkit-backdrop-filter: var(--surface-blur);
+  border-top: 1px solid var(--surface-border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: 20px; /* Safe area for modern phones */
+  z-index: 100;
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+}
+
+.tc-nav-item-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+
+.tc-nav-item-mobile--active {
+  color: var(--accent);
+}
+
+.tc-nav-item-mobile svg {
+  width: 20px;
+  height: 20px;
 }

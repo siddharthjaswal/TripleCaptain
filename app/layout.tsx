@@ -46,7 +46,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
-      <body className="tc-surface min-h-dvh antialiased relative">
+      <body className="tc-surface min-h-dvh antialiased relative pb-20 md:pb-0">
         <Script id="tc-theme-script" strategy="beforeInteractive">
           {themeScript}
         </Script>
