@@ -340,7 +340,7 @@ body {
   flex: 1;
   min-width: 0;
   max-width: 110px;
-  min-height: 200px; /* Force consistent height for breathing room */
+  min-height: 200px;
   color: #ffffff;
   position: relative;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -355,31 +355,46 @@ body {
   justify-content: center;
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.6));
   z-index: 10;
-  margin-bottom: -15px; /* Integration gap */
-  border-radius: 50%;
+  margin-bottom: -15px;
   transition: all 0.3s;
 }
 
-/* Halo for high impact players */
+.tc-player-shirt-img {
+    height: 82px;
+    width: auto;
+    object-contain: true;
+}
+
+/* Points Color Logic */
+.tc-points-positive {
+    color: var(--brand-secondary);
+    text-shadow: 0 0 25px rgba(0, 255, 133, 0.7);
+}
+
+.tc-points-negative {
+    color: #f87171;
+    text-shadow: 0 0 20px rgba(248, 113, 113, 0.5);
+}
+
+/* Refined Glow for high impact players */
 .tc-player-chip-vertical--halo .tc-player-chip-vertical__image {
-  filter: drop-shadow(0 0 15px var(--brand-secondary));
-  transform: scale(1.05);
+  background: radial-gradient(circle, var(--brand-secondary) 0%, transparent 80%);
 }
 
 .tc-player-chip-vertical--halo .tc-player-chip-vertical__image::after {
     content: "";
     position: absolute;
-    inset: -8px;
-    border: 2px solid var(--brand-secondary);
-    border-radius: 50%;
-    opacity: 0.6;
-    animation: glow-pulse 2s infinite ease-in-out;
+    inset: -15px;
+    background: radial-gradient(circle, var(--brand-secondary) 0%, transparent 60%);
+    opacity: 0.4;
+    animation: glow-soft 3s infinite ease-in-out;
+    z-index: -1;
 }
 
-@keyframes glow-pulse {
-  0% { transform: scale(1); opacity: 0.3; box-shadow: 0 0 0 0 rgba(0, 255, 133, 0); }
-  50% { transform: scale(1.05); opacity: 0.7; box-shadow: 0 0 20px 5px rgba(0, 255, 133, 0.4); }
-  100% { transform: scale(1); opacity: 0.3; box-shadow: 0 0 0 0 rgba(0, 255, 133, 0); }
+@keyframes glow-soft {
+  0% { transform: scale(0.8); opacity: 0.2; }
+  50% { transform: scale(1.1); opacity: 0.4; }
+  100% { transform: scale(0.8); opacity: 0.2; }
 }
 
 .tc-player-chip-vertical__badge {
@@ -422,7 +437,7 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 28px 10px 14px 10px; /* Even more breathable */
+  padding: 28px 10px 14px 10px;
   background: rgba(15, 23, 42, 0.92);
   border-radius: 16px;
   backdrop-filter: blur(20px);
@@ -430,7 +445,7 @@ body {
   box-shadow: 0 12px 24px -8px rgba(0,0,0,0.7);
   position: relative;
   z-index: 5;
-  text-align: center; /* Force center alignment */
+  text-align: center;
 }
 
 .tc-player-chip-vertical__name {
@@ -462,12 +477,10 @@ body {
 
 .tc-player-chip-vertical__points {
   font-weight: 950;
-  font-size: 2.2rem; /* Even larger */
-  color: var(--brand-secondary);
-  margin-top: 10px;
-  text-shadow: 0 0 25px rgba(0, 255, 133, 0.7);
+  font-size: 2.2rem;
   line-height: 1;
   text-align: center;
+  margin-top: 10px;
 }
 
 .tc-impact-badge-inline {
@@ -479,25 +492,6 @@ body {
     border-radius: 6px;
     box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
     margin-left: 4px;
-}
-
-.tc-impact-badge {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 30;
-}
-
-.tc-impact-badge-content {
-    background: #10b981;
-    color: #000;
-    font-size: 11px;
-    font-weight: 950;
-    padding: 2px 8px;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.4);
 }
 
 .tc-player-chip-vertical--compact {

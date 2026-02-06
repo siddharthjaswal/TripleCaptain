@@ -174,7 +174,8 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
   const shirtUrl = getTeamShirtUrl(player.teamCode);
   const showFallback = (!imgUrl || imageError) && !useShirtFallback;
   const isHighImpact = player.impactScore !== null && player.impactScore >= 5;
-  const isDeadwood = player.points <= 2 && player.ownership !== null && player.ownership > 20;
+  const isPoorPerformance = player.points <= 2;
+  const isDeadwood = isPoorPerformance && player.ownership !== null && player.ownership > 20;
 
   return (
     <div
@@ -197,7 +198,7 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
                 alt="Team Shirt"
                 width={compact ? 44 : 66}
                 height={compact ? 55 : 82}
-                className="object-contain"
+                className="object-contain tc-player-shirt-img"
                 unoptimized
             />
         ) : !showFallback ? (
@@ -252,7 +253,9 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
                 </div>
             )}
         </div>
-        <div className="tc-player-chip-vertical__points">{player.points}</div>
+        <div className={`tc-player-chip-vertical__points ${isPoorPerformance ? 'tc-points-negative' : 'tc-points-positive'}`}>
+            {player.points}
+        </div>
       </div>
     </div>
   );
