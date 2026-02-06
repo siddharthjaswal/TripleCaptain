@@ -146,7 +146,7 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
     player.multiplier > 1 ? `×${player.multiplier}` : null;
 
   const photoUrl = getPlayerPhotoUrl(player.photo, player.code);
-  const showLiveIndicator = isLiveGameweek && player.rawPoints > 0;
+  const showLiveIndicator = isLiveGameweek && (player.rawPoints > 0 || player.isLive);
   const [imgUrl, setImgUrl] = useState(photoUrl);
   const [imageError, setImageError] = useState(false);
   const [useShirtFallback, setUseShirtFallback] = useState(false);
@@ -238,6 +238,14 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
                 <span className="text-[10px] font-black text-white bg-red-600 px-1.5 rounded-sm uppercase tracking-tighter shadow-lg">Blanked</span>
             </div>
         )}
+        {player.isLive && (
+             <div className="absolute top-0 right-0 p-1 z-30">
+                <span className="flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+             </div>
+        )}
       </div>
       <div className="tc-player-chip-vertical__info">
         <p className="tc-player-chip-vertical__name">{player.name}</p>
@@ -252,6 +260,11 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
         </div>
         <div className={`tc-player-chip-vertical__points ${isPoorPerformance ? 'tc-points-negative' : 'tc-points-positive'}`}>
             {player.points}
+            {player.projectedBonus !== undefined && player.projectedBonus > 0 && (
+                <span className="ml-1 text-[10px] text-yellow-400 font-bold" title="Projected Bonus">
+                    +{player.projectedBonus}
+                </span>
+            )}
         </div>
       </div>
     </div>

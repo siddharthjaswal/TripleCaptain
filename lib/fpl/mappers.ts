@@ -70,6 +70,7 @@ export function mapLatestGameweek(params: {
   isFinished: boolean;
   liveData?: EventLive | null;
   elements?: BootstrapElement[];
+  fixtures?: Fixture[] | null;
 }): LatestGwDTO {
   const {
     entryId,
@@ -80,6 +81,7 @@ export function mapLatestGameweek(params: {
     isFinished,
     liveData,
     elements,
+    fixtures,
   } = params;
   const historyRecord = findHistoryRecord(history.current, currentEvent);
 
@@ -100,6 +102,7 @@ export function mapLatestGameweek(params: {
         picks,
         liveData,
         elements,
+        fixtures,
       })
     : [];
 
@@ -132,11 +135,12 @@ export function mapLatestGameweekPlayers(params: {
   picks: EntryPicks;
   liveData?: EventLive | null;
   elements?: BootstrapElement[];
+  fixtures?: Fixture[] | null;
 }): LatestGwPlayerDTO[] {
-  const { picks, liveData, elements } = params;
-  const liveLookup = new Map<number, number>();
+  const { picks, liveData, elements, fixtures } = params;
+  const liveLookup = new Map<number, EventLive["elements"][0]["stats"]>();
   liveData?.elements.forEach((entry) => {
-    liveLookup.set(entry.id, entry.stats.total_points ?? 0);
+    liveLookup.set(entry.id, entry.stats);
   });
 
   const elementLookup = new Map<number, BootstrapElement>();
@@ -144,20 +148,60 @@ export function mapLatestGameweekPlayers(params: {
     elementLookup.set(element.id, element);
   });
 
-  return picks.picks
+  // Calculate projected bonus points
+  const bonusProjections = new Map<number, number>();
+  if (fixtures && liveData) {
+      fixtures.forEach(fixture => {
+          if (!fixture.finished && (fixture.team_h_score !== null || fixture.team_a_score !== null)) {
+              // Active fixture, calculate bonus
+              const playersInFixture = liveData.elements.filter(el => {
+                  const playerInfo = elementLookup.get(el.id);
+                  return playerInfo && (playerInfo.team === fixture.team_h || playerInfo.team === fixture.team_a);
+              });
+              
+              // Sort by BPS descending
+              const sorted = [...playersInFixture].sort((a, b) => (b.stats.bps ?? 0) - (a.stats.bps ?? 0));
+              
+              if (sorted.length > 0) {
+                  const topBps = sorted[0].stats.bps ?? 0;
+                  if (topBps > 0) {
+                      bonusProjections.set(sorted[0].id, 3);
+                      if (sorted.length > 1) {
+                          const secondBps = sorted[1].stats.bps ?? 0;
+                          if (secondBps > 0) bonusProjections.set(sorted[1].id, 2);
+                      }
+                      if (sorted.length > 2) {
+                          const thirdBps = sorted[2].stats.bps ?? 0;
+                          if (thirdBps > 0) bonusProjections.set(sorted[2].id, 1);
+                      }
+                  }
+              }
+          }
+      });
+  }
+
+  const mappedPlayers = picks.picks
     .slice()
     .sort((a, b) => a.position - b.position)
     .map((pick, index) => {
       const playerInfo = elementLookup.get(pick.element);
-      const rawPoints = liveLookup.get(pick.element) ?? 0;
+      const liveStats = liveLookup.get(pick.element);
+      const rawPoints = liveStats?.total_points ?? 0;
       const positionCode = playerInfo?.element_type ?? 4;
       const position = mapElementType(positionCode);
       const isBench = pick.position > 11;
       const multiplier = pick.multiplier ?? 1;
-      const appliedPoints = isBench ? rawPoints : rawPoints * multiplier;
+      
+      const projectedBonus = bonusProjections.get(pick.element) ?? 0;
+      const totalPointsWithBonus = rawPoints + projectedBonus;
+      const appliedPoints = isBench ? totalPointsWithBonus : totalPointsWithBonus * multiplier;
 
       const ownership = playerInfo?.selected_by_percent ? parseFloat(playerInfo.selected_by_percent) : 0;
       const impactScore = appliedPoints * (1 - ownership / 100);
+
+      // Check if player is currently playing
+      const playerFixture = fixtures?.find(f => (f.team_h === playerInfo?.team || f.team_a === playerInfo?.team) && !f.finished);
+      const isLive = !!playerFixture && (playerFixture.team_h_score !== null || playerFixture.team_a_score !== null);
 
       return {
         elementId: pick.element,
@@ -176,8 +220,25 @@ export function mapLatestGameweekPlayers(params: {
         teamCode: playerInfo?.team_code ?? null,
         ownership,
         impactScore: parseFloat(impactScore.toFixed(1)),
+        bps: liveStats?.bps ?? 0,
+        projectedBonus,
+        isLive,
+        minutes: liveStats?.minutes ?? 0,
+        goals: liveStats?.goals_scored ?? 0,
+        assists: liveStats?.assists ?? 0,
+        yellowCards: liveStats?.yellow_cards ?? 0,
+        redCards: liveStats?.red_cards ?? 0,
+        saves: liveStats?.saves ?? 0,
       } satisfies LatestGwPlayerDTO;
     });
+
+    // Handle Live Subs logic
+    // If a starting player has 0 minutes and has finished their game, 
+    // we should look at the bench. 
+    // This is complex to do fully accurately without a full sub engine, 
+    // but we can flag it in the UI.
+    
+    return mappedPlayers;
 }
 
 function mapElementType(type: number): "GK" | "DEF" | "MID" | "FWD" {

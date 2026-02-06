@@ -88,10 +88,11 @@ export async function loadEntrySummary(
     const historyRecord = resolveHistoryRecord(history.current, resolvedEvent);
     const summaryEvent = historyRecord?.event ?? resolvedEvent;
 
-    const [picks, bootstrap, liveData] = await Promise.all([
+    const [picks, bootstrap, liveData, fixtures] = await Promise.all([
       getEntryPicks(entryId, summaryEvent).catch(() => null),
       getBootstrap(),
       getEventLive(summaryEvent).catch(() => null),
+      getFixtures(summaryEvent).catch(() => null),
     ]);
 
     const currentEventMeta = bootstrap.events.find(
@@ -115,6 +116,7 @@ export async function loadEntrySummary(
         isFinished,
         liveData: liveData ?? undefined,
         elements: bootstrap.elements,
+        fixtures: fixtures ?? undefined,
       }),
       nextDeadline,
       phase,
@@ -335,8 +337,19 @@ function calculateFplPhase(
   const currentGw = events.find((e) => e.is_current);
   
   // 1. LIVE Phase: Current GW is active and not finished
+  // Also check if current time is after deadline but game hasn't finished
   if (currentGw && !currentGw.finished) {
     return "LIVE";
+  }
+
+  // Handle "Updating" case: If no current GW is marked as current, but deadline has passed
+  const nextGw = events.find((e) => e.is_next);
+  if (nextGw) {
+      const deadline = new Date(nextGw.deadline_time);
+      const now = new Date();
+      if (now > deadline && !nextGw.finished) {
+          return "LIVE"; // Treat as live even if not marked "is_current" yet
+      }
   }
 
   // 2. STRATEGY Phase: Next deadline is within 48 hours
@@ -505,9 +518,10 @@ export async function loadGameweek(
 
     const currentEvent = await resolveCurrentEvent(profile.current_event);
 
-    const [picks, liveData] = await Promise.all([
+    const [picks, liveData, fixtures] = await Promise.all([
       getEntryPicks(entryId, event).catch(() => null),
       getEventLive(event).catch(() => null),
+      getFixtures(event).catch(() => null),
     ]);
 
     const currentEventMeta = bootstrap.events.find((e) => e.id === event);
@@ -528,6 +542,7 @@ export async function loadGameweek(
         isFinished,
         liveData: liveData ?? undefined,
         elements: bootstrap.elements,
+        fixtures: fixtures ?? undefined,
       }),
     };
   } catch (error) {

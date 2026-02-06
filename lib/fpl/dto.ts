@@ -60,6 +60,16 @@ export type LatestGwPlayerDTO = {
   teamCode: number | null;
   ownership: number | null;
   impactScore: number | null; // (Points * (1 - Ownership/100))
+  // Live Data
+  bps?: number;
+  projectedBonus?: number;
+  isLive?: boolean;
+  minutes?: number;
+  goals?: number;
+  assists?: number;
+  yellowCards?: number;
+  redCards?: number;
+  saves?: number;
 };
 
 export type LeagueSummaryDTO = {
