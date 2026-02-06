@@ -59,6 +59,7 @@ export function calculateCaptainPicks(
     let fixtureDifficulty: FixtureDifficultyDTO | null = null;
     let difficultyBonus = 0;
     const isDoubleGw = playerFixtures.length >= 2;
+    const isBlankGw = playerFixtures.length === 0;
 
     if (playerFixtures.length > 0) {
       // Use the first fixture as primary for DTO but calculate bonus for all

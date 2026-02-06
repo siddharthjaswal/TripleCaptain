@@ -1,9 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import "dotenv/config";
-
-const prisma = new PrismaClient();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+import { callGemini } from './gemini';
 
 interface Pick {
     name: string;
@@ -75,9 +71,7 @@ For each pick, provide:
 Format: JSON array of {name, reasoning, epNext, ownership}.
 Return ONLY the JSON.`;
 
-    const model = genAI.getGenerativeModel({ model: 'models/gemini-2.5-flash' });
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    const responseText = await callGemini(prompt);
     
     const jsonMatch = responseText.match(/\[[\s\S]*\]/);
     if (!jsonMatch) return [];

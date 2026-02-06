@@ -128,6 +128,7 @@ export async function GET(
           : fixture.team_a_difficulty ?? 3;
 
         return {
+          gameweek: fixture.event,
           opponent: opponent?.name || "Unknown",
           opponentShort: opponent?.short_name || "UNK",
           difficulty,

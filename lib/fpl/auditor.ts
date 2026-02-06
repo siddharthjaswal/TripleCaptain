@@ -1,10 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { getEntryPicks } from './api';
-import "dotenv/config";
-
-const prisma = new PrismaClient();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+import { callGemini } from './gemini';
 
 interface Pick {
     element: number;
@@ -81,9 +76,7 @@ Provide your audit in JSON format with:
 
 Return ONLY the JSON.`;
 
-    const model = genAI.getGenerativeModel({ model: 'models/gemini-2.5-flash' });
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    const responseText = await callGemini(prompt);
     
     // Clean JSON response
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);

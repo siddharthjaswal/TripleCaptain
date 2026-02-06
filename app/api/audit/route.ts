@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { callGemini } from '@/lib/fpl/gemini';
 import { auditTeam } from '@/lib/fpl/auditor';
 import { prisma } from '@/lib/prisma';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -53,10 +53,10 @@ export async function POST(req: NextRequest) {
         const prompt = `You are "The Gaffer", a tactical FPL genius.
 Analyze this planned transfer for the next gameweek.
 Current Squad Overview: ${JSON.stringify(squad.map((p: { name: string; teamCode: number; position: string }) => ({ name: p.name, team: p.teamCode, pos: p.position })))}
-Transfers Planned in Planner: ${JSON.stringify(transfers.map((t: { out: { name: string }; in: { webName: string; epNext: number }; pointsGain: string }) => ({ 
+Transfers Planned in Planner: ${JSON.stringify(transfers.map((t: { out: { name: string; epNext: number }; in: { webName: string; epNext: number } }) => ({ 
     out: t.out.name, 
     in: t.in.webName,
-    pointsGain: t.pointsGain
+    pointsGain: (t.in.epNext - (t.out.epNext || 0)).toFixed(1)
 })))}
 Bank Remaining: £${bank.toFixed(1)}m
 
@@ -64,11 +64,7 @@ Provide a short, direct football-themed verdict. Use "Title Contender" for good 
 Focus on the tactical logic and the value for money.
 Return ONLY the verdict text.`;
 
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-        const model = genAI.getGenerativeModel({ model: 'models/gemini-2.5-flash' });
-        
-        const result = await model.generateContent(prompt);
-        const verdict = result.response.text();
+        const verdict = await callGemini(prompt);
 
         // Deduct credit
         if (entryId) {

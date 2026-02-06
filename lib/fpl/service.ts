@@ -36,6 +36,8 @@ import {
   calculateTransferSuggestions,
 } from "./predictions";
 
+import { callGemini } from "./gemini";
+
 export function parseEntryId(value: string | null): number {
   if (!value) {
     throw new Error("Missing entryId parameter");

@@ -362,7 +362,7 @@ body {
 .tc-player-shirt-img {
     height: 82px;
     width: auto;
-    object-contain: true;
+    object-fit: contain;
 }
 
 /* Points Color Logic */
