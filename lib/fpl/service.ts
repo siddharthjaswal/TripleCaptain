@@ -564,7 +564,19 @@ export async function loadPredictions(
     const nextGw = nextEvent.id;
 
     // Get current picks (from most recent completed/current gameweek)
-    const currentPicks = await getEntryPicks(entryId, currentEvent);
+    // We try to get picks for currentEvent, but if FPL returns 404 (common during pre-deadline phase),
+    // we fall back to currentEvent - 1.
+    let currentPicks;
+    try {
+        currentPicks = await getEntryPicks(entryId, currentEvent);
+    } catch (error) {
+        if (currentEvent > 1) {
+            console.warn(`Picks for GW ${currentEvent} not available, falling back to GW ${currentEvent - 1}`);
+            currentPicks = await getEntryPicks(entryId, currentEvent - 1);
+        } else {
+            throw error;
+        }
+    }
 
     // Get fixtures for next gameweek
     const nextGwFixtures = await getFixtures(nextGw);
