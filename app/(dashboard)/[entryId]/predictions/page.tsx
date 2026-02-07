@@ -13,7 +13,7 @@ import { FixtureAnalysisCard } from "@/components/FixtureAnalysisCard";
 import { DifferentialScout } from "@/components/DifferentialScout";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { AccountStatus } from "@/components/AccountStatus";
-import { LayoutDashboard, BrainCircuit } from "lucide-react";
+import { BrainCircuit } from "lucide-react";
 import { loadPredictions, parseEntryId } from "@/lib/fpl/service";
 
 type PredictionsPageParams = {

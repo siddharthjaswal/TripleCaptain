@@ -737,7 +737,6 @@ export function calculateDifferentialPicks(
       const cost = player.now_cost ? player.now_cost / 10 : 0;
 
       // Find next fixture
-      const nextGwId = nextGwFixtures[0]?.event;
       const playerNextGwFixtures = nextGwFixtures.filter(
         (f) => f.team_h === player.team || f.team_a === player.team,
       );

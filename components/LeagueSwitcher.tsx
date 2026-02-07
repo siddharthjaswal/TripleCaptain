@@ -7,7 +7,7 @@ import {
   getStoredLeaguePreference,
   setStoredLeaguePreference,
 } from "@/lib/storage";
-import { Typography, Badge } from "./ui";
+import { Badge } from "./ui";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 type LeagueSwitcherProps = {

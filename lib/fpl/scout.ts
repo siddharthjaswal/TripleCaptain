@@ -32,7 +32,7 @@ export async function scoutDifferentials() {
     if (candidates.length === 0) return [];
 
     // 3. Get fixtures for these players
-    const teamIds = candidates.map((c: any) => c.teamId);
+    const teamIds = candidates.map((c: { teamId: number }) => c.teamId);
     const fixtures = await prisma.fixture.findMany({
         where: {
             gameweekId: { gte: currentGw.id + 1, lte: currentGw.id + 3 },
@@ -45,14 +45,14 @@ export async function scoutDifferentials() {
     });
 
     // 4. Send to AI for reasoning
-    const scoutData = candidates.map((c: any) => ({
+    const scoutData = candidates.map((c) => ({
         name: c.webName,
         team: c.team.name,
         ownership: c.selectedByPercent,
         epNext: c.epNext,
         fixtures: fixtures
-            .filter((f: any) => f.homeTeamId === c.teamId || f.awayTeamId === c.teamId)
-            .map((f: any) => {
+            .filter((f) => f.homeTeamId === c.teamId || f.awayTeamId === c.teamId)
+            .map((f) => {
                 const isHome = f.homeTeamId === c.teamId;
                 const opponent = isHome ? f.awayTeam.shortName : f.homeTeam.shortName;
                 return `${opponent}(${isHome ? 'H' : 'A'})`;
@@ -80,7 +80,7 @@ Return ONLY the JSON.`;
     if (picks.length > 0) {
         // Save to DB
         for (const pick of picks) {
-            const player = candidates.find((c: any) => c.webName === pick.name);
+            const player = candidates.find((c) => c.webName === pick.name);
             if (player) {
                 await prisma.differentialPick.create({
                     data: {

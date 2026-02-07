@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import type { ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { Card, Typography, Badge } from "./ui";
-import { TrendingUp, Activity } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 type LeagueRaceChartProps = {
   race: LeagueRaceDTO;
@@ -100,7 +100,11 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
   const toggleEntry = (entryName: string) => {
     setVisibleEntries((prev) => {
       const newSet = new Set(prev);
-      newSet.has(entryName) ? newSet.delete(entryName) : newSet.add(entryName);
+      if (newSet.has(entryName)) {
+          newSet.delete(entryName);
+      } else {
+          newSet.add(entryName);
+      }
       return newSet;
     });
   };

@@ -17,7 +17,7 @@ import type {
   PredictionsDTO,
   SummaryDTO,
 } from "./dto";
-import type { BootstrapStatic, EntryCurrentHistory } from "./schemas";
+import type { BootstrapStatic } from "./schemas";
 import {
   mapClassicLeagueStandings,
   mapClassicLeagueSummaries,
@@ -35,8 +35,6 @@ import {
   calculateFixtureAnalysis,
   calculateTransferSuggestions,
 } from "./predictions";
-
-import { callGemini } from "./gemini";
 
 export function parseEntryId(value: string | null): number {
   if (!value) {
@@ -277,34 +275,6 @@ async function resolveCurrentEvent(
   }
 
   throw new Error("Unable to determine current gameweek");
-}
-
-function resolveLatestHistoryEvent(
-  history: EntryCurrentHistory[],
-): number | null {
-  if (history.length === 0) {
-    return null;
-  }
-
-  return history.reduce<number>((latest, item) => {
-    return item.event > latest ? item.event : latest;
-  }, 0);
-}
-
-function resolveHistoryRecord(
-  history: EntryCurrentHistory[],
-  targetEvent: number,
-) {
-  if (history.length === 0) {
-    return undefined;
-  }
-
-  const exact = history.find((item) => item.event === targetEvent);
-  if (exact) {
-    return exact;
-  }
-
-  return history[history.length - 1];
 }
 
 function calculateNextDeadline(
