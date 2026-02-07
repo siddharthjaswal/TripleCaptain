@@ -36,6 +36,8 @@ import {
   calculateTransferSuggestions,
 } from "./predictions";
 
+import { callGemini } from "./gemini";
+
 export function parseEntryId(value: string | null): number {
   if (!value) {
     throw new Error("Missing entryId parameter");
@@ -123,6 +125,42 @@ export async function loadEntrySummary(
       notFound();
     }
     throw error;
+  }
+}
+
+async function generateLeagueInsights(
+  leagueName: string,
+  entries: import("./dto").LeagueTableEntryDTO[],
+): Promise<import("./dto").LeagueAiInsightDTO[]> {
+  const top10 = entries.slice(0, 10).map(e => ({
+    name: e.entryName,
+    manager: e.playerName,
+    points: e.points,
+    total: e.totalPoints,
+    rank: e.rank
+  }));
+
+  const prompt = `You are "The Chief Scout", a witty and sharp-tongued English football pundit.
+Analyze the current standings of the FPL league "${leagueName}".
+
+Data for top 10 managers: ${JSON.stringify(top10)}
+
+Provide 3 concise "Scout Report" insights about the league. 
+Be fun, competitive, and slightly cheeky. Use English football slang (e.g. "proper bargain", "parked the bus", "absolute scenes", "bottled it").
+One should be about the leader, one about a rising star or someone in form, and one general witty observation.
+
+Format: JSON array of objects with {title, insight, squadName, sentiment}.
+Sentiment options: "positive", "negative", "neutral", "funny".
+Return ONLY the JSON. Keep insights under 100 characters each.`;
+
+  try {
+    const response = await callGemini(prompt);
+    const jsonMatch = response.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) return [];
+    return JSON.parse(jsonMatch[0]);
+  } catch (error) {
+    console.error("Failed to generate league insights:", error);
+    return [];
   }
 }
 
@@ -254,37 +292,48 @@ export async function loadEntryLeagues(
 
     // Fetch race data only for page 1 (top 5 managers)
     let leagueRace: import("./dto").LeagueRaceDTO | null = null;
+    let aiInsights: import("./dto").LeagueAiInsightDTO[] | undefined = undefined;
+
     if ((!page || page === 1) && selectedLeague.entries.length > 0) {
-      try {
-        const top10Entries = selectedLeague.entries.slice(0, 5);
-        const historyPromises = top10Entries.map((entry) =>
-          getEntryHistory(entry.entryId)
-            .then((history) => ({
-              entryId: entry.entryId,
-              entryName: entry.entryName,
-              playerName: entry.playerName,
-              history: history.current.map((h) => ({
-                event: h.event,
-                totalPoints: h.total_points,
-              })),
-            }))
-            .catch(() => null)
-        );
+      // Parallelize race data and AI insights
+      const [raceData, insights] = await Promise.all([
+          (async () => {
+              try {
+                const top10Entries = selectedLeague.entries.slice(0, 5);
+                const historyPromises = top10Entries.map((entry) =>
+                  getEntryHistory(entry.entryId)
+                    .then((history) => ({
+                      entryId: entry.entryId,
+                      entryName: entry.entryName,
+                      playerName: entry.playerName,
+                      history: history.current.map((h) => ({
+                        event: h.event,
+                        totalPoints: h.total_points,
+                      })),
+                    }))
+                    .catch(() => null)
+                );
 
-        const histories = await Promise.all(historyPromises);
-        const validHistories = histories.filter((h): h is NonNullable<typeof h> => h !== null);
+                const histories = await Promise.all(historyPromises);
+                const validHistories = histories.filter((h): h is NonNullable<typeof h> => h !== null);
 
-        if (validHistories.length > 0) {
-          leagueRace = {
-            leagueId: selectedLeagueId,
-            leagueName: selectedLeague.leagueName,
-            entries: validHistories,
-          };
-        }
-      } catch {
-        // Silently fail if race data can't be loaded
-        leagueRace = null;
-      }
+                if (validHistories.length > 0) {
+                  return {
+                    leagueId: selectedLeagueId,
+                    leagueName: selectedLeague.leagueName,
+                    entries: validHistories,
+                  };
+                }
+              } catch {
+                return null;
+              }
+              return null;
+          })(),
+          generateLeagueInsights(selectedLeague.leagueName, selectedLeague.entries)
+      ]);
+
+      leagueRace = raceData;
+      aiInsights = insights;
     }
 
     return {
@@ -296,6 +345,7 @@ export async function loadEntryLeagues(
       selectedLeagueId,
       selectedLeague,
       leagueRace,
+      aiInsights,
     };
   } catch (error) {
     if (error instanceof FplError && error.status === 404) {

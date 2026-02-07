@@ -125,6 +125,13 @@ export type LeagueRaceDTO = {
   entries: LeagueRaceEntryDTO[];
 };
 
+export type LeagueAiInsightDTO = {
+  title: string;
+  insight: string;
+  squadName?: string;
+  sentiment: "positive" | "negative" | "neutral" | "funny";
+};
+
 export type LeaguesViewDTO = {
   entryId: number;
   teamName: string;
@@ -134,6 +141,7 @@ export type LeaguesViewDTO = {
   selectedLeagueId: number | null;
   selectedLeague: LeagueStandingDTO | null;
   leagueRace: LeagueRaceDTO | null;
+  aiInsights?: LeagueAiInsightDTO[];
 };
 
 export type FixtureDTO = {
