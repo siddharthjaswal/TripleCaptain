@@ -8,6 +8,10 @@ import { LayoutDashboard, Sparkles, Trophy, Calendar } from "lucide-react";
 export default function Home() {
   return (
     <main className="tc-hero flex min-h-dvh flex-col items-center px-6 py-12">
+      {/* FORCE REFRESH BANNER */}
+      <div className="w-full bg-red-600 text-white text-center py-2 font-black text-sm uppercase tracking-[0.5em] z-[200]">
+        DEPLOYED V2.2.2 - REFRESH IF OLD
+      </div>
       {/* Header */}
       <div className="flex w-full max-w-7xl justify-end mb-12">
         <ThemeToggle />
