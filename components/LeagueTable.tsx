@@ -94,17 +94,19 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                     <div className="flex items-center gap-4">
                         <div className={`relative w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm transition-transform group-hover:scale-110 ${liveRank === 1 ? 'bg-gradient-to-br from-yellow-400 to-amber-600 text-black shadow-lg shadow-yellow-500/20' : 'bg-white/5 border border-white/5 text-white/70'}`}>
                             {liveRank}
-                            {entry.isLive && rankDeltaFromLive !== 0 && (
-                                <div className={`absolute -top-1 -right-2 px-1.5 py-0.5 rounded-full text-[8px] font-black shadow-sm border ${rankDeltaFromLive > 0 ? 'bg-emerald-500/90 text-white border-emerald-400' : 'bg-red-500/90 text-white border-red-400'}`}>
-                                    {rankDeltaFromLive > 0 ? `+${rankDeltaFromLive}` : rankDeltaFromLive}
-                                </div>
-                            )}
                         </div>
                     </div>
                   </td>
                   <td className="px-4 py-5 text-center">
-                    <div className={`inline-flex items-center justify-center font-black text-[10px] ${delta.className}`}>
-                        {delta.label}
+                    <div className="flex flex-col items-center gap-1">
+                        <div className={`inline-flex items-center justify-center font-black text-[10px] ${delta.className}`}>
+                            {delta.label}
+                        </div>
+                        {entry.isLive && rankDeltaFromLive !== 0 && (
+                            <div className={`px-1.5 py-0.5 rounded-full text-[8px] font-black border ${rankDeltaFromLive > 0 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                                {rankDeltaFromLive > 0 ? `▲ LIVE +${rankDeltaFromLive}` : `▼ LIVE ${rankDeltaFromLive}`}
+                            </div>
+                        )}
                     </div>
                   </td>
                   <td className="px-6 py-5">
@@ -112,7 +114,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                         <Typography weight="black" className={`text-[13px] uppercase tracking-tight ${isCurrentUser ? 'text-[color:var(--brand-secondary)]' : 'text-slate-100'}`}>
                             {entry.entryName}
                         </Typography>
-                        <Typography variant="caption" className="text-[10px] opacity-40 font-bold uppercase tracking-wider">{entry.playerName} {isCurrentUser && '• YOU'}</Typography>
+                        <Typography variant="caption" className="text-[10px] opacity-60 font-black uppercase tracking-wider text-slate-300">{entry.playerName} {isCurrentUser && '• YOU'}</Typography>
                     </div>
                   </td>
                   
@@ -132,7 +134,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
 
                   <td className="px-6 py-5 text-right">
                     <div className="flex flex-col items-end">
-                        <Typography weight="black" className="text-base font-mono text-emerald-400">+{formatNumber(entry.points)}</Typography>
+                        <Typography weight="black" className="text-base font-mono text-white">+{formatNumber(entry.points)}</Typography>
                         {entry.isLive && (
                             <span className="text-[7px] font-black text-emerald-400 uppercase tracking-[0.1em] bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">Live</span>
                         )}
