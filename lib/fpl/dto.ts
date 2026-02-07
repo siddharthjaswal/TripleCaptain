@@ -89,6 +89,7 @@ export type LeagueTableEntryDTO = {
   playerName: string;
   points: number;
   totalPoints: number;
+  isLive?: boolean;
   // Optional captain info (loaded async for small leagues)
   captain?: {
     playerId: number;

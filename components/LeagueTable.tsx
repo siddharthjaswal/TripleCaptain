@@ -75,9 +75,12 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {enrichedEntries.map((entry) => {
+            {enrichedEntries.map((entry, index) => {
               const delta = formatRankDelta(entry.rank, entry.lastRank);
               const isCurrentUser = entry.entryId === currentEntryId;
+              const liveRank = index + 1 + (league.page - 1) * 50;
+              const rankDeltaFromLive = entry.rank ? entry.rank - liveRank : 0;
+
               return (
                 <tr
                   key={entry.entryId}
@@ -88,8 +91,15 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                   }`}
                 >
                   <td className="px-6 py-5">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs ${entry.rank === 1 ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20' : 'bg-white/10 text-white/60'}`}>
-                        {entry.rank}
+                    <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs ${liveRank === 1 ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20' : 'bg-white/10 text-white/60'}`}>
+                            {liveRank}
+                        </div>
+                        {entry.isLive && rankDeltaFromLive !== 0 && (
+                            <span className={`text-[10px] font-black ${rankDeltaFromLive > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                                {rankDeltaFromLive > 0 ? `+${rankDeltaFromLive}` : rankDeltaFromLive}
+                            </span>
+                        )}
                     </div>
                   </td>
                   <td className="px-4 py-5 text-center">
@@ -121,7 +131,12 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                   )}
 
                   <td className="px-6 py-5 text-right">
-                    <Typography weight="black" className="text-sm font-mono text-emerald-400">+{formatNumber(entry.points)}</Typography>
+                    <div className="flex flex-col items-end">
+                        <Typography weight="black" className="text-sm font-mono text-emerald-400">+{formatNumber(entry.points)}</Typography>
+                        {entry.isLive && (
+                            <span className="text-[8px] font-black text-emerald-500/60 uppercase tracking-tighter">Live Calc</span>
+                        )}
+                    </div>
                   </td>
                   <td className="px-6 py-5 text-right">
                     <Typography weight="black" className="text-sm font-mono text-white">{formatNumber(entry.totalPoints)}</Typography>

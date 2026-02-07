@@ -192,6 +192,66 @@ export async function loadEntryLeagues(
       gameweek: currentEvent ?? undefined,
     });
 
+    // --- LIVE LEAGUE CALCULATION ---
+    const bootstrap = await getBootstrap();
+    const currentGwMeta = bootstrap.events.find(e => e.id === currentEvent);
+    const isLive = !!currentGwMeta && !currentGwMeta.finished;
+
+    if (isLive && selectedLeague.entries.length > 0) {
+        try {
+            const liveData = await getEventLive(currentEvent!).catch(() => null);
+            const fixtures = await getFixtures(currentEvent!).catch(() => []);
+            
+            if (liveData) {
+                // Fetch picks for each entry on the current page to get real-time points
+                // We limit to 50 (max page size) to prevent excessive API load
+                const updatedEntries = await Promise.all(
+                    selectedLeague.entries.map(async (entry) => {
+                        try {
+                            const picks = await getEntryPicks(entry.entryId, currentEvent!);
+                            const players = mapLatestGameweekPlayers({
+                                picks,
+                                liveData,
+                                elements: bootstrap.elements,
+                                fixtures
+                            });
+                            
+                            const liveGwPoints = players.reduce((sum, p) => sum + (p.isBench ? 0 : p.points), 0);
+                            // Standings 'totalPoints' usually includes 'points' (the stale GW points)
+                            // We replace the stale part with our live calculation
+                            const liveTotal = (entry.totalPoints - entry.points) + liveGwPoints;
+                            
+                            return {
+                                ...entry,
+                                points: liveGwPoints,
+                                totalPoints: liveTotal,
+                                // Flag as live for the UI
+                                isLive: true
+                            };
+                        } catch {
+                            return entry;
+                        }
+                    })
+                );
+                
+                // Re-sort the league based on our real-time calculations
+                selectedLeague.entries = updatedEntries.sort((a, b) => {
+                    if (b.totalPoints !== a.totalPoints) {
+                        return b.totalPoints - a.totalPoints;
+                    }
+                    // Tie-breaker: total points from standings if live calculation is same
+                    return (b.totalPoints || 0) - (a.totalPoints || 0);
+                });
+
+                // Note: We don't overwrite the 'rank' property because it's global, 
+                // but the UI will show them in the correct sorted order.
+            }
+        } catch (err) {
+            console.error("Live league calculation failed:", err);
+        }
+    }
+    // -------------------------------
+
     // Fetch race data only for page 1 (top 5 managers)
     let leagueRace: import("./dto").LeagueRaceDTO | null = null;
     if ((!page || page === 1) && selectedLeague.entries.length > 0) {
