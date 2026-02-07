@@ -86,7 +86,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="w-full border-t border-[color:var(--surface-border)] pt-12 pb-24 flex flex-col items-center gap-8">
-        <Typography variant="caption" weight="black" className="opacity-40 uppercase tracking-[0.2em]">V2.2.1 Premium • Built for the Premier League</Typography>
+        <Typography variant="caption" weight="black" className="opacity-40 uppercase tracking-[0.2em]">V2.2.2 Premium • Built for the Premier League</Typography>
         <div className="flex flex-wrap items-center justify-center gap-4">
             <Badge variant="secondary">Next.js 16</Badge>
             <Badge variant="secondary">React 19</Badge>
