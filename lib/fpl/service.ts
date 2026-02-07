@@ -82,15 +82,14 @@ export async function loadEntrySummary(
       getEntryHistory(entryId),
     ]);
 
-    const fallbackEvent = await resolveCurrentEvent(profile.current_event);
-    const latestHistoryEvent = resolveLatestHistoryEvent(history.current);
-    const resolvedEvent = latestHistoryEvent ?? fallbackEvent;
-    const historyRecord = resolveHistoryRecord(history.current, resolvedEvent);
-    const summaryEvent = historyRecord?.event ?? resolvedEvent;
+    const bootstrap = await getBootstrap();
+    const currentGwFromBootstrap = bootstrap.events.find(e => e.is_current)?.id;
+    
+    // Prioritize the actual current gameweek from bootstrap or profile
+    const summaryEvent = profile.current_event || currentGwFromBootstrap || 1;
 
-    const [picks, bootstrap, liveData, fixtures] = await Promise.all([
+    const [picks, liveData, fixtures] = await Promise.all([
       getEntryPicks(entryId, summaryEvent).catch(() => null),
-      getBootstrap(),
       getEventLive(summaryEvent).catch(() => null),
       getFixtures(summaryEvent).catch(() => null),
     ]);
@@ -501,6 +500,9 @@ export async function loadGameweek(
     const managerName =
       `${profile.player_first_name} ${profile.player_last_name}`.trim();
 
+    const currentGwFromBootstrap = bootstrap.events.find(e => e.is_current)?.id;
+    const currentEvent = profile.current_event || currentGwFromBootstrap || 1;
+
     // Determine which event to show
     let event: number;
     if (options.event !== undefined && options.event !== null) {
@@ -508,15 +510,11 @@ export async function loadGameweek(
         ? options.event
         : Number.parseInt(String(options.event), 10);
       if (Number.isNaN(event) || event <= 0) {
-        event = await resolveCurrentEvent(profile.current_event);
+        event = currentEvent;
       }
     } else {
-      const fallbackEvent = await resolveCurrentEvent(profile.current_event);
-      const latestHistoryEvent = resolveLatestHistoryEvent(history.current);
-      event = latestHistoryEvent ?? fallbackEvent;
+      event = currentEvent;
     }
-
-    const currentEvent = await resolveCurrentEvent(profile.current_event);
 
     const [picks, liveData, fixtures] = await Promise.all([
       getEntryPicks(entryId, event).catch(() => null),

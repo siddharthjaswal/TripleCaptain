@@ -171,7 +171,8 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
   const shirtUrl = getTeamShirtUrl(player.teamCode);
   const showFallback = (!imgUrl || imageError) && !useShirtFallback;
   const isHighImpact = player.impactScore !== null && player.impactScore >= 5;
-  const isPoorPerformance = player.points <= 2;
+  const hasPlayedOrPlaying = (player.minutes ?? 0) > 0 || player.isLive;
+  const isPoorPerformance = hasPlayedOrPlaying && player.points <= 2;
   const isDeadwood = isPoorPerformance && player.ownership !== null && player.ownership > 20;
 
   return (

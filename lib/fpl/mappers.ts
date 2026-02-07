@@ -106,10 +106,14 @@ export function mapLatestGameweek(params: {
       })
     : [];
 
+  const totalPoints = isLive 
+    ? players.reduce((sum, p) => sum + (p.isBench ? 0 : p.points), 0)
+    : historyRecord.points;
+
   return {
     entryId,
-    event: historyRecord.event,
-    points: historyRecord.points,
+    event: currentEvent,
+    points: totalPoints,
     rank: historyRecord.rank ?? historyRecord.overall_rank ?? null,
     pointsOnBench: benchPoints,
     chipUsed,
