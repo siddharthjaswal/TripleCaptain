@@ -27,6 +27,7 @@ import {
   mapProfile,
   mapTotals,
 } from "./mappers";
+import { prisma } from "../prisma";
 import {
   calculateBestXI,
   calculateCaptainPicks,
@@ -129,9 +130,29 @@ export async function loadEntrySummary(
 }
 
 async function generateLeagueInsights(
+  leagueId: number,
   leagueName: string,
   entries: import("./dto").LeagueTableEntryDTO[],
+  gameweek: number
 ): Promise<import("./dto").LeagueAiInsightDTO[]> {
+  // 1. Check Cache
+  try {
+      const cached = await prisma.leagueInsight.findUnique({
+          where: { leagueId_gameweek: { leagueId, gameweek } }
+      });
+      
+      if (cached) {
+          // If cache is less than 6 hours old, return it
+          const ageHours = (new Date().getTime() - new Date(cached.createdAt).getTime()) / (1000 * 60 * 60);
+          if (ageHours < 6) {
+              return cached.insights as import("./dto").LeagueAiInsightDTO[];
+          }
+      }
+  } catch (err) {
+      console.error("Cache read failed:", err);
+  }
+
+  // 2. Generate New Insights
   const top10 = entries.slice(0, 10).map(e => ({
     name: e.entryName,
     manager: e.playerName,
@@ -157,7 +178,20 @@ Return ONLY the JSON. Keep insights under 100 characters each.`;
     const response = await callGemini(prompt);
     const jsonMatch = response.match(/\[[\s\S]*\]/);
     if (!jsonMatch) return [];
-    return JSON.parse(jsonMatch[0]);
+    const insights = JSON.parse(jsonMatch[0]);
+
+    // 3. Update Cache
+    try {
+        await prisma.leagueInsight.upsert({
+            where: { leagueId_gameweek: { leagueId, gameweek } },
+            update: { insights, createdAt: new Date() },
+            create: { leagueId, gameweek, insights }
+        });
+    } catch (err) {
+        console.error("Cache write failed:", err);
+    }
+
+    return insights;
   } catch (error) {
     console.error("Failed to generate league insights:", error);
     return [];
@@ -169,6 +203,7 @@ export async function loadEntryLeagues(
   options: {
     leagueId?: string | number | null;
     page?: string | number | null;
+    skipInsights?: boolean;
   } = {},
 ): Promise<LeaguesViewDTO> {
   const entryId =
@@ -294,7 +329,7 @@ export async function loadEntryLeagues(
     let leagueRace: import("./dto").LeagueRaceDTO | null = null;
     let aiInsights: import("./dto").LeagueAiInsightDTO[] | undefined = undefined;
 
-    if ((!page || page === 1) && selectedLeague.entries.length > 0) {
+    if ((!page || page === 1) && selectedLeague.entries.length > 0 && !options.skipInsights) {
       // Parallelize race data and AI insights
       const [raceData, insights] = await Promise.all([
           (async () => {
@@ -329,7 +364,7 @@ export async function loadEntryLeagues(
               }
               return null;
           })(),
-          generateLeagueInsights(selectedLeague.leagueName, selectedLeague.entries)
+          generateLeagueInsights(selectedLeagueId, selectedLeague.leagueName, selectedLeague.entries, currentEvent!)
       ]);
 
       leagueRace = raceData;

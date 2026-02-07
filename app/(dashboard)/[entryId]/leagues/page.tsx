@@ -29,7 +29,7 @@ export async function generateMetadata({
   const { entryId } = await params;
   try {
     const parsedEntryId = parseEntryId(entryId);
-    const leagues = await loadEntryLeagues(parsedEntryId);
+    const leagues = await loadEntryLeagues(parsedEntryId, { skipInsights: true });
     return {
       title: `${leagues.teamName} | League Standings | Triple Captain`,
     };

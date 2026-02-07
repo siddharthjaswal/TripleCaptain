@@ -1,7 +1,11 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const PRIMARY_MODEL = 'gemini-3-pro';
-const FALLBACK_MODEL = 'gemini-2.5-flash';
+const MODELS = [
+    'gemini-1.5-flash',
+    'gemini-1.5-flash-8b',
+    'gemini-2.0-flash-exp',
+    'gemini-2.5-flash' // Keeping this as a potential future name
+];
 
 let _genAI: GoogleGenerativeAI | null = null;
 const getGemini = () => {
@@ -13,14 +17,24 @@ const getGemini = () => {
 
 export async function callGemini(prompt: string) {
     const genAI = getGemini();
-    try {
-        const model = genAI.getGenerativeModel({ model: `models/${PRIMARY_MODEL}` });
-        const result = await model.generateContent(prompt);
-        return result.response.text();
-    } catch (error) {
-        console.warn(`Primary model (${PRIMARY_MODEL}) failed, trying fallback (${FALLBACK_MODEL}):`, error);
-        const model = genAI.getGenerativeModel({ model: `models/${FALLBACK_MODEL}` });
-        const result = await model.generateContent(prompt);
-        return result.response.text();
+    let lastError = null;
+
+    for (const modelName of MODELS) {
+        try {
+            const model = genAI.getGenerativeModel({ model: `models/${modelName}` });
+            const result = await model.generateContent(prompt);
+            return result.response.text();
+        } catch (error: any) {
+            lastError = error;
+            // If it's a 429, try next model
+            if (error.status === 429 || error.message?.includes('429')) {
+                console.warn(`Model ${modelName} hit quota limit, trying next...`);
+                continue;
+            }
+            // If it's another error, also try next model just in case
+            console.warn(`Model ${modelName} failed:`, error.message);
+        }
     }
+
+    throw lastError || new Error("All Gemini models failed");
 }

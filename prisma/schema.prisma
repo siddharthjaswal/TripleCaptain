@@ -103,3 +103,14 @@ model DifferentialPick {
 
   @@index([gameweek])
 }
+
+model LeagueInsight {
+  id        String   @id @default(cuid())
+  leagueId  Int
+  gameweek  Int
+  insights  Json     // Array of {title, insight, squadName, sentiment}
+  createdAt DateTime @default(now())
+
+  @@unique([leagueId, gameweek])
+  @@index([leagueId, gameweek])
+}
