@@ -36,7 +36,7 @@ export function LeagueAiInsights({ insights }: LeagueAiInsightsProps) {
                  )}
                </div>
                <Typography weight="black" className="text-xs text-white leading-relaxed">
-                  "{insight.insight}"
+                  &quot;{insight.insight}&quot;
                </Typography>
             </div>
           </div>

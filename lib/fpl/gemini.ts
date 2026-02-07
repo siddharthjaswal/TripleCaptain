@@ -24,15 +24,16 @@ export async function callGemini(prompt: string) {
             const model = genAI.getGenerativeModel({ model: `models/${modelName}` });
             const result = await model.generateContent(prompt);
             return result.response.text();
-        } catch (error: any) {
+        } catch (error: unknown) {
             lastError = error;
+            const err = error as { status?: number; message?: string };
             // If it's a 429, try next model
-            if (error.status === 429 || error.message?.includes('429')) {
+            if (err.status === 429 || err.message?.includes('429')) {
                 console.warn(`Model ${modelName} hit quota limit, trying next...`);
                 continue;
             }
             // If it's another error, also try next model just in case
-            console.warn(`Model ${modelName} failed:`, error.message);
+            console.warn(`Model ${modelName} failed:`, err.message);
         }
     }
 
