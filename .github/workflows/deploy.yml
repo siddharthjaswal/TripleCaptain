@@ -85,23 +85,21 @@ jobs:
             set -e
             echo "--- TACTICAL DEPLOYMENT STARTING ---"
             
-            # 1. Login to GitHub Container Registry with hardcoded owner
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u siddharthjaswal --password-stdin
+            # 1. Login to GitHub Container Registry with sudo
+            echo "${{ secrets.GHCR_TOKEN }}" | sudo docker login ghcr.io -u siddharthjaswal --password-stdin
 
-            # 2. Pull the specific SHA image to ensure we bypass any 'latest' caching issues
-            echo "Pulling image SHA: ${{ github.sha }}"
-            docker pull ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:${{ github.sha }}
+            # 2. Force pull the SHA image with sudo
+            sudo docker pull ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:${{ github.sha }}
 
-            # 3. Tag it as latest locally
-            docker tag ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:${{ github.sha }} ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:latest
+            # 3. Tag it with sudo
+            sudo docker tag ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:${{ github.sha }} ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:latest
 
-            # 4. Hard reset the container
-            echo "Resetting container..."
-            docker stop triple-captain || true
-            docker rm triple-captain || true
+            # 4. Reset the container with sudo
+            sudo docker stop triple-captain || true
+            sudo docker rm triple-captain || true
 
-            # 5. Start fresh with explicit env path
-            docker run -d \
+            # 5. Start fresh with sudo and explicit env path
+            sudo docker run -d \
               --name triple-captain \
               --restart unless-stopped \
               -p 3000:3000 \
