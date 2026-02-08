@@ -85,8 +85,8 @@ jobs:
             set -e
             echo "--- TACTICAL DEPLOYMENT STARTING ---"
             
-            # 1. Login to GitHub Container Registry
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u siddharthjaswal --password-stdin
+            # 1. Login to GitHub Container Registry with explicit actor
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
             # 2. Pull the specific SHA image to ensure we bypass any 'latest' caching issues
             echo "Pulling image SHA: ${{ github.sha }}"
