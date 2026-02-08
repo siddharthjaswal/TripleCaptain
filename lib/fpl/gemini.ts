@@ -1,10 +1,11 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const MODELS = [
+    'claude-4.5-sonnet',
+    'gemini-3-pro',
     'gemini-1.5-flash',
     'gemini-1.5-flash-8b',
-    'gemini-2.0-flash-exp',
-    'gemini-2.5-flash' // Keeping this as a potential future name
+    'gemini-2.0-flash-exp'
 ];
 
 let _genAI: GoogleGenerativeAI | null = null;
