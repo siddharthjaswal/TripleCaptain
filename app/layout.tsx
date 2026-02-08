@@ -16,8 +16,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Triple Captain | FPL Companion",
-  description:
-    "Plan, track, and analyze your Fantasy Premier League entry with a fast Next.js dashboard.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

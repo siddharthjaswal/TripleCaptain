@@ -14,7 +14,16 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <div className="flex max-w-4xl flex-col items-center text-center mb-16 animate-fade-in">
+        <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 shadow-2xl mb-8 border border-white/10 p-4">
+            <Image 
+                src="/favicon.svg" 
+                alt="Triple Captain Logo" 
+                width={64} 
+                height={64} 
+                className="drop-shadow-[0_0_8px_rgba(255,183,0,0.5)]"
+            />
+        </div>
+
         <Badge variant="primary" className="mb-8 px-4 py-1.5 shadow-glow">
             <Trophy className="mr-2 h-4 w-4" />
             V2 Premium Companion
