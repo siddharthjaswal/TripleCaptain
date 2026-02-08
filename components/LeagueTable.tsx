@@ -61,16 +61,16 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-white/5">
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40">Rank</th>
-              <th className="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-center">Trend</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40">Squad & Manager</th>
+              <th className="px-3 sm:px-6 py-4 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/40">Rank</th>
+              <th className="hidden sm:table-cell px-4 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-center">Trend</th>
+              <th className="px-3 sm:px-6 py-4 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/40">Squad & Manager</th>
               {enrichedEntries.length < 20 && (
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-center">Captain</th>
+                <th className="hidden lg:table-cell px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-center">Captain</th>
               )}
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-right">GW Pts</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-right">Total</th>
+              <th className="px-3 sm:px-6 py-4 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/40 text-right">Points</th>
+              <th className="hidden sm:table-cell px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-right">Total</th>
               {enrichedEntries.length < 20 && (
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-center">Tactics</th>
+                <th className="hidden md:table-cell px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-center">Tactics</th>
               )}
             </tr>
           </thead>
@@ -84,20 +84,32 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
               return (
                 <tr
                   key={entry.entryId}
-                  className={`group transition-colors ${
+                  onClick={() => {
+                      if (entry.teamPicks) {
+                        setSelectedTeam({
+                            teamName: entry.entryName,
+                            teamPicks: entry.teamPicks!,
+                          });
+                      }
+                  }}
+                  className={`group transition-colors cursor-pointer ${
                     isCurrentUser
                       ? "bg-[color:var(--accent)]/10 hover:bg-[color:var(--accent)]/20"
                       : "hover:bg-white/5"
                   }`}
                 >
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-4">
-                        <div className={`relative w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm transition-transform group-hover:scale-110 ${liveRank === 1 ? 'bg-gradient-to-br from-yellow-400 to-amber-600 text-black shadow-lg shadow-yellow-500/20' : 'bg-white/5 border border-white/5 text-white/70'}`}>
+                  <td className="px-3 sm:px-6 py-4">
+                    <div className="flex flex-col items-center gap-1">
+                        <div className={`relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center font-black text-xs sm:text-sm transition-transform group-hover:scale-110 ${liveRank === 1 ? 'bg-gradient-to-br from-yellow-400 to-amber-600 text-black shadow-lg shadow-yellow-500/20' : 'bg-white/5 border border-white/5 text-white/70'}`}>
                             {liveRank}
+                        </div>
+                        {/* Mobile-only trend indicator under rank */}
+                        <div className="sm:hidden mt-1">
+                            {delta.label}
                         </div>
                     </div>
                   </td>
-                  <td className="px-4 py-5 text-center">
+                  <td className="hidden sm:table-cell px-4 py-5 text-center">
                     <div className="flex flex-col items-center gap-1">
                         <div className={`inline-flex items-center justify-center font-black text-[10px] ${delta.className}`}>
                             {delta.label}
@@ -109,17 +121,32 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                         )}
                     </div>
                   </td>
-                  <td className="px-6 py-5">
-                    <div className="flex flex-col gap-0.5">
-                        <Typography weight="black" className={`text-[13px] uppercase tracking-tight ${isCurrentUser ? 'text-[color:var(--brand-secondary)]' : 'text-slate-100'}`}>
+                  <td className="px-3 sm:px-6 py-4">
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                        <Typography weight="black" className={`text-[11px] sm:text-[13px] uppercase tracking-tight truncate max-w-[120px] sm:max-w-none ${isCurrentUser ? 'text-emerald-400' : 'text-slate-100'}`}>
                             {entry.entryName}
                         </Typography>
-                        <Typography variant="caption" className="text-[10px] opacity-60 font-black uppercase tracking-wider text-slate-300">{entry.playerName} {isCurrentUser && '• YOU'}</Typography>
+                        <Typography variant="caption" className="text-[8px] sm:text-[10px] opacity-60 font-black uppercase tracking-wider text-slate-300 truncate max-w-[100px] sm:max-w-none">
+                            {entry.playerName} {isCurrentUser && '• YOU'}
+                        </Typography>
+                        {/* Mobile-only sub-info: Captain and Rank Delta */}
+                        <div className="flex items-center gap-2 mt-1 sm:hidden">
+                            {entry.isLive && rankDeltaFromLive !== 0 && (
+                                <span className={`text-[7px] font-black px-1 rounded border ${rankDeltaFromLive > 0 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                                    {rankDeltaFromLive > 0 ? `+${rankDeltaFromLive} LIVE` : `${rankDeltaFromLive} LIVE`}
+                                </span>
+                            )}
+                            {entry.captain && (
+                                <span className="text-[7px] text-white/40 font-black uppercase tracking-tighter">
+                                    {entry.captain.playerName} (C)
+                                </span>
+                            )}
+                        </div>
                     </div>
                   </td>
                   
                   {enrichedEntries.length < 20 && (
-                    <td className="px-6 py-5 text-center">
+                    <td className="hidden lg:table-cell px-6 py-5 text-center">
                       {entry.isLoading ? (
                         <div className="w-4 h-4 rounded-full border-2 border-white/10 border-t-white/30 animate-spin mx-auto" />
                       ) : entry.captain ? (
@@ -132,34 +159,30 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                     </td>
                   )}
 
-                  <td className="px-6 py-5 text-right">
+                  <td className="px-3 sm:px-6 py-4 text-right">
                     <div className="flex flex-col items-end">
-                        <Typography weight="black" className="text-base font-mono text-white">+{formatNumber(entry.points)}</Typography>
-                        {entry.isLive && (
-                            <span className="text-[7px] font-black text-emerald-400 uppercase tracking-[0.1em] bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">Live</span>
-                        )}
+                        <Typography weight="black" className="text-xs sm:text-base font-mono text-white tracking-tighter sm:tracking-normal">
+                            {formatNumber(entry.totalPoints)}
+                        </Typography>
+                        <div className="flex items-center gap-1">
+                            {entry.isLive && (
+                                <span className="text-[6px] sm:text-[7px] font-black text-emerald-400 uppercase tracking-tighter bg-emerald-500/10 px-1 py-0.5 rounded border border-emerald-500/20">Live</span>
+                            )}
+                            <Typography weight="black" className="text-[10px] sm:text-sm font-mono text-emerald-400">+{formatNumber(entry.points)}</Typography>
+                        </div>
                     </div>
                   </td>
-                  <td className="px-6 py-5 text-right">
+
+                  <td className="hidden sm:table-cell px-6 py-5 text-right">
                     <Typography weight="black" className="text-base font-mono text-white tracking-tight">{formatNumber(entry.totalPoints)}</Typography>
                   </td>
 
                   {enrichedEntries.length < 20 && (
-                    <td className="px-6 py-5 text-center">
+                    <td className="hidden md:table-cell px-6 py-5 text-center">
                       {entry.teamPicks ? (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() =>
-                            setSelectedTeam({
-                              teamName: entry.entryName,
-                              teamPicks: entry.teamPicks!,
-                            })
-                          }
-                          className="h-8 w-8 opacity-40 group-hover:opacity-100 transition-opacity"
-                        >
-                          <Eye className="w-4 h-4 text-[color:var(--accent)]" />
-                        </Button>
+                        <div className="h-8 w-8 mx-auto flex items-center justify-center rounded-lg bg-white/5 text-white/40 group-hover:text-emerald-400 group-hover:bg-emerald-400/10 transition-all">
+                          <Eye size={16} />
+                        </div>
                       ) : (
                         <span className="text-white/20">—</span>
                       )}
