@@ -14,6 +14,7 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
+      <div className="flex max-w-4xl flex-col items-center text-center mb-16 animate-fade-in">
         <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 shadow-2xl mb-8 border border-white/10 p-4">
             <Image 
                 src="/favicon.svg" 
