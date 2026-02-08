@@ -64,8 +64,12 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:latest
+            ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Deploy to Gulmarg server
         uses: appleboy/ssh-action@v1.0.3
@@ -75,32 +79,41 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 1970
           script: |
-            # 1. Login to GitHub Container Registry with fresh credentials
+            set -e
+            echo "--- TACTICAL DEPLOYMENT STARTING ---"
+            
+            # 1. Login to GitHub Container Registry
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u siddharthjaswal --password-stdin
 
-            # 2. Force pull the absolute latest image
-            docker pull ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:latest
+            # 2. Pull the specific SHA image to ensure we bypass any 'latest' caching issues
+            echo "Pulling image SHA: ${{ github.sha }}"
+            docker pull ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:${{ github.sha }}
 
-            # 3. Hard reset the container
+            # 3. Tag it as latest locally
+            docker tag ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:${{ github.sha }} ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:latest
+
+            # 4. Hard reset the container
+            echo "Resetting container..."
             docker stop triple-captain || true
             docker rm triple-captain || true
 
-            # 4. Start fresh with explicit env path
+            # 5. Start fresh with explicit env path
             docker run -d \
               --name triple-captain \
               --restart unless-stopped \
               -p 3000:3000 \
               --env-file /home/deploy/triple-captain/.env.production \
-              ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:latest
+              ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:${{ github.sha }}
 
-            # 5. Strategic pause for startup
-            sleep 10
+            # 6. Strategic pause for startup
+            echo "Waiting for kickoff (15s)..."
+            sleep 15
 
-            # 6. Verification check (Bypass Nginx)
-            curl -f http://localhost:3000/api/health || (docker logs triple-captain && exit 1)
-
-            # 7. Cleanup tactical reserves
-            docker image prune -af --filter "until=24h"
+            # 7. Verification check (Bypass Nginx)
+            echo "Running health check..."
+            curl -f http://localhost:3000/api/health
+            
+            echo "--- TACTICAL DEPLOYMENT SUCCESSFUL ---"
 
       - name: Notify success
         if: success()
