@@ -67,7 +67,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Deploy to Hetzner server
+      - name: Deploy to Gulmarg server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -75,34 +75,31 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 1970
           script: |
-            # Login to GitHub Container Registry
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            # 1. Login to GitHub Container Registry with fresh credentials
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u siddharthjaswal --password-stdin
 
-            # Navigate to app directory
-            cd /home/deploy/triple-captain
-
-            # Pull new image
+            # 2. Force pull the absolute latest image
             docker pull ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:latest
 
-            # Stop old container
+            # 3. Hard reset the container
             docker stop triple-captain || true
             docker rm triple-captain || true
 
-            # Start new container
+            # 4. Start fresh with explicit env path
             docker run -d \
               --name triple-captain \
               --restart unless-stopped \
               -p 3000:3000 \
-              --env-file .env.production \
+              --env-file /home/deploy/triple-captain/.env.production \
               ghcr.io/${{ steps.image.outputs.IMAGE_NAME }}:latest
 
-            # Wait for app to start
-            sleep 5
+            # 5. Strategic pause for startup
+            sleep 10
 
-            # Health check
-            curl -f http://localhost:3000/api/health || exit 1
+            # 6. Verification check (Bypass Nginx)
+            curl -f http://localhost:3000/api/health || (docker logs triple-captain && exit 1)
 
-            # Cleanup old images
+            # 7. Cleanup tactical reserves
             docker image prune -af --filter "until=24h"
 
       - name: Notify success
