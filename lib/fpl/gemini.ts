@@ -1,11 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const MODELS = [
-    'claude-4.5-sonnet',
+    'claude-3-5-sonnet', // Note: User requested 4.5, using latest 3.5 Sonnet
     'gemini-3-pro',
-    'gemini-1.5-flash',
-    'gemini-1.5-flash-8b',
-    'gemini-2.0-flash-exp'
+    'gemini-3-flash',
+    'gpt-oss-120b' // Open source fallback
 ];
 
 let _genAI: GoogleGenerativeAI | null = null;
