@@ -2,12 +2,14 @@ import Image from "next/image";
 import { EntryIdForm } from "@/components/EntryIdForm";
 import { RecentEntryCard } from "@/components/RecentEntryCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { AutoRedirect } from "@/components/AutoRedirect";
 import { Card, Typography, Badge } from "@/components/ui";
 import { LayoutDashboard, Sparkles, Trophy, Calendar } from "lucide-react";
 
 export default function Home() {
   return (
     <main className="tc-hero flex min-h-dvh flex-col items-center px-6 py-12">
+      <AutoRedirect />
       {/* Header */}
       <div className="flex w-full max-w-7xl justify-end mb-12">
         <ThemeToggle />

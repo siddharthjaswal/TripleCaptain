@@ -33,7 +33,8 @@ export function EntryIdForm() {
     const id = result.data.entryId;
 
     startTransition(() => {
-      router.push(`/${id}`);
+      // Use replace so back button quits app instead of returning to login
+      router.replace(`/${id}`);
     });
   };
 

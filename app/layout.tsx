@@ -16,8 +16,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Triple Captain | FPL Companion",
+  description: "Your Ultimate Fantasy Premier League Companion",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Triple Captain",
+  },
   icons: {
     icon: "/favicon.svg",
+    apple: "/icon-192.png",
   },
 };
 
