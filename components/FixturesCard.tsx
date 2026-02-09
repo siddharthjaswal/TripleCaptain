@@ -194,7 +194,7 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
       <div className="flex items-center justify-between px-5 py-4 gap-4">
         {/* Home Team */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="relative shrink-0">
+          <div className="shrink-0">
             <Image
               src={fixture.homeTeamBadge}
               alt={fixture.homeTeam}
@@ -202,11 +202,6 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
               height={40}
               className="h-10 w-10 object-contain drop-shadow-md"
             />
-            {homePlayers.length > 0 && (
-              <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--accent)] text-[10px] font-black text-[color:var(--accent-contrast)] shadow-lg">
-                {homePlayers.length}
-              </div>
-            )}
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-bold text-base truncate">
@@ -253,7 +248,7 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
 
         {/* Away Team */}
         <div className="flex items-center gap-3 flex-1 min-w-0 flex-row-reverse">
-          <div className="relative shrink-0">
+          <div className="shrink-0">
             <Image
               src={fixture.awayTeamBadge}
               alt={fixture.awayTeam}
@@ -261,11 +256,6 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
               height={40}
               className="h-10 w-10 object-contain drop-shadow-md"
             />
-            {awayPlayers.length > 0 && (
-              <div className="absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--accent)] text-[10px] font-black text-[color:var(--accent-contrast)] shadow-lg">
-                {awayPlayers.length}
-              </div>
-            )}
           </div>
           <div className="flex-1 min-w-0 text-right">
             <p className="font-bold text-base truncate">
