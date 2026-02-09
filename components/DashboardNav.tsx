@@ -55,33 +55,74 @@ export function DashboardNav({ entryId, active, currentEvent }: DashboardNavProp
         </div>
       </nav>
 
-      {/* Mobile Bottom Navigation */}
-      <nav 
-        className="md:hidden fixed bottom-0 left-0 w-full h-20 bg-slate-900/90 backdrop-blur-xl border-t border-slate-800 flex flex-row justify-around items-center pb-4 z-[100] shadow-[0_-10px_30px_rgba(0,0,0,0.5)]"
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, display: 'flex' }}
-      >
-        {links.map((link) => {
-          const href =
-            link.slug === "summary" ? `/${entryId}` : `/${entryId}/${link.slug}`;
-          const isActive = link.slug === active;
-          const Icon = link.icon;
-          const label = link.isDynamic && currentEvent ? `GW${currentEvent}` : link.name;
+      {/* Apple-Style Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
+        {/* Glass container with Apple-style blur */}
+        <div className="absolute bottom-0 left-0 right-0 h-[92px] pointer-events-auto">
+          {/* Ultra-thin frosted glass background - Apple's signature effect */}
+          <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-white/70 to-white/60 dark:from-slate-900/95 dark:via-slate-900/90 dark:to-slate-900/85" 
+               style={{
+                 backdropFilter: 'saturate(180%) blur(20px)',
+                 WebkitBackdropFilter: 'saturate(180%) blur(20px)',
+               }}
+          />
           
-          return (
-            <Link
-              key={link.slug}
-              href={href}
-              className={`flex flex-col items-center justify-center gap-1 flex-1 h-full ${
-                isActive 
-                  ? "text-emerald-400" 
-                  : "text-slate-400"
-              }`}
-            >
-              <Icon size={22} strokeWidth={isActive ? 3 : 2} />
-              <span className="text-[9px] font-bold uppercase tracking-tight">{label}</span>
-            </Link>
-          );
-        })}
+          {/* Top border with gradient - Apple's subtle detail */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-200/60 to-transparent dark:via-slate-700/40" />
+          
+          {/* Navigation container */}
+          <div className="relative h-full flex items-start pt-2 pb-safe">
+            <div className="w-full flex justify-around items-center px-2">
+              {links.map((link) => {
+                const href =
+                  link.slug === "summary" ? `/${entryId}` : `/${entryId}/${link.slug}`;
+                const isActive = link.slug === active;
+                const Icon = link.icon;
+                const label = link.isDynamic && currentEvent ? `GW${currentEvent}` : link.name;
+                
+                return (
+                  <Link
+                    key={link.slug}
+                    href={href}
+                    className="relative flex flex-col items-center justify-center gap-[3px] py-2 px-3 min-w-[56px] group touch-manipulation"
+                  >
+                    {/* Active indicator pill - Apple style */}
+                    {isActive && (
+                      <div className="absolute inset-0 rounded-2xl bg-[color:var(--accent)]/10 dark:bg-[color:var(--accent)]/15 scale-100 transition-all duration-300" />
+                    )}
+                    
+                    {/* Icon container with scale animation */}
+                    <div className={`relative transition-all duration-300 ${
+                      isActive ? 'scale-100' : 'scale-95 group-active:scale-90'
+                    }`}>
+                      <Icon 
+                        size={24} 
+                        strokeWidth={isActive ? 2.5 : 2}
+                        className={`transition-all duration-300 ${
+                          isActive 
+                            ? 'text-[color:var(--accent)] drop-shadow-[0_0_8px_var(--accent)]' 
+                            : 'text-slate-500 dark:text-slate-400 group-active:text-slate-600 dark:group-active:text-slate-300'
+                        }`}
+                      />
+                    </div>
+                    
+                    {/* Label with Apple's typography */}
+                    <span className={`text-[10px] font-semibold leading-none transition-all duration-300 ${
+                      isActive 
+                        ? 'text-[color:var(--accent)]' 
+                        : 'text-slate-500 dark:text-slate-400'
+                    }`}>
+                      {label}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Bottom safe area for modern iPhones */}
+          <div className="absolute bottom-0 left-0 right-0 h-safe bg-gradient-to-t from-white/90 to-transparent dark:from-slate-900/95 dark:to-transparent" />
+        </div>
       </nav>
     </>
   );

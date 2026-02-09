@@ -7,6 +7,10 @@ import { LogoutButton } from "@/components/LogoutButton";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { GameweekPitchCard } from "@/components/GameweekPitchCard";
 import { DeadlineCard } from "@/components/DeadlineCard";
+import { DeadlineCountdown } from "@/components/DeadlineCountdown";
+import { ChipStatus } from "@/components/ChipStatus";
+import { PointsPace } from "@/components/PointsPace";
+import { RankBadge } from "@/components/RankChangeIndicator";
 import { loadEntrySummary, parseEntryId } from "@/lib/fpl/service";
 import { ProfileCard } from "@/components/cards/ProfileCard";
 import { TotalsCard } from "@/components/cards/TotalsCard";
@@ -148,6 +152,38 @@ export default async function EntryPage({
                 </Card>
              </div>
         )}
+
+        {/* New Quick Insights Row */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {/* Deadline Countdown */}
+          {summary.nextDeadline && (
+            <DeadlineCountdown 
+              deadline={summary.nextDeadline.deadline}
+              gameweek={summary.nextDeadline.nextGameweek}
+            />
+          )}
+
+          {/* Points Pace */}
+          <PointsPace 
+            currentPoints={summary.totals.totalPoints}
+            currentGameweek={summary.totals.currentEvent}
+          />
+
+          {/* Chip Status - Compact for now since we don't have chips data yet */}
+          <div className="tc-card p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-black uppercase tracking-wider tc-text-muted">
+                Chips Status
+              </h3>
+              <span className="text-xs font-bold text-[color:var(--accent)]">
+                Check Planner
+              </span>
+            </div>
+            <p className="text-xs tc-text-muted">
+              View chip usage and plan optimal timing in the Transfer Planner section.
+            </p>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <ProfileCard profile={summary.profile} />

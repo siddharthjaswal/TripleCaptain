@@ -683,3 +683,44 @@ body {
   width: 20px;
   height: 20px;
 }
+
+/* Safe area support for modern devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .h-safe {
+    height: env(safe-area-inset-bottom);
+  }
+}
+
+/* Fallback for devices without safe area */
+@supports not (padding: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: 1rem;
+  }
+  
+  .h-safe {
+    height: 0;
+  }
+}
+
+/* Apple-style glassmorphism enhancements */
+.apple-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+[data-theme="dark"] .apple-glass {
+  background: rgba(15, 20, 25, 0.72);
+}
+
+/* Touch feedback for better mobile UX */
+@media (hover: none) {
+  .touch-manipulation {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}
