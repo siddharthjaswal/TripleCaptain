@@ -561,6 +561,31 @@ export async function loadFixtures(
         const multiplier = pick.multiplier ?? 1;
         const appliedPoints = points * multiplier;
 
+        // Get detailed stats if available
+        let stats: import("./dto").FixturePlayerDTO["stats"] = undefined;
+        if (liveData) {
+          const liveStats = liveData.elements.find(
+            (el) => el.id === pick.element,
+          );
+          if (liveStats?.stats) {
+            stats = {
+              minutes: liveStats.stats.minutes ?? 0,
+              goals_scored: liveStats.stats.goals_scored ?? 0,
+              assists: liveStats.stats.assists ?? 0,
+              clean_sheets: liveStats.stats.clean_sheets ?? 0,
+              goals_conceded: liveStats.stats.goals_conceded ?? 0,
+              own_goals: liveStats.stats.own_goals ?? 0,
+              penalties_saved: liveStats.stats.penalties_saved ?? 0,
+              penalties_missed: liveStats.stats.penalties_missed ?? 0,
+              yellow_cards: liveStats.stats.yellow_cards ?? 0,
+              red_cards: liveStats.stats.red_cards ?? 0,
+              saves: liveStats.stats.saves ?? 0,
+              bonus: liveStats.stats.bonus ?? 0,
+              bps: liveStats.stats.bps ?? 0,
+            };
+          }
+        }
+
         const fixturePlayer: import("./dto").FixturePlayerDTO = {
           elementId: pick.element,
           name: playerInfo.web_name,
@@ -569,6 +594,7 @@ export async function loadFixtures(
           isCaptain: Boolean(pick.is_captain),
           isViceCaptain: Boolean(pick.is_vice_captain),
           multiplier,
+          stats,
         };
 
         if (!playersByFixture.has(fixture.id)) {

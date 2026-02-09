@@ -1,9 +1,9 @@
 "use client";
 
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-import { Calendar, ChevronLeft, ChevronRight, Clock, Trophy } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Clock, Trophy, ChevronDown, ChevronUp } from "lucide-react";
 import type { FixtureDTO, FixturePlayerDTO } from "@/lib/fpl/dto";
 
 type FixturesCardProps = {
@@ -31,7 +31,7 @@ export function FixturesCard({ event, fixtures, playersByFixture }: FixturesCard
       const dateKey = date.toLocaleDateString("en-GB", {
         weekday: "long",
         day: "2-digit",
-        month: "long",
+        month: "short",
       });
       const sortKey = date.toISOString().split("T")[0];
       if (!acc[sortKey]) {
@@ -112,13 +112,14 @@ export function FixturesCard({ event, fixtures, playersByFixture }: FixturesCard
             const { label, fixtures: dateFixtures } = fixturesByDate[sortKey];
             return (
               <div key={sortKey} className="space-y-4">
-                {/* Date Header */}
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[color:var(--accent)]/10">
-                    <Clock className="h-5 w-5 text-[color:var(--accent)]" />
+                {/* Centered Date Header */}
+                <div className="flex items-center gap-3 justify-center">
+                  <div className="h-px bg-gradient-to-r from-transparent via-[color:var(--surface-border)] to-transparent flex-1" />
+                  <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)]">
+                    <Clock className="h-4 w-4 text-[color:var(--accent)]" />
+                    <h3 className="text-base font-black tracking-tight">{label}</h3>
                   </div>
-                  <h3 className="text-lg font-black tracking-tight">{label}</h3>
-                  <div className="flex-1 h-px bg-gradient-to-r from-[color:var(--surface-border)] to-transparent" />
+                  <div className="h-px bg-gradient-to-r from-transparent via-[color:var(--surface-border)] to-transparent flex-1" />
                 </div>
 
                 {/* Fixtures for this date */}
@@ -281,31 +282,17 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
 
       {/* Players Section */}
       {hasPlayers && (
-        <div className="border-t border-[color:var(--surface-border)] bg-gradient-to-b from-[color:var(--surface-elevated)]/40 to-transparent px-5 py-4">
-          <div className="grid sm:grid-cols-2 gap-4">
-            {/* Home Players */}
-            {homePlayers.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-xs font-black uppercase tracking-wider tc-text-muted mb-3">
-                  Your Players
-                </p>
-                {homePlayers.map((player) => (
-                  <PlayerChip key={player.elementId} player={player} />
-                ))}
-              </div>
-            )}
-            
-            {/* Away Players */}
-            {awayPlayers.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-xs font-black uppercase tracking-wider tc-text-muted mb-3">
-                  Your Players
-                </p>
-                {awayPlayers.map((player) => (
-                  <PlayerChip key={player.elementId} player={player} />
-                ))}
-              </div>
-            )}
+        <div className="border-t border-[color:var(--surface-border)] bg-gradient-to-b from-blue-500/5 via-purple-500/5 to-transparent px-5 py-4">
+          <div className="space-y-3">
+            <p className="text-xs font-black uppercase tracking-wider text-[color:var(--accent)] flex items-center gap-2">
+              <span className="h-1 w-1 rounded-full bg-[color:var(--accent)]" />
+              Your Squad ({players.length})
+            </p>
+            <div className="grid gap-2">
+              {[...homePlayers, ...awayPlayers].map((player) => (
+                <PlayerChip key={player.elementId} player={player} />
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -314,27 +301,125 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
 }
 
 function PlayerChip({ player }: { player: FixturePlayerDTO }) {
-  const pointsColor = player.points > 0 
-    ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" 
-    : player.points < 0 
-    ? "bg-rose-500/20 text-rose-400 border-rose-500/30"
-    : "bg-slate-500/20 text-slate-400 border-slate-500/30";
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Calculate point breakdown
+  const basePoints = player.multiplier > 1 ? player.points / player.multiplier : player.points;
+  
+  const getPointsStyle = (points: number) => {
+    if (points > 5) return "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-emerald-500/20";
+    if (points > 0) return "bg-blue-500/20 text-blue-400 border-blue-500/40 shadow-blue-500/20";
+    if (points < 0) return "bg-rose-500/20 text-rose-400 border-rose-500/40 shadow-rose-500/20";
+    return "bg-slate-500/20 text-slate-400 border-slate-500/40";
+  };
+
+  const hasStats = player.stats && (player.stats.minutes > 0 || player.stats.goals_scored > 0);
 
   return (
-    <div className="flex items-center gap-2 rounded-xl bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] px-3 py-2 transition-all hover:border-[color:var(--accent)]/50">
-      <span className="text-sm font-bold flex-1">{player.name}</span>
-      
-      {/* Captain/Vice Badge */}
-      {(player.isCaptain || player.isViceCaptain) && (
-        <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-red-500 to-red-600 text-[10px] font-black text-white shadow-lg shadow-red-500/30">
-          {player.isCaptain ? "C" : "V"}
+    <div className="rounded-xl bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] overflow-hidden transition-all hover:border-[color:var(--accent)]/50">
+      <div 
+        className={`flex items-center gap-2 px-3 py-2.5 ${hasStats ? 'cursor-pointer' : ''}`}
+        onClick={() => hasStats && setIsExpanded(!isExpanded)}
+      >
+        <span className="text-sm font-bold flex-1">{player.name}</span>
+        
+        {/* Captain/Vice Badge */}
+        {(player.isCaptain || player.isViceCaptain) && (
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-red-600 text-[11px] font-black text-white shadow-lg shadow-red-500/30">
+            {player.isCaptain ? "C" : "V"}
+          </span>
+        )}
+        
+        {/* Points Badge */}
+        <span className={`inline-flex items-center justify-center rounded-lg border shadow-lg px-3 py-1.5 text-sm font-black tabular-nums min-w-[42px] ${getPointsStyle(player.points)}`}>
+          {player.points > 0 ? "+" : ""}{player.points}
         </span>
+
+        {/* Expand indicator */}
+        {hasStats && (
+          <div className="flex items-center justify-center w-6 h-6">
+            {isExpanded ? (
+              <ChevronUp className="h-4 w-4 tc-text-muted" />
+            ) : (
+              <ChevronDown className="h-4 w-4 tc-text-muted" />
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Expandable Stats */}
+      {isExpanded && player.stats && (
+        <div className="border-t border-[color:var(--surface-border)] bg-[color:var(--surface-root)]/40 px-3 py-3">
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            {player.stats.minutes > 0 && (
+              <StatBadge label="Minutes" value={player.stats.minutes} />
+            )}
+            {player.stats.goals_scored > 0 && (
+              <StatBadge label="Goals" value={player.stats.goals_scored} color="emerald" />
+            )}
+            {player.stats.assists > 0 && (
+              <StatBadge label="Assists" value={player.stats.assists} color="blue" />
+            )}
+            {player.stats.clean_sheets > 0 && (
+              <StatBadge label="Clean Sheet" value={player.stats.clean_sheets} color="green" />
+            )}
+            {player.stats.saves > 0 && (
+              <StatBadge label="Saves" value={player.stats.saves} color="cyan" />
+            )}
+            {player.stats.bonus > 0 && (
+              <StatBadge label="Bonus" value={player.stats.bonus} color="amber" />
+            )}
+            {player.stats.yellow_cards > 0 && (
+              <StatBadge label="Yellow" value={player.stats.yellow_cards} color="yellow" />
+            )}
+            {player.stats.red_cards > 0 && (
+              <StatBadge label="Red" value={player.stats.red_cards} color="red" />
+            )}
+            {player.stats.own_goals > 0 && (
+              <StatBadge label="Own Goals" value={player.stats.own_goals} color="rose" />
+            )}
+            {player.stats.penalties_missed > 0 && (
+              <StatBadge label="Pen Miss" value={player.stats.penalties_missed} color="rose" />
+            )}
+            {player.stats.penalties_saved > 0 && (
+              <StatBadge label="Pen Save" value={player.stats.penalties_saved} color="emerald" />
+            )}
+            {player.multiplier > 1 && (
+              <StatBadge label={`${player.multiplier}x Captain`} value={Math.round(basePoints)} color="purple" />
+            )}
+          </div>
+        </div>
       )}
-      
-      {/* Points Badge */}
-      <span className={`inline-flex items-center justify-center rounded-lg border px-2.5 py-1 text-xs font-black tabular-nums min-w-[36px] ${pointsColor}`}>
-        {player.points > 0 ? "+" : ""}{player.points}
-      </span>
+    </div>
+  );
+}
+
+function StatBadge({ 
+  label, 
+  value, 
+  color = "default" 
+}: { 
+  label: string; 
+  value: number; 
+  color?: "default" | "emerald" | "blue" | "green" | "cyan" | "amber" | "yellow" | "red" | "rose" | "purple";
+}) {
+  const colorClasses = {
+    default: "bg-slate-500/10 text-slate-400",
+    emerald: "bg-emerald-500/10 text-emerald-400",
+    blue: "bg-blue-500/10 text-blue-400",
+    green: "bg-green-500/10 text-green-400",
+    cyan: "bg-cyan-500/10 text-cyan-400",
+    amber: "bg-amber-500/10 text-amber-400",
+    yellow: "bg-yellow-500/10 text-yellow-400",
+    red: "bg-red-500/10 text-red-400",
+    rose: "bg-rose-500/10 text-rose-400",
+    purple: "bg-purple-500/10 text-purple-400",
+  };
+
+  return (
+    <div className={`flex items-center justify-between rounded-lg px-2 py-1.5 ${colorClasses[color]}`}>
+      <span className="font-medium">{label}</span>
+      <span className="font-black">{value}</span>
     </div>
   );
 }
