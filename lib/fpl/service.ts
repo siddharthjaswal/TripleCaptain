@@ -491,8 +491,11 @@ export async function loadFixtures(
       : parseEntryId(entryIdInput);
 
   try {
-    const profile = await getEntryProfile(entryId);
-    const bootstrap = await getBootstrap();
+    // Fetch profile and bootstrap in parallel for better performance
+    const [profile, bootstrap] = await Promise.all([
+      getEntryProfile(entryId),
+      getBootstrap(),
+    ]);
 
     const teamName = profile.name;
     const managerName =
@@ -515,19 +518,21 @@ export async function loadFixtures(
     const fixtures = await getFixtures(event);
     const mappedFixtures = mapFixtures(fixtures, bootstrap);
 
-    // Try to fetch picks and live data for this gameweek
-    let picks;
-    let liveData;
-    try {
-      picks = await getEntryPicks(entryId, event);
-    } catch {
-      picks = null;
-    }
-    try {
-      liveData = await getEventLive(event);
-    } catch {
-      liveData = null;
-    }
+    // Try to fetch picks and live data for this gameweek in parallel
+    const [picks, liveData] = await Promise.all([
+      getEntryPicks(entryId, event).catch((error) => {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn("Failed to fetch entry picks:", error);
+        }
+        return null;
+      }),
+      getEventLive(event).catch((error) => {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn("Failed to fetch live data:", error);
+        }
+        return null;
+      }),
+    ]);
 
     // Map players to fixtures
     const playersByFixture = new Map<number, import("./dto").FixturePlayerDTO[]>();
@@ -548,26 +553,17 @@ export async function loadFixtures(
 
         if (!fixture) continue;
 
-        // Get live points if available
+        // Get live points and stats if available (single lookup for efficiency)
         let points = 0;
-        if (liveData) {
-          const liveStats = liveData.elements.find(
-            (el) => el.id === pick.element,
-          );
-          points = liveStats?.stats?.total_points ?? 0;
-        }
-
-        // Apply multiplier
-        const multiplier = pick.multiplier ?? 1;
-        const appliedPoints = points * multiplier;
-
-        // Get detailed stats if available
         let stats: import("./dto").FixturePlayerDTO["stats"] = undefined;
+        
         if (liveData) {
           const liveStats = liveData.elements.find(
             (el) => el.id === pick.element,
           );
+          
           if (liveStats?.stats) {
+            points = liveStats.stats.total_points ?? 0;
             stats = {
               minutes: liveStats.stats.minutes ?? 0,
               goals_scored: liveStats.stats.goals_scored ?? 0,
@@ -585,6 +581,10 @@ export async function loadFixtures(
             };
           }
         }
+
+        // Apply multiplier
+        const multiplier = pick.multiplier ?? 1;
+        const appliedPoints = points * multiplier;
 
         const fixturePlayer: import("./dto").FixturePlayerDTO = {
           elementId: pick.element,
