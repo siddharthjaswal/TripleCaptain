@@ -115,7 +115,7 @@ export default function PricingPage({ params }: { params: { entryId: string } })
                             </div>
 
                             <Button 
-                                variant={plan.highlight ? 'primary' : 'outline'} 
+                                variant={plan.highlight ? 'primary' : 'secondary'} 
                                 className="w-full py-4 text-sm uppercase tracking-widest font-black"
                                 asChild={!plan.current}
                             >

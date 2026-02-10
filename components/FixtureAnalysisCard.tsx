@@ -2,14 +2,71 @@
 
 import type { FixtureAnalysisDTO, TeamFixtureRunDTO } from "@/lib/fpl/dto";
 import { Card, Typography, Badge } from "./ui";
+import { Skeleton } from "./ui/Skeleton";
 import { BarChart3, CheckCircle2, XCircle, Info } from "lucide-react";
 import Image from "next/image";
 
 type FixtureAnalysisCardProps = {
   analysis: FixtureAnalysisDTO;
+  isLoading?: boolean;
 };
 
-export function FixtureAnalysisCard({ analysis }: FixtureAnalysisCardProps) {
+export function FixtureAnalysisCard({ analysis, isLoading = false }: FixtureAnalysisCardProps) {
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <section className="space-y-12 animate-fade-in pb-20">
+        {/* Header Area */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
+          <div className="flex items-center gap-4">
+            <Skeleton variant="rectangular" width="56px" height="56px" className="rounded-2xl" />
+            <div>
+              <Skeleton variant="text" width="250px" height="40px" className="mb-2" />
+              <Skeleton variant="text" width="200px" height="12px" />
+            </div>
+          </div>
+          <Card className="px-8 py-4 border-blue-500/20 bg-blue-500/5" glass hover={false}>
+            <Skeleton variant="text" width="120px" height="40px" />
+          </Card>
+        </div>
+
+        <div className="grid gap-12 lg:grid-cols-2">
+          {[1, 2].map((section) => (
+            <div key={section} className="space-y-8">
+              <div className="flex items-center gap-3 px-4">
+                <Skeleton variant="rectangular" width="48px" height="48px" className="rounded-2xl" />
+                <div>
+                  <Skeleton variant="text" width="150px" height="20px" className="mb-1" />
+                  <Skeleton variant="text" width="200px" height="12px" />
+                </div>
+              </div>
+              <div className="grid gap-6">
+                {[1, 2, 3].map((team) => (
+                  <Card key={team} className="border-white/10 bg-white/5" glass hover={false}>
+                    <div className="p-6 space-y-4">
+                      <div className="flex items-center gap-3">
+                        <Skeleton variant="circular" width="48px" height="48px" />
+                        <div className="flex-1">
+                          <Skeleton variant="text" width="60%" height="20px" className="mb-1" />
+                          <Skeleton variant="text" width="40%" height="14px" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-5 gap-2">
+                        {[1, 2, 3, 4, 5].map((fix) => (
+                          <Skeleton key={fix} variant="rectangular" height="64px" className="rounded-xl" />
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="space-y-12 animate-fade-in pb-20">
       {/* Header Area */}

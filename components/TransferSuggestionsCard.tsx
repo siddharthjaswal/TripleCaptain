@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { TransferSuggestionDTO } from "@/lib/fpl/dto";
 import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
 import { Card, Typography, Badge } from "./ui";
+import { Skeleton } from "./ui/Skeleton";
 import { 
     TrendingUp, 
     Target, 
@@ -14,12 +15,47 @@ import {
 type TransferSuggestionsCardProps = {
   suggestions: TransferSuggestionDTO[];
   budgetAvailable: number;
+  isLoading?: boolean;
 };
 
 export function TransferSuggestionsCard({
   suggestions,
   budgetAvailable,
+  isLoading = false,
 }: TransferSuggestionsCardProps) {
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <section className="space-y-10 animate-fade-in pb-20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 px-4">
+          <div className="space-y-1">
+            <Skeleton variant="text" width="250px" height="40px" className="mb-2" />
+            <Skeleton variant="text" width="300px" height="12px" />
+          </div>
+          <Card className="px-8 py-4 border-white/5 bg-white/5" glass hover={false}>
+            <Skeleton variant="text" width="120px" height="12px" className="mb-2" />
+            <Skeleton variant="text" width="100px" height="32px" />
+          </Card>
+        </div>
+
+        <div className="grid gap-8">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="relative overflow-hidden border-white/10 bg-slate-950/40" glass hover={false}>
+              <div className="p-8 space-y-6">
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                  <Skeleton variant="circular" width="80px" height="80px" />
+                  <Skeleton variant="rectangular" width="48px" height="48px" className="rounded-2xl" />
+                  <Skeleton variant="circular" width="80px" height="80px" />
+                </div>
+                <Skeleton variant="rectangular" height="100px" className="rounded-2xl" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   if (suggestions.length === 0) {
     return (
       <Card className="p-20 text-center" glass hover={false}>
