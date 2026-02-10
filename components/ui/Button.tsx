@@ -2,7 +2,7 @@ import React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: 'primary' | 'outline' | 'ghost';
+    variant?: 'primary' | 'secondary' | 'ghost';
     size?: 'sm' | 'md' | 'lg' | 'icon';
     loading?: boolean;
     asChild?: boolean;
@@ -19,12 +19,12 @@ export function Button({
     ...props 
 }: ButtonProps) {
     const Component = asChild ? Slot : 'button';
-    const baseStyles = 'tc-button';
+    const baseStyles = 'tc-button tc-focus-ring';
     
     const variants = {
         primary: 'tc-button-primary',
-        outline: 'tc-button-outline',
-        ghost: 'hover:bg-[color:var(--surface-hover)] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]',
+        secondary: 'tc-button-secondary',
+        ghost: 'tc-button-ghost',
     };
 
     const sizes = {

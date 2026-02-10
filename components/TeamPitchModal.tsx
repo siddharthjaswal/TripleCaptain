@@ -225,7 +225,7 @@ function PlayerChip({ player, onClick }: PlayerChipProps) {
           <div className="tc-player-chip-vertical__badge">C</div>
         )}
         {player.isViceCaptain && (
-          <div className="tc-player-chip-vertical__badge" style={{ background: '#0ea5e9' }}>V</div>
+          <div className="tc-player-chip-vertical__badge" style={{ background: 'var(--info)' }}>V</div>
         )}
       </div>
 

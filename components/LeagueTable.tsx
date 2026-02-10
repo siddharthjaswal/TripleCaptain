@@ -199,7 +199,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
       {(league.page > 1 || league.hasNextPage) && (
         <div className="p-8 border-t border-white/5 flex items-center justify-between bg-black/20 backdrop-blur-sm">
             <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={() => handlePageChange(league.page - 1)}
                 disabled={league.page === 1 || isPending}
@@ -211,7 +211,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
             <Typography variant="caption" weight="black" className="opacity-40">Page {league.page}</Typography>
 
             <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={() => handlePageChange(league.page + 1)}
                 disabled={!league.hasNextPage || isPending}

@@ -163,7 +163,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => {
+                        <Button variant="secondary" size="sm" onClick={() => {
                             setSquad(initialSquad);
                             setBank(initialBank);
                             setTransfers([]);

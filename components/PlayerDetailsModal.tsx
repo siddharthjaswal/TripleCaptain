@@ -104,7 +104,7 @@ export function PlayerDetailsModal({
           <div className="py-32 text-center space-y-4">
             <AlertTriangle className="h-12 w-12 mx-auto text-red-500" />
             <Typography variant="title" weight="bold" className="text-red-500">{error}</Typography>
-            <Button onClick={onClose} variant="outline">Close Report</Button>
+            <Button onClick={onClose} variant="secondary">Close Report</Button>
           </div>
         ) : player && (
           <div className="flex flex-col">

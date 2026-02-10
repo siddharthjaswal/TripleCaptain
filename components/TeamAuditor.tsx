@@ -157,7 +157,7 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
             </div>
             
             <div className="flex justify-center pt-4">
-                <Button variant="outline" onClick={runAudit} size="md">
+                <Button variant="secondary" onClick={runAudit} size="md">
                     <Anchor className="mr-2 h-4 w-4" />
                     Re-Audit Squad
                 </Button>

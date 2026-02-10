@@ -19,13 +19,13 @@ type LeagueRaceChartProps = {
   race: LeagueRaceDTO;
 };
 
-// Generate distinct premium colors
+// Chart colors - using semantic colors for consistency
 const CHART_COLORS = [
-  "#38bdf8", // sky
-  "#10b981", // emerald
-  "#fbbf24", // amber
-  "#ef4444", // red
-  "#8b5cf6", // violet
+  "hsl(199, 89%, 48%)", // Blue
+  "hsl(142, 71%, 45%)", // Emerald (brand color)
+  "hsl(38, 92%, 50%)",  // Amber
+  "hsl(0, 84%, 60%)",   // Red
+  "hsl(258, 90%, 66%)", // Violet
 ];
 
 type CustomTooltipProps = {

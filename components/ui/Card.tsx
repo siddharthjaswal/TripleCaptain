@@ -3,16 +3,15 @@ import React from 'react';
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
     className?: string;
-    glass?: boolean;
-    hover?: boolean;
+    interactive?: boolean;
 }
 
-export function Card({ children, className = '', glass = false, hover = true, ...props }: CardProps) {
-    const baseStyles = glass ? 'tc-card-glass' : 'tc-card';
-    const hoverStyles = hover ? 'hover:-translate-y-1' : '';
+export function Card({ children, className = '', interactive = false, ...props }: CardProps) {
+    const baseStyles = 'tc-card';
+    const interactiveStyles = interactive ? 'tc-card-interactive' : '';
     
     return (
-        <div className={`${baseStyles} ${hoverStyles} ${className}`} {...props}>
+        <div className={`${baseStyles} ${interactiveStyles} ${className}`} {...props}>
             {children}
         </div>
     );
