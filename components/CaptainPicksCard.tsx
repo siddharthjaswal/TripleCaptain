@@ -2,13 +2,56 @@ import Image from "next/image";
 import type { CaptainPickDTO } from "@/lib/fpl/dto";
 import { getPlayerPhotoUrl } from "@/lib/fpl/images";
 import { Card, Typography, Badge } from "./ui";
+import { Skeleton } from "./ui/Skeleton";
 import { Crown } from "lucide-react";
 
 type CaptainPicksCardProps = {
   picks: CaptainPickDTO[];
+  isLoading?: boolean;
 };
 
-export function CaptainPicksCard({ picks }: CaptainPicksCardProps) {
+export function CaptainPicksCard({ picks, isLoading = false }: CaptainPicksCardProps) {
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <section className="space-y-6 animate-fade-in">
+        <div className="flex items-center gap-3">
+          <Skeleton variant="rectangular" width="56px" height="56px" className="rounded-2xl" />
+          <div className="flex-1">
+            <Skeleton variant="text" width="40%" height="24px" className="mb-2" />
+            <Skeleton variant="text" width="60%" height="14px" />
+          </div>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="relative overflow-hidden border-white/5" glass>
+              <div className="p-6 space-y-6">
+                <div className="flex justify-between items-start">
+                  <Skeleton variant="circular" width="40px" height="40px" />
+                  <Skeleton variant="rectangular" width="80px" height="20px" className="rounded" />
+                </div>
+                <div className="flex items-center gap-4 pb-4 border-b border-white/5">
+                  <Skeleton variant="rectangular" width="64px" height="64px" className="rounded-2xl" />
+                  <div className="flex-1">
+                    <Skeleton variant="text" width="80%" height="20px" className="mb-2" />
+                    <Skeleton variant="text" width="50%" height="12px" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <Skeleton variant="rectangular" height="80px" className="rounded-2xl" />
+                  <Skeleton variant="rectangular" height="80px" className="rounded-2xl" />
+                </div>
+                <Skeleton variant="rectangular" height="60px" className="rounded-2xl" />
+                <Skeleton variant="rectangular" height="80px" className="rounded-xl" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   if (picks.length === 0) {
     return (
       <Card className="p-12 text-center" glass>

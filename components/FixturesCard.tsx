@@ -5,14 +5,16 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { Calendar, ChevronLeft, ChevronRight, Clock, Trophy, ChevronDown, ChevronUp } from "lucide-react";
 import type { FixtureDTO, FixturePlayerDTO } from "@/lib/fpl/dto";
+import { Skeleton } from "./ui/Skeleton";
 
 type FixturesCardProps = {
   event: number;
   fixtures: FixtureDTO[];
   playersByFixture: Map<number, FixturePlayerDTO[]>;
+  isLoading?: boolean;
 };
 
-export function FixturesCard({ event, fixtures, playersByFixture }: FixturesCardProps) {
+export function FixturesCard({ event, fixtures, playersByFixture, isLoading = false }: FixturesCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -22,6 +24,67 @@ export function FixturesCard({ event, fixtures, playersByFixture }: FixturesCard
       router.push(`${pathname}?event=${newEvent}`);
     });
   };
+
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <section className="relative">
+        {/* Premium Gameweek Selector Skeleton */}
+        <div className="tc-card rounded-3xl p-6 mb-6 bg-gradient-to-br from-[color:var(--accent)]/5 to-transparent border-[color:var(--accent)]/10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <Skeleton variant="rectangular" width="56px" height="56px" className="rounded-2xl" />
+              <div>
+                <Skeleton variant="text" width="150px" height="24px" className="mb-2" />
+                <Skeleton variant="text" width="100px" height="14px" />
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Skeleton variant="rectangular" width="100px" height="44px" className="rounded-xl" />
+              <Skeleton variant="rectangular" width="60px" height="40px" className="rounded-xl" />
+              <Skeleton variant="rectangular" width="100px" height="44px" className="rounded-xl" />
+            </div>
+          </div>
+        </div>
+
+        {/* Fixtures List Skeleton */}
+        <div className="space-y-8">
+          {[1, 2].map((day) => (
+            <div key={day} className="space-y-4">
+              <div className="flex items-center gap-3 justify-center">
+                <div className="h-px bg-[color:var(--surface-border)] flex-1" />
+                <Skeleton variant="text" width="200px" height="20px" />
+                <div className="h-px bg-[color:var(--surface-border)] flex-1" />
+              </div>
+              <div className="grid gap-3">
+                {[1, 2, 3].map((fixture) => (
+                  <div key={fixture} className="tc-card rounded-2xl p-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3 flex-1">
+                        <Skeleton variant="circular" width="40px" height="40px" />
+                        <div className="flex-1">
+                          <Skeleton variant="text" width="80%" height="16px" className="mb-2" />
+                          <Skeleton variant="text" width="40%" height="28px" />
+                        </div>
+                      </div>
+                      <Skeleton variant="rectangular" width="60px" height="40px" className="rounded-xl" />
+                      <div className="flex items-center gap-3 flex-1 flex-row-reverse">
+                        <Skeleton variant="circular" width="40px" height="40px" />
+                        <div className="flex-1 text-right">
+                          <Skeleton variant="text" width="80%" height="16px" className="mb-2 ml-auto" />
+                          <Skeleton variant="text" width="40%" height="28px" className="ml-auto" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   // Group fixtures by date
   const fixturesByDate = fixtures.reduce(
@@ -48,7 +111,7 @@ export function FixturesCard({ event, fixtures, playersByFixture }: FixturesCard
   return (
     <section className="relative">
       {/* Premium Gameweek Selector */}
-      <div className="tc-card rounded-3xl p-6 shadow-lg mb-6 bg-gradient-to-br from-[color:var(--accent)]/5 to-transparent border-[color:var(--accent)]/10">
+      <div className="tc-card rounded-3xl p-6 mb-6 bg-gradient-to-br from-[color:var(--accent)]/5 to-transparent border-[color:var(--accent)]/10">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent)]/80 shadow-lg shadow-[color:var(--accent)]/20">

@@ -120,6 +120,7 @@ export async function loadEntrySummary(
       }),
       nextDeadline,
       phase,
+      chips: history.chips || [],
     };
   } catch (error) {
     if (error instanceof FplError && error.status === 404) {

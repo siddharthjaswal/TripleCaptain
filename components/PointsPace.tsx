@@ -1,14 +1,42 @@
 "use client";
 
 import { TrendingUp, Target, Award } from "lucide-react";
+import { Skeleton } from "./ui/Skeleton";
 
 type PointsPaceProps = {
   currentPoints: number;
   currentGameweek: number;
   totalGameweeks?: number;
+  isLoading?: boolean;
 };
 
-export function PointsPace({ currentPoints, currentGameweek, totalGameweeks = 38 }: PointsPaceProps) {
+export function PointsPace({ currentPoints, currentGameweek, totalGameweeks = 38, isLoading = false }: PointsPaceProps) {
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <div className="tc-card p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Skeleton variant="circular" width="20px" height="20px" />
+          <Skeleton variant="text" width="40%" height="14px" />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-lg bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-3">
+            <Skeleton variant="text" width="50%" height="10px" className="mb-2" />
+            <Skeleton variant="text" width="70%" height="28px" />
+          </div>
+          <div className="rounded-lg bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-3">
+            <Skeleton variant="text" width="60%" height="10px" className="mb-2" />
+            <Skeleton variant="text" width="70%" height="28px" />
+          </div>
+        </div>
+        <div className="mt-3 rounded-lg bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-2">
+          <Skeleton variant="text" width="60%" height="12px" className="mb-2" />
+          <Skeleton variant="rectangular" height="8px" />
+        </div>
+      </div>
+    );
+  }
+
   if (currentGameweek === 0) {
     return null;
   }

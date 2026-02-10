@@ -169,20 +169,11 @@ export default async function EntryPage({
             currentGameweek={summary.totals.currentEvent}
           />
 
-          {/* Chip Status - Compact for now since we don't have chips data yet */}
-          <div className="tc-card p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-black uppercase tracking-wider tc-text-muted">
-                Chips Status
-              </h3>
-              <span className="text-xs font-bold text-[color:var(--accent)]">
-                Check Planner
-              </span>
-            </div>
-            <p className="text-xs tc-text-muted">
-              View chip usage and plan optimal timing in the Transfer Planner section.
-            </p>
-          </div>
+          {/* Chip Status with real data */}
+          <ChipStatus 
+            usedChips={summary.chips.map(c => c.name as "wildcard" | "bboost" | "3xc" | "freehit")}
+            compact={false}
+          />
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

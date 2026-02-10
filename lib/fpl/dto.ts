@@ -41,6 +41,13 @@ export type SummaryDTO = {
   latest: LatestGwDTO;
   nextDeadline: GameweekDeadlineDTO | null;
   phase: FplPhase;
+  chips: ChipUsageDTO[];
+};
+
+export type ChipUsageDTO = {
+  name: string;
+  event: number;
+  time: string;
 };
 
 export type LatestGwPlayerDTO = {

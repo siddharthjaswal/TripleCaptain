@@ -5,15 +5,68 @@ import Image from "next/image";
 import type { DifferentialPickDTO } from "@/lib/fpl/dto";
 import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
 import { Card, Typography, Badge } from "./ui";
+import { Skeleton } from "./ui/Skeleton";
 import { Gem, TrendingUp } from "lucide-react";
 
 type DifferentialPicksCardProps = {
   differentials: DifferentialPickDTO[];
+  isLoading?: boolean;
 };
 
 export function DifferentialPicksCard({
   differentials,
+  isLoading = false,
 }: DifferentialPicksCardProps) {
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <section className="space-y-10 animate-fade-in pb-20">
+        <div className="flex items-center gap-4 px-4">
+          <Skeleton variant="rectangular" width="56px" height="56px" className="rounded-2xl" />
+          <div>
+            <Skeleton variant="text" width="250px" height="40px" className="mb-2" />
+            <Skeleton variant="text" width="300px" height="12px" />
+          </div>
+        </div>
+
+        <div className="grid gap-8">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="relative overflow-hidden border-white/10 bg-slate-950/40" glass hover={false}>
+              <div className="flex flex-col md:flex-row">
+                <div className="flex-1 p-8 flex flex-col md:flex-row items-center gap-8 border-b md:border-b-0 md:border-r border-white/5">
+                  <Skeleton variant="circular" width="96px" height="96px" />
+                  <div className="flex-1 text-center md:text-left">
+                    <Skeleton variant="text" width="80%" height="28px" className="mb-2" />
+                    <Skeleton variant="text" width="60%" height="14px" />
+                  </div>
+                </div>
+                <div className="flex-[1.5] p-8 space-y-8 bg-white/[0.01]">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    {[1, 2, 3, 4].map((j) => (
+                      <div key={j} className="space-y-1">
+                        <Skeleton variant="text" width="60%" height="10px" className="mb-2" />
+                        <Skeleton variant="text" width="80%" height="28px" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="space-y-3">
+                    <Skeleton variant="text" width="40%" height="10px" />
+                    <div className="grid grid-cols-5 gap-2">
+                      {[1, 2, 3, 4, 5].map((k) => (
+                        <Skeleton key={k} variant="rectangular" height="48px" className="rounded-xl" />
+                      ))}
+                    </div>
+                  </div>
+                  <Skeleton variant="rectangular" height="120px" className="rounded-2xl" />
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   if (differentials.length === 0) {
     return (
       <Card className="p-20 text-center" glass hover={false}>

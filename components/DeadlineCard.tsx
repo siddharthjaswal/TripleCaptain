@@ -3,12 +3,14 @@
 
 import { useEffect, useState } from "react";
 import type { GameweekDeadlineDTO } from "@/lib/fpl/dto";
+import { Skeleton } from "./ui/Skeleton";
 
 type DeadlineCardProps = {
   deadline: GameweekDeadlineDTO;
+  isLoading?: boolean;
 };
 
-export function DeadlineCard({ deadline }: DeadlineCardProps) {
+export function DeadlineCard({ deadline, isLoading = false }: DeadlineCardProps) {
   const [timeRemaining, setTimeRemaining] = useState<string>("");
   // Check if we're on client-side (avoids hydration mismatch)
   const [isClient, setIsClient] = useState(false);
@@ -52,10 +54,33 @@ export function DeadlineCard({ deadline }: DeadlineCardProps) {
     return () => clearInterval(interval);
   }, [deadline.deadline]);
 
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <section className="tc-card rounded-3xl p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <Skeleton variant="text" width="40%" height="12px" className="mb-3" />
+            <Skeleton variant="text" width="60%" height="28px" />
+          </div>
+          <Skeleton variant="circular" width="56px" height="56px" />
+        </div>
+        <div className="mt-4 rounded-2xl border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/90 px-4 py-4">
+          <Skeleton variant="text" width="30%" height="12px" className="mb-2" />
+          <Skeleton variant="text" width="50%" height="20px" />
+        </div>
+        <div className="mt-3 flex items-center gap-2">
+          <Skeleton variant="circular" width="16px" height="16px" />
+          <Skeleton variant="text" width="60%" height="14px" />
+        </div>
+      </section>
+    );
+  }
+
   if (!isClient) {
     // Return placeholder during SSR
     return (
-      <section className="tc-card rounded-3xl p-6 shadow-lg">
+      <section className="tc-card rounded-3xl p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs uppercase tracking-wide tc-text-muted">
@@ -98,7 +123,7 @@ export function DeadlineCard({ deadline }: DeadlineCardProps) {
   });
 
   return (
-    <section className="tc-card rounded-3xl p-6 shadow-lg">
+    <section className="tc-card rounded-3xl p-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs uppercase tracking-wide tc-text-muted">
