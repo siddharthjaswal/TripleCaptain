@@ -5,39 +5,39 @@
 
   /* --- CLEAN MINIMAL DESIGN SYSTEM --- */
   
-  /* Brand Identity (Refined) */
-  --brand-primary: #10b981;        /* Emerald - primary accent */
-  --brand-primary-hover: #059669;  /* Darker emerald */
-  --brand-secondary: #6366f1;      /* Indigo - secondary accent */
+  /* Brand Identity (Mellow & Soft) */
+  --brand-primary: #64748b;        /* Slate - mellow primary */
+  --brand-primary-hover: #475569;  /* Darker slate */
+  --brand-secondary: #8b5cf6;      /* Soft purple - secondary */
   
-  /* Light Theme - Clean & Spacious */
-  --surface-root: #fafafa;         /* Soft warm gray */
+  /* Light Theme - Soft & Gentle */
+  --surface-root: #f8fafc;         /* Very soft blue-gray */
   --surface-elevated: #ffffff;     /* Pure white */
-  --surface-hover: #f5f5f5;        /* Subtle hover */
-  --surface-border: #e5e5e5;       /* Light border */
-  --surface-border-strong: #d4d4d4; /* Stronger border */
+  --surface-hover: #f1f5f9;        /* Gentle hover */
+  --surface-border: #e2e8f0;       /* Soft border */
+  --surface-border-strong: #cbd5e1; /* Stronger border */
   
-  /* Text - Clear Hierarchy */
-  --text-primary: #171717;         /* Near black */
-  --text-secondary: #737373;       /* Medium gray */
-  --text-tertiary: #a3a3a3;        /* Light gray */
+  /* Text - Soft Hierarchy */
+  --text-primary: #334155;         /* Soft dark slate */
+  --text-secondary: #64748b;       /* Medium slate */
+  --text-tertiary: #94a3b8;        /* Light slate */
   --text-inverse: #ffffff;
   
-  /* Accent Colors - Emerald Focus */
-  --accent: #10b981;
-  --accent-hover: #059669;
-  --accent-light: #d1fae5;
+  /* Accent Colors - Muted Teal */
+  --accent: #14b8a6;
+  --accent-hover: #0d9488;
+  --accent-light: #ccfbf1;
   --accent-contrast: #ffffff;
   
-  /* Semantic Colors - Refined */
-  --success: #10b981;
-  --success-bg: #d1fae5;
-  --success-border: #6ee7b7;
-  --success-text: #065f46;
+  /* Semantic Colors - Muted */
+  --success: #14b8a6;
+  --success-bg: #ccfbf1;
+  --success-border: #5eead4;
+  --success-text: #0f766e;
   
   --warning: #f59e0b;
   --warning-bg: #fef3c7;
-  --warning-border: #fbbf24;
+  --warning-border: #fcd34d;
   --warning-text: #92400e;
   
   --error: #ef4444;
@@ -45,10 +45,10 @@
   --error-border: #fca5a5;
   --error-text: #991b1b;
   
-  --info: #3b82f6;
-  --info-bg: #dbeafe;
-  --info-border: #93c5fd;
-  --info-text: #1e40af;
+  --info: #6366f1;
+  --info-bg: #e0e7ff;
+  --info-border: #a5b4fc;
+  --info-text: #4338ca;
   
   /* Shadows - Subtle & Soft */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -65,24 +65,24 @@
 [data-theme="dark"] {
   color-scheme: dark;
   
-  /* Dark Theme - Deep & Clean */
-  --surface-root: #0a0a0a;         /* Nearly black */
-  --surface-elevated: #171717;     /* Dark gray */
-  --surface-hover: #262626;        /* Lighter dark */
-  --surface-border: #262626;       /* Subtle border */
-  --surface-border-strong: #404040; /* Visible border */
+  /* Dark Theme - Soft & Deep */
+  --surface-root: #0f172a;         /* Deep slate */
+  --surface-elevated: #1e293b;     /* Elevated slate */
+  --surface-hover: #334155;        /* Lighter slate */
+  --surface-border: #334155;       /* Subtle border */
+  --surface-border-strong: #475569; /* Visible border */
   
-  /* Text - High Contrast */
-  --text-primary: #fafafa;
-  --text-secondary: #a3a3a3;
-  --text-tertiary: #737373;
-  --text-inverse: #0a0a0a;
+  /* Text - Soft Contrast */
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-inverse: #0f172a;
   
-  /* Accent Colors - Brighter in Dark */
-  --accent: #34d399;
-  --accent-hover: #10b981;
-  --accent-light: #065f46;
-  --accent-contrast: #0a0a0a;
+  /* Accent Colors - Muted Teal (slightly brighter) */
+  --accent: #2dd4bf;
+  --accent-hover: #14b8a6;
+  --accent-light: #134e4a;
+  --accent-contrast: #0f172a;
   
   /* Semantic Colors - Dark Optimized */
   --success: #34d399;
