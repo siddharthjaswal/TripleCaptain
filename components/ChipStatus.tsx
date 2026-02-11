@@ -1,12 +1,14 @@
 "use client";
 
 import { Sparkles, Zap, Users, Repeat } from "lucide-react";
+import { Skeleton } from "./ui/Skeleton";
 
 type ChipType = "wildcard" | "bboost" | "3xc" | "freehit";
 
 type ChipStatusProps = {
   usedChips?: ChipType[];
   compact?: boolean;
+  isLoading?: boolean;
 };
 
 const CHIP_CONFIG = {
@@ -36,8 +38,40 @@ const CHIP_CONFIG = {
   },
 } as const;
 
-export function ChipStatus({ usedChips = [], compact = false }: ChipStatusProps) {
+export function ChipStatus({ usedChips = [], compact = false, isLoading = false }: ChipStatusProps) {
   const chips: ChipType[] = ["wildcard", "bboost", "3xc", "freehit"];
+
+  if (isLoading) {
+    if (compact) {
+      return (
+        <div className="flex items-center gap-2 flex-wrap">
+          {chips.map((chip) => (
+            <Skeleton key={chip} variant="rectangular" width="60px" height="32px" className="rounded-lg" />
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className="tc-card p-6 rounded-2xl">
+        <div className="flex items-center justify-between mb-4">
+          <Skeleton variant="text" width="40%" height="16px" />
+          <Skeleton variant="text" width="30%" height="14px" />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {chips.map((chip) => (
+            <div key={chip} className="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-hover)] p-4">
+              <div className="flex items-center justify-between mb-2">
+                <Skeleton variant="circular" width="20px" height="20px" />
+              </div>
+              <Skeleton variant="text" width="50%" height="14px" className="mb-2" />
+              <Skeleton variant="text" width="80%" height="12px" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (compact) {
     return (
