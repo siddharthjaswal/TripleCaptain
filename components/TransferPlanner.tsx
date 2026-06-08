@@ -154,7 +154,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
             <div className="lg:col-span-3 space-y-6">
                 <Card className="p-4 flex items-center justify-between" glass>
                     <div className="flex items-center gap-4">
-                        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
+                        <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-500">
                             <Coins className="h-5 w-5" />
                         </div>
                         <div>
@@ -198,7 +198,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                                 <Typography variant="caption" className="text-[9px]">Blank GW</Typography>
                             </div>
                             <div className="flex items-center gap-1.5">
-                                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
+                                <div className="w-2.5 h-2.5 rounded-full bg-cyan-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
                                 <Typography variant="caption" className="text-[9px]">Double GW</Typography>
                             </div>
                         </div>
@@ -267,7 +267,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                                             </div>
                                         </div>
                                         <div className="text-right shrink-0">
-                                            <Typography weight="black" className="text-xs text-emerald-500">{p.epNext}</Typography>
+                                            <Typography weight="black" className="text-xs text-cyan-500">{p.epNext}</Typography>
                                             <Typography variant="caption" className="text-[8px]">Exp. Pts</Typography>
                                         </div>
                                     </div>
@@ -370,7 +370,7 @@ function FixtureTimeline({ teamId, bgwDgwMap, nextGw }: {
                             title={isBlank ? "Blank Gameweek" : f.opponents.join(', ')}
                             className={`w-4 h-4 rounded-sm flex items-center justify-center text-[8px] font-black transition-all ${
                                 isBlank ? 'bg-red-500/20 text-red-500 border border-red-500/50' :
-                                isDouble ? 'bg-emerald-500 text-black shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
+                                isDouble ? 'bg-cyan-500 text-black shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
                                 'bg-white/10 text-white/60 border border-white/5'
                             }`}
                         >

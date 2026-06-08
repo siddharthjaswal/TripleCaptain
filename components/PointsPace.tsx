@@ -61,7 +61,7 @@ export function PointsPace({ currentPoints, currentGameweek, totalGameweeks = 38
   const Icon = status.icon;
 
   const colorClasses: Record<string, string> = {
-    emerald: "from-emerald-500/20 to-green-500/20 border-emerald-500/30 text-emerald-600 dark:text-emerald-400",
+    emerald: "from-cyan-500/20 to-cyan-500/20 border-cyan-500/30 text-cyan-600 dark:text-cyan-400",
     blue: "from-blue-500/20 to-cyan-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400",
     amber: "from-amber-500/20 to-orange-500/20 border-amber-500/30 text-amber-600 dark:text-amber-400",
     slate: "from-slate-500/20 to-slate-400/20 border-slate-500/30 text-slate-600 dark:text-slate-400",
@@ -125,8 +125,8 @@ export function PointsPace({ currentPoints, currentGameweek, totalGameweeks = 38
         )}
 
         {projectedTotal >= 2000 && (
-          <div className="mt-3 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 text-center">
+          <div className="mt-3 p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+            <p className="text-xs font-bold text-cyan-600 dark:text-cyan-400 text-center">
               🎯 On track for {projectedTotal.toLocaleString()} points!
             </p>
           </div>

@@ -16,8 +16,8 @@ export function Typography({
     weight = 'normal'
 }: TextProps) {
     const variants = {
-        display: 'text-4xl md:text-6xl tracking-tight uppercase font-black',
-        title: 'text-2xl md:text-3xl tracking-tight',
+        display: 'font-display text-5xl md:text-7xl tracking-[-0.03em] uppercase font-black leading-[0.9]',
+        title: 'font-display text-2xl md:text-3xl tracking-tight font-extrabold',
         body: 'text-base leading-relaxed',
         caption: 'text-xs uppercase tracking-widest text-[color:var(--text-tertiary)]',
     };

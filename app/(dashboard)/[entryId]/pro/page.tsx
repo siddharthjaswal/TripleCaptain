@@ -59,7 +59,7 @@ export default function PricingPage({ params }: { params: { entryId: string } })
             {/* Background Accents */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
                 <div className="absolute top-[20%] left-[-10%] w-[50%] h-[50%] bg-[color:var(--accent)]/10 rounded-full blur-[150px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-500/10 rounded-full blur-[120px]" />
             </div>
 
             <div className="mx-auto max-w-6xl space-y-12">
@@ -106,7 +106,7 @@ export default function PricingPage({ params }: { params: { entryId: string } })
                             <div className="space-y-4 flex-1">
                                 {plan.features.map(feature => (
                                     <div key={feature} className="flex items-center gap-3">
-                                        <div className={`p-1 rounded-full ${plan.highlight ? 'bg-emerald-500/20 text-emerald-500' : 'bg-[color:var(--surface-hover)] text-[color:var(--text-tertiary)]'}`}>
+                                        <div className={`p-1 rounded-full ${plan.highlight ? 'bg-cyan-500/20 text-cyan-500' : 'bg-[color:var(--surface-hover)] text-[color:var(--text-tertiary)]'}`}>
                                             <Check className="h-3 w-3 stroke-[3px]" />
                                         </div>
                                         <Typography className="text-sm font-medium">{feature}</Typography>

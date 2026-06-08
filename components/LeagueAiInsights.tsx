@@ -48,7 +48,7 @@ export function LeagueAiInsights({ insights }: LeagueAiInsightsProps) {
 
 function getSentimentColor(sentiment: LeagueAiInsightDTO["sentiment"]) {
   switch (sentiment) {
-    case "positive": return "bg-emerald-500/10 text-emerald-400";
+    case "positive": return "bg-cyan-500/10 text-cyan-400";
     case "negative": return "bg-red-500/10 text-red-400";
     case "funny": return "bg-purple-500/10 text-purple-400";
     default: return "bg-blue-500/10 text-blue-400";

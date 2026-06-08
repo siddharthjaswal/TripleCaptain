@@ -136,7 +136,7 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
                     <div className="flex items-center justify-center md:justify-start gap-3">
                         <Typography variant="caption" className="text-xs font-black text-yellow-500/60 uppercase tracking-[0.2em]">{differential.team} • {differential.position} • £{differential.cost.toFixed(1)}m</Typography>
                         {differential.isDoubleGw && (
-                             <Badge variant="primary" className="bg-emerald-500 text-black text-[8px] font-black animate-glow">DOUBLE GW</Badge>
+                             <Badge variant="primary" className="bg-cyan-500 text-black text-[8px] font-black animate-glow">DOUBLE GW</Badge>
                         )}
                         {differential.isBlankGw && (
                              <Badge variant="error" className="text-[8px] font-black">BLANK GW</Badge>
@@ -152,9 +152,9 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
             <div className="flex-[1.5] p-8 space-y-8 bg-white/[0.01]">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <MetricBox label="OWNERSHIP" value={`${differential.ownership.toFixed(1)}%`} color="text-[color:var(--accent)]" />
-                    <MetricBox label="EXPECTED" value={differential.expectedPoints.toFixed(1)} color="text-emerald-400" />
+                    <MetricBox label="EXPECTED" value={differential.expectedPoints.toFixed(1)} color="text-cyan-400" />
                     <MetricBox label="FORM" value={differential.form.toFixed(1)} color="text-white" />
-                    <MetricBox label="UPSIDE" value={differential.upsideScore.toFixed(1)} color={differential.isDoubleGw ? "text-emerald-500" : "text-yellow-500"} />
+                    <MetricBox label="UPSIDE" value={differential.upsideScore.toFixed(1)} color={differential.isDoubleGw ? "text-cyan-500" : "text-yellow-500"} />
                 </div>
 
                 {/* Fixture Timeline */}
@@ -172,12 +172,12 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
 
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/5 relative group overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                        <TrendingUp className="w-16 h-16 text-emerald-400" />
+                        <TrendingUp className="w-16 h-16 text-cyan-400" />
                     </div>
-                    <Typography variant="caption" weight="black" className="text-[9px] text-emerald-400 mb-3 block uppercase tracking-[0.2em]">Scout Verdict</Typography>
+                    <Typography variant="caption" weight="black" className="text-[9px] text-cyan-400 mb-3 block uppercase tracking-[0.2em]">Scout Verdict</Typography>
                     <div className="flex items-start gap-4">
                         <div className="shrink-0 pt-1">
-                            <div className="w-1 h-12 rounded-full bg-emerald-500/30" />
+                            <div className="w-1 h-12 rounded-full bg-cyan-500/30" />
                         </div>
                         <Typography className="text-sm leading-relaxed text-white/80 italic">
                             &quot;{differential.reasoning}&quot;
@@ -200,7 +200,7 @@ function MetricBox({ label, value, color }: { label: string, value: string, colo
 }
 
 function getDiffBorder(diff: number) {
-    if (diff <= 2) return "border-emerald-500/30 bg-emerald-500/10 text-emerald-400";
+    if (diff <= 2) return "border-cyan-500/30 bg-cyan-500/10 text-cyan-400";
     if (diff === 3) return "border-white/10 bg-white/5 text-white/60";
     if (diff === 4) return "border-amber-500/30 bg-amber-500/10 text-amber-400";
     return "border-red-500/30 bg-red-500/10 text-red-400";

@@ -94,7 +94,7 @@ export function FixtureAnalysisCard({ analysis, isLoading = false }: FixtureAnal
         {/* Best Fixtures */}
         <div className="space-y-8">
             <div className="flex items-center gap-3 px-4">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500 text-black flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <div className="w-12 h-12 rounded-2xl bg-cyan-500 text-black flex items-center justify-center shadow-lg shadow-cyan-500/20">
                     <CheckCircle2 className="w-7 h-7" />
                 </div>
                 <div>
@@ -149,7 +149,7 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
   return (
     <Card className="relative overflow-hidden group border-white/5" glass hover={false}>
       {/* Dynamic Background Accent */}
-      <div className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full blur-[60px] opacity-10 ${type === 'best' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+      <div className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full blur-[60px] opacity-10 ${type === 'best' ? 'bg-cyan-500' : 'bg-red-500'}`} />
       
       <div className="p-8 space-y-8">
         <div className="flex items-center justify-between">
@@ -192,7 +192,7 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
                     
                     return (
                         <div key={gw} className="space-y-3 group/fix relative">
-                            <div className={`p-4 rounded-2xl border-2 transition-all duration-300 group-hover/fix:scale-105 text-center shadow-xl flex flex-col items-center justify-center min-h-[85px] ${isBlank ? 'bg-red-950/20 border-red-500/20' : getDiffStyle(fixtures[0].difficulty)} ${isDouble ? 'ring-2 ring-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.2)]' : ''}`}>
+                            <div className={`p-4 rounded-2xl border-2 transition-all duration-300 group-hover/fix:scale-105 text-center shadow-xl flex flex-col items-center justify-center min-h-[85px] ${isBlank ? 'bg-red-950/20 border-red-500/20' : getDiffStyle(fixtures[0].difficulty)} ${isDouble ? 'ring-2 ring-cyan-500/50 shadow-[0_0_20px_rgba(16,185,129,0.2)]' : ''}`}>
                                 {isBlank ? (
                                     <div className="space-y-1">
                                         <Typography weight="black" className="text-xs text-red-500 uppercase">BLANK</Typography>
@@ -210,7 +210,7 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
                                 )}
                                 
                                 {isDouble && (
-                                    <div className="absolute -top-2 -right-2 bg-emerald-500 text-black text-[7px] font-black px-1.5 py-0.5 rounded shadow-lg z-20">DOUBLE</div>
+                                    <div className="absolute -top-2 -right-2 bg-cyan-500 text-black text-[7px] font-black px-1.5 py-0.5 rounded shadow-lg z-20">DOUBLE</div>
                                 )}
                             </div>
                             <div className="flex flex-col items-center gap-1">
@@ -240,7 +240,7 @@ function DifficultyIndicator({ difficulty, type }: { difficulty: number, type: "
             </div>
             <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5 p-[1px]">
                 <div 
-                    className={`h-full rounded-full transition-all duration-1000 ${type === 'best' ? 'bg-emerald-500' : 'bg-red-500'}`} 
+                    className={`h-full rounded-full transition-all duration-1000 ${type === 'best' ? 'bg-cyan-500' : 'bg-red-500'}`} 
                     style={{ width: `${percent}%` }}
                 />
             </div>
@@ -249,14 +249,14 @@ function DifficultyIndicator({ difficulty, type }: { difficulty: number, type: "
 }
 
 function getDiffStyle(diff: number) {
-    if (diff <= 2) return "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 shadow-emerald-500/10";
+    if (diff <= 2) return "border-cyan-500/30 bg-cyan-500/10 text-cyan-400 shadow-cyan-500/10";
     if (diff === 3) return "border-white/10 bg-white/5 text-white/60 shadow-white/5";
     if (diff === 4) return "border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-amber-500/10";
     return "border-red-500/30 bg-red-500/10 text-red-400 shadow-red-500/10";
 }
 
 function getDiffStyleLine(diff: number) {
-    if (diff <= 2) return "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]";
+    if (diff <= 2) return "bg-cyan-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]";
     if (diff === 3) return "bg-white/10";
     if (diff === 4) return "bg-amber-500";
     return "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]";

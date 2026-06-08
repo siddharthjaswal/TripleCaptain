@@ -40,10 +40,10 @@ export function PriceChangeTracker({ players, showOnlyYourTeam = false }: PriceC
 
   return (
     <div className="tc-card overflow-hidden">
-      <div className="bg-gradient-to-br from-emerald-500/10 via-blue-500/10 to-rose-500/10 p-4 border-b border-[color:var(--surface-border)]">
+      <div className="bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-rose-500/10 p-4 border-b border-[color:var(--surface-border)]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5 text-emerald-500" />
+            <DollarSign className="h-5 w-5 text-cyan-500" />
             <h3 className="text-sm font-black uppercase tracking-wider">
               Price Change Predictions
             </h3>
@@ -62,8 +62,8 @@ export function PriceChangeTracker({ players, showOnlyYourTeam = false }: PriceC
         {rising.length > 0 && (
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <TrendingUp className="h-4 w-4 text-emerald-500" />
-              <h4 className="text-xs font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <TrendingUp className="h-4 w-4 text-cyan-500" />
+              <h4 className="text-xs font-black uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
                 Expected to Rise ({rising.length})
               </h4>
             </div>
@@ -127,7 +127,7 @@ function PriceChangeRow({
   return (
     <div className={`rounded-xl border p-3 transition-all ${
       isRising 
-        ? "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40"
+        ? "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-500/40"
         : "bg-rose-500/5 border-rose-500/20 hover:border-rose-500/40"
     }`}>
       <div className="flex items-center gap-3">
@@ -174,7 +174,7 @@ function PriceChangeRow({
               {formatPrice(player.currentPrice)}
             </span>
             {isRising ? (
-              <TrendingUp className="h-4 w-4 text-emerald-500" />
+              <TrendingUp className="h-4 w-4 text-cyan-500" />
             ) : (
               <TrendingDown className="h-4 w-4 text-rose-500" />
             )}
@@ -184,13 +184,13 @@ function PriceChangeRow({
           <div className="w-24">
             <div className="flex items-center justify-between text-[10px] mb-1">
               <span className="font-bold tc-text-muted">Prob</span>
-              <span className={`font-black ${isRising ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+              <span className={`font-black ${isRising ? 'text-cyan-600 dark:text-cyan-400' : 'text-rose-600 dark:text-rose-400'}`}>
                 {player.changeProb}%
               </span>
             </div>
             <div className="h-1.5 bg-[color:var(--surface-root)] rounded-full overflow-hidden">
               <div 
-                className={`h-full rounded-full ${isRising ? 'bg-emerald-500' : 'bg-rose-500'}`}
+                className={`h-full rounded-full ${isRising ? 'bg-cyan-500' : 'bg-rose-500'}`}
                 style={{ width: `${player.changeProb}%` }}
               />
             </div>
@@ -202,7 +202,7 @@ function PriceChangeRow({
       <div className="mt-2 pt-2 border-t border-[color:var(--surface-border)] flex items-center justify-between text-xs">
         <span className="tc-text-muted">Net transfers:</span>
         <span className={`font-black tabular-nums ${
-          player.netTransfers > 0 ? 'text-emerald-500' : 'text-rose-500'
+          player.netTransfers > 0 ? 'text-cyan-500' : 'text-rose-500'
         }`}>
           {player.netTransfers > 0 ? '+' : ''}{player.netTransfers.toLocaleString()}
         </span>

@@ -41,12 +41,12 @@ export const BootstrapStaticSchema = z
           photo: z.string().optional(),
           code: z.number().optional(),
           // Prediction fields
-          ep_next: z.string().optional(), // Expected points next GW
-          ep_this: z.string().optional(), // Expected points this GW
-          form: z.string().optional(), // Recent form score
+          ep_next: z.string().nullable().optional(), // Expected points next GW
+          ep_this: z.string().nullable().optional(), // Expected points this GW
+          form: z.string().nullable().optional(), // Recent form score
           now_cost: z.number().optional(), // Current price in 0.1m units
-          selected_by_percent: z.string().optional(), // Ownership percentage
-          points_per_game: z.string().optional(), // Average PPG
+          selected_by_percent: z.string().nullable().optional(), // Ownership percentage
+          points_per_game: z.string().nullable().optional(), // Average PPG
           chance_of_playing_next_round: z.number().nullable().optional(), // Injury status
           chance_of_playing_this_round: z.number().nullable().optional(),
           minutes: z.number().optional(), // Total minutes played

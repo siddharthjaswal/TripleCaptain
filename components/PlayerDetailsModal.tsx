@@ -165,7 +165,7 @@ export function PlayerDetailsModal({
                         <Card className="p-6 bg-white/5 border-white/5 space-y-4" hover={false}>
                              <div className="flex justify-between items-center">
                                 <Typography className="text-sm text-white/70">xP Next GW</Typography>
-                                <Typography weight="black" className="text-emerald-500 text-lg">{player.expectedPoints.toFixed(1)}</Typography>
+                                <Typography weight="black" className="text-cyan-500 text-lg">{player.expectedPoints.toFixed(1)}</Typography>
                              </div>
                              <div className="flex justify-between items-center">
                                 <Typography className="text-sm text-white/70">xG (Goals)</Typography>
@@ -243,7 +243,7 @@ function PriceTag({ label, value }: { label: string, value: string }) {
 
 function StatBox({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: string | number, color: string }) {
     const colors: Record<string, string> = {
-        emerald: 'text-emerald-500 bg-emerald-500/10',
+        emerald: 'text-cyan-500 bg-cyan-500/10',
         blue: 'text-blue-500 bg-blue-500/10',
         purple: 'text-purple-500 bg-purple-500/10',
         amber: 'text-amber-500 bg-amber-500/10'
@@ -279,7 +279,7 @@ function LinearStat({ label, value, max }: { label: string, value: number, max: 
                 <Typography weight="black" className="text-white">{value.toLocaleString()}</Typography>
             </div>
             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
-                <div className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" style={{ width: `${percent}%` }} />
+                <div className="h-full bg-cyan-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" style={{ width: `${percent}%` }} />
             </div>
         </div>
     )
@@ -295,7 +295,7 @@ function SmallStat({ label, value }: { label: string, value: string }) {
 }
 
 function getDiffColor(diff: number) {
-    if (diff <= 2) return "bg-emerald-500 text-black";
+    if (diff <= 2) return "bg-cyan-500 text-black";
     if (diff === 3) return "bg-slate-500 text-white";
     if (diff === 4) return "bg-amber-500 text-black";
     return "bg-red-500 text-white";

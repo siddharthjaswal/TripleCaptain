@@ -100,7 +100,7 @@ export function TeamAuditor({ entryId }: { entryId: number }) {
                                 fill="transparent"
                                 strokeDasharray={439.8}
                                 strokeDashoffset={439.8 - (439.8 * audit.healthScore) / 100}
-                                className={`${audit.healthScore > 70 ? 'text-green-500' : audit.healthScore > 40 ? 'text-yellow-500' : 'text-red-500'} transition-all duration-1000 ease-out`}
+                                className={`${audit.healthScore > 70 ? 'text-cyan-500' : audit.healthScore > 40 ? 'text-yellow-500' : 'text-red-500'} transition-all duration-1000 ease-out`}
                                 strokeLinecap="round"
                             />
                         </svg>

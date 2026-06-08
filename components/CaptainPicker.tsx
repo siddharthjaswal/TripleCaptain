@@ -33,7 +33,7 @@ export function CaptainPicker({ suggestions, currentCaptain, compact = false }: 
   const alternatives = suggestions.slice(1, 3);
 
   const getDifficultyColor = (difficulty: number) => {
-    if (difficulty <= 2) return "text-emerald-500 bg-emerald-500/10";
+    if (difficulty <= 2) return "text-cyan-500 bg-cyan-500/10";
     if (difficulty <= 3) return "text-amber-500 bg-amber-500/10";
     return "text-rose-500 bg-rose-500/10";
   };
@@ -175,7 +175,7 @@ function CaptainCard({
           {/* Fixture */}
           <div className="flex items-center gap-2 mt-2">
             {player.isHome ? (
-              <Home className="h-3 w-3 text-emerald-500" />
+              <Home className="h-3 w-3 text-cyan-500" />
             ) : (
               <Plane className="h-3 w-3 text-slate-400" />
             )}

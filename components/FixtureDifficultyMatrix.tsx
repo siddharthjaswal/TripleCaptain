@@ -27,7 +27,7 @@ type FixtureDifficultyMatrixProps = {
 
 export function FixtureDifficultyMatrix({ players, gameweeksAhead = 5 }: FixtureDifficultyMatrixProps) {
   const getDifficultyColor = (difficulty: number) => {
-    if (difficulty <= 2) return "bg-emerald-500/80 border-emerald-600";
+    if (difficulty <= 2) return "bg-cyan-500/80 border-cyan-600";
     if (difficulty === 3) return "bg-slate-400/80 border-slate-500";
     if (difficulty === 4) return "bg-orange-500/80 border-orange-600";
     return "bg-rose-500/80 border-rose-600";
@@ -162,7 +162,7 @@ export function FixtureDifficultyMatrix({ players, gameweeksAhead = 5 }: Fixture
       <div className="border-t border-[color:var(--surface-border)] p-4 bg-[color:var(--surface-root)]">
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded bg-emerald-500/80 border border-emerald-600" />
+            <div className="h-4 w-4 rounded bg-cyan-500/80 border border-cyan-600" />
             <span className="text-xs font-bold">1-2 Easy</span>
           </div>
           <div className="flex items-center gap-2">
@@ -179,7 +179,7 @@ export function FixtureDifficultyMatrix({ players, gameweeksAhead = 5 }: Fixture
           </div>
           <span className="text-xs tc-text-muted">•</span>
           <div className="flex items-center gap-1">
-            <Home className="h-3 w-3 text-emerald-500" />
+            <Home className="h-3 w-3 text-cyan-500" />
             <span className="text-xs font-bold">Home</span>
           </div>
           <div className="flex items-center gap-1">

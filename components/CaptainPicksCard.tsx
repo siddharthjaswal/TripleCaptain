@@ -123,7 +123,7 @@ function CaptainPickItem({ pick, rank }: { pick: CaptainPickDTO; rank: number })
                 <div className="flex items-center gap-2">
                     <Typography weight="black" className="text-xl uppercase truncate leading-none mb-1">{pick.playerName}</Typography>
                     {pick.reasoning.includes('DOUBLE') && (
-                        <div className="bg-emerald-500 text-black text-[8px] font-black px-1 rounded animate-glow">DGW</div>
+                        <div className="bg-cyan-500 text-black text-[8px] font-black px-1 rounded animate-glow">DGW</div>
                     )}
                     {pick.reasoning.includes('BLANK') && (
                          <div className="bg-red-500 text-white text-[8px] font-black px-1 rounded">BGW</div>
@@ -141,7 +141,7 @@ function CaptainPickItem({ pick, rank }: { pick: CaptainPickDTO; rank: number })
             </div>
             <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5 shadow-inner group-hover:bg-white/10 transition-colors">
                 <Typography variant="caption" weight="black" className="text-[8px] opacity-40 mb-1">RECENT FORM</Typography>
-                <Typography variant="title" weight="black" className={`text-2xl ${pick.form >= 6 ? 'text-emerald-500' : 'text-white'}`}>
+                <Typography variant="title" weight="black" className={`text-2xl ${pick.form >= 6 ? 'text-cyan-500' : 'text-white'}`}>
                     {pick.form.toFixed(1)}
                 </Typography>
             </div>
@@ -176,7 +176,7 @@ function CaptainPickItem({ pick, rank }: { pick: CaptainPickDTO; rank: number })
 }
 
 function getDiffColor(diff: number) {
-    if (diff <= 2) return "bg-emerald-500";
+    if (diff <= 2) return "bg-cyan-500";
     if (diff === 3) return "bg-slate-400";
     if (diff === 4) return "bg-amber-500";
     return "bg-red-500";

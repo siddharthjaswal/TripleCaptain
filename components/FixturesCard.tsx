@@ -228,7 +228,7 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
     if (homeScore === null || awayScore === null) return "text-[color:var(--text-primary)]";
     if (homeScore === awayScore) return "text-amber-400";
     const isWinner = isHome ? homeScore > awayScore : awayScore > homeScore;
-    return isWinner ? "text-emerald-400" : "text-[color:var(--text-tertiary)]";
+    return isWinner ? "text-cyan-400" : "text-[color:var(--text-tertiary)]";
   };
 
   const formatKickoffTime = (kickoffTime: string | null) => {
@@ -288,10 +288,10 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
             </div>
           ) : fixture.started ? (
             <div className="flex flex-col items-center gap-1">
-              <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500/20 to-green-500/20 border border-emerald-500/30 px-3 py-1.5 text-xs font-black text-emerald-400 uppercase tracking-wider shadow-lg shadow-emerald-500/10">
+              <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500/20 to-cyan-500/20 border border-cyan-500/30 px-3 py-1.5 text-xs font-black text-cyan-400 uppercase tracking-wider shadow-lg shadow-cyan-500/10">
                 <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400"></span>
                 </span>
                 Live
               </span>
@@ -360,7 +360,7 @@ function PlayerChip({ player }: { player: FixturePlayerDTO }) {
   const basePoints = player.multiplier > 1 ? player.points / player.multiplier : player.points;
   
   const getPointsStyle = (points: number) => {
-    if (points > 5) return "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-emerald-500/20";
+    if (points > 5) return "bg-cyan-500/20 text-cyan-400 border-cyan-500/40 shadow-cyan-500/20";
     if (points > 0) return "bg-blue-500/20 text-blue-400 border-blue-500/40 shadow-blue-500/20";
     if (points < 0) return "bg-rose-500/20 text-rose-400 border-rose-500/40 shadow-rose-500/20";
     return "bg-slate-500/20 text-slate-400 border-slate-500/40";
@@ -458,9 +458,9 @@ function StatBadge({
 }) {
   const colorClasses = {
     default: "bg-slate-500/10 text-slate-400",
-    emerald: "bg-emerald-500/10 text-emerald-400",
+    emerald: "bg-cyan-500/10 text-cyan-400",
     blue: "bg-blue-500/10 text-blue-400",
-    green: "bg-green-500/10 text-green-400",
+    green: "bg-cyan-500/10 text-cyan-400",
     cyan: "bg-cyan-500/10 text-cyan-400",
     amber: "bg-amber-500/10 text-amber-400",
     yellow: "bg-yellow-500/10 text-yellow-400",

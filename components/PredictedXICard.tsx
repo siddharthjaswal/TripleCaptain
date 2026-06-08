@@ -18,7 +18,7 @@ export function PredictedXICard({ predicted }: PredictedXICardProps) {
     <section className="space-y-6 animate-fade-in">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-                <div className="p-3 rounded-2xl bg-emerald-500 text-black shadow-lg shadow-emerald-500/20">
+                <div className="p-3 rounded-2xl bg-cyan-500 text-black shadow-lg shadow-cyan-500/20">
                 <Target className="h-6 w-6" />
                 </div>
                 <div>
@@ -27,10 +27,10 @@ export function PredictedXICard({ predicted }: PredictedXICardProps) {
                 </div>
             </div>
             
-            <Card className="px-6 py-3 flex items-center gap-3 border-emerald-500/20 bg-emerald-500/5" glass hover={false}>
+            <Card className="px-6 py-3 flex items-center gap-3 border-cyan-500/20 bg-cyan-500/5" glass hover={false}>
                 <Typography variant="caption" weight="black" className="text-[10px] opacity-40">TOTAL EXPECTED</Typography>
-                <Typography variant="title" weight="black" className="text-2xl text-emerald-500">{predicted.totalPredictedPoints.toFixed(1)}</Typography>
-                <Typography variant="caption" weight="black" className="text-emerald-500/60">PTS</Typography>
+                <Typography variant="title" weight="black" className="text-2xl text-cyan-500">{predicted.totalPredictedPoints.toFixed(1)}</Typography>
+                <Typography variant="caption" weight="black" className="text-cyan-500/60">PTS</Typography>
             </Card>
         </div>
 
@@ -138,7 +138,7 @@ function PredictorPlayerChip({ player, isCaptain, compact = false }: { player: P
             <span className="opacity-50">vs {player.fixture.opponentShort}</span>
           )}
         </div>
-        <div className="tc-player-chip-vertical__points text-emerald-400">
+        <div className="tc-player-chip-vertical__points text-cyan-400">
             {player.expectedPoints.toFixed(1)}
         </div>
       </div>

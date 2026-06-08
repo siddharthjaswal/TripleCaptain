@@ -49,7 +49,7 @@ export function RankChangeIndicator({
 
   if (isImproved) {
     return (
-      <div className={`inline-flex items-center gap-1 ${textSizes[size]} font-bold text-emerald-500`}>
+      <div className={`inline-flex items-center gap-1 ${textSizes[size]} font-bold text-cyan-500`}>
         <TrendingUp className={sizeClasses[size]} />
         {showValue && <span>↑ {Math.abs(change).toLocaleString()}</span>}
       </div>

@@ -33,7 +33,7 @@ export function DifferentialFinder({ differentials, maxOwnership = 10 }: Differe
     .slice(0, 6);
 
   const getDifficultyColor = (difficulty: number) => {
-    if (difficulty <= 2) return "text-emerald-500";
+    if (difficulty <= 2) return "text-cyan-500";
     if (difficulty <= 3) return "text-amber-500";
     return "text-rose-500";
   };
@@ -98,7 +98,7 @@ export function DifferentialFinder({ differentials, maxOwnership = 10 }: Differe
                         <span className="text-xs font-bold tc-text-muted">{player.position}</span>
                         <span className="text-xs tc-text-muted">•</span>
                         <span className="text-xs font-bold">{formatPrice(player.price)}</span>
-                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black ${ownershipTier.color === 'purple' ? 'bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30' : ownershipTier.color === 'blue' ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30' : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'}`}>
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black ${ownershipTier.color === 'purple' ? 'bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30' : ownershipTier.color === 'blue' ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30' : 'bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30'}`}>
                           <Users className="h-2.5 w-2.5" />{player.ownership.toFixed(1)}%
                         </span>
                       </div>

@@ -10,7 +10,7 @@ type LatestGwCardProps = {
 export function LatestGwCard({ latest }: LatestGwCardProps) {
   return (
     <Card className="p-8 relative overflow-hidden" glass>
-       <div className="absolute top-0 right-0 p-4 opacity-5 text-emerald-500">
+       <div className="absolute top-0 right-0 p-4 opacity-5 text-cyan-500">
         <Zap className="h-24 w-24 fill-current" />
       </div>
 
@@ -24,7 +24,7 @@ export function LatestGwCard({ latest }: LatestGwCardProps) {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div className="space-y-1">
           <Typography variant="caption" className="text-[10px]">GW Points</Typography>
-          <Typography variant="title" weight="black" className="text-3xl text-emerald-500">{formatNumber(latest.points)}</Typography>
+          <Typography variant="title" weight="black" className="text-3xl text-cyan-500">{formatNumber(latest.points)}</Typography>
         </div>
         <div className="space-y-1">
           <Typography variant="caption" className="text-[10px]">GW Rank</Typography>
@@ -46,7 +46,7 @@ function StatusPill({ isLive, event }: { isLive: boolean; event: number }) {
   if (isLive) {
     return (
       <Badge variant="success" className="animate-glow flex gap-2">
-        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+        <span className="h-2 w-2 rounded-full bg-cyan-500 animate-pulse" />
         Live — GW {event}
       </Badge>
     );

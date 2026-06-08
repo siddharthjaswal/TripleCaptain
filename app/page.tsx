@@ -17,7 +17,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <div className="flex max-w-4xl flex-col items-center text-center mb-16 animate-fade-in">
-        <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 shadow-2xl mb-8 border border-white/10 p-4">
+        <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-[#2a0a33] to-[#160520] shadow-2xl mb-8 ring-1 ring-[var(--accent)]/30 p-4">
             <Image 
                 src="/favicon.svg" 
                 alt="Triple Captain Logo" 
@@ -34,7 +34,7 @@ export default function Home() {
         
         <Typography variant="display" weight="black" className="mb-8 leading-[0.9]">
             Triple<br/>
-            <span className="text-[color:var(--accent)] drop-shadow-sm">Captain</span>
+            <span className="tc-gradient-text">Captain</span>
         </Typography>
 
         <Typography className="text-xl text-[color:var(--text-secondary)] max-w-2xl leading-relaxed mb-12">
@@ -122,10 +122,10 @@ function FeatureHighlight({
   color: "blue" | "purple" | "amber" | "green";
 }) {
   const colorClasses = {
-    blue: "bg-blue-500/10 text-blue-500",
-    purple: "bg-purple-500/10 text-purple-500",
-    amber: "bg-amber-500/10 text-amber-500",
-    green: "bg-green-500/10 text-green-500",
+    blue: "bg-[var(--accent)]/10 text-[color:var(--accent)]",
+    purple: "bg-[var(--brand-secondary)]/10 text-[color:var(--brand-secondary)]",
+    amber: "bg-amber-400/10 text-amber-400",
+    green: "bg-[var(--accent)]/10 text-[color:var(--accent)]",
   };
 
   return (

@@ -19,13 +19,13 @@ type LeagueRaceChartProps = {
   race: LeagueRaceDTO;
 };
 
-// Chart colors - using semantic colors for consistency
+// Chart colors - on-brand "Aubergine Nights" categorical palette (green-free)
 const CHART_COLORS = [
-  "hsl(199, 89%, 48%)", // Blue
-  "hsl(142, 71%, 45%)", // Emerald (brand color)
-  "hsl(38, 92%, 50%)",  // Amber
-  "hsl(0, 84%, 60%)",   // Red
-  "hsl(258, 90%, 66%)", // Violet
+  "#ff2d78", // Magenta (brand)
+  "#04f5ff", // Cyan (brand)
+  "#f5b932", // Gold
+  "#a06cff", // Violet
+  "#ff8a3d", // Amber-orange
 ];
 
 type CustomTooltipProps = {

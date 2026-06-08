@@ -39,7 +39,7 @@ export function TeamValueTracker({
   const Icon = status.icon;
 
   const colorClasses: Record<string, string> = {
-    emerald: "from-emerald-500/20 to-green-500/20 border-emerald-500/30 text-emerald-600 dark:text-emerald-400",
+    emerald: "from-cyan-500/20 to-cyan-500/20 border-cyan-500/30 text-cyan-600 dark:text-cyan-400",
     blue: "from-blue-500/20 to-cyan-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400",
     amber: "from-amber-500/20 to-orange-500/20 border-amber-500/30 text-amber-600 dark:text-amber-400",
     slate: "from-slate-500/20 to-slate-400/20 border-slate-500/30 text-slate-600 dark:text-slate-400",
@@ -114,7 +114,7 @@ export function TeamValueTracker({
                 </div>
               ) : (
                 <div className={`inline-flex items-center gap-1 ${
-                  hasGained ? 'text-emerald-500' : 'text-rose-500'
+                  hasGained ? 'text-cyan-500' : 'text-rose-500'
                 }`}>
                   {hasGained ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
                   <span className="text-sm font-black tabular-nums">

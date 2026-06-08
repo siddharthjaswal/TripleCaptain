@@ -59,7 +59,7 @@ export function TransferSuggestionsCard({
   if (suggestions.length === 0) {
     return (
       <Card className="p-20 text-center" glass hover={false}>
-        <div className="p-5 w-20 h-20 rounded-3xl bg-emerald-500/10 text-emerald-500 mx-auto mb-8 flex items-center justify-center">
+        <div className="p-5 w-20 h-20 rounded-3xl bg-cyan-500/10 text-cyan-500 mx-auto mb-8 flex items-center justify-center">
              <TrendingUp className="w-10 h-10" />
         </div>
         <Typography variant="title" weight="black" className="mb-2 uppercase text-white text-3xl">Squad Optimized</Typography>
@@ -78,7 +78,7 @@ export function TransferSuggestionsCard({
             
             <Card className="px-8 py-4 border-white/5 bg-white/5" glass hover={false}>
                 <Typography variant="caption" weight="black" className="text-[10px] opacity-40 uppercase tracking-widest mb-1">Available Funds</Typography>
-                <Typography variant="title" weight="black" className="text-3xl text-emerald-400">£{budgetAvailable.toFixed(1)}m</Typography>
+                <Typography variant="title" weight="black" className="text-3xl text-cyan-400">£{budgetAvailable.toFixed(1)}m</Typography>
             </Card>
         </div>
 
@@ -145,7 +145,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform">
                     <ArrowRight className="w-5 h-5 text-white/40" />
                  </div>
-                 <div className={`mt-2 px-2 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[9px] font-black ${suggestion.netCost > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                 <div className={`mt-2 px-2 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[9px] font-black ${suggestion.netCost > 0 ? 'text-red-400' : 'text-cyan-400'}`}>
                     {suggestion.netCost > 0 ? '-' : '+'}£{Math.abs(suggestion.netCost).toFixed(1)}m
                  </div>
             </div>
@@ -153,7 +153,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
             {/* Player IN */}
             <div className="flex flex-col items-center gap-3 w-full md:w-40 shrink-0">
                 <div className="relative group">
-                    <div className="relative w-28 h-28 bg-slate-900 rounded-full overflow-hidden border-4 border-emerald-500/40 group-hover:border-emerald-500 group-hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] transition-all shadow-2xl">
+                    <div className="relative w-28 h-28 bg-slate-900 rounded-full overflow-hidden border-4 border-cyan-500/40 group-hover:border-cyan-500 group-hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] transition-all shadow-2xl">
                         <Image 
                             src={imgIn || getTeamShirtUrl(suggestion.playerIn.teamCode)!} 
                             alt="In" 
@@ -162,16 +162,16 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                             unoptimized 
                             onError={() => handleImgError(setImgIn)} 
                         />
-                        <div className="absolute inset-0 bg-emerald-500/5 mix-blend-overlay" />
+                        <div className="absolute inset-0 bg-cyan-500/5 mix-blend-overlay" />
                     </div>
-                    <Badge className="absolute -bottom-1 -right-1 bg-emerald-500 text-black text-[9px] font-black border-2 border-slate-950">SIGNING</Badge>
+                    <Badge className="absolute -bottom-1 -right-1 bg-cyan-500 text-black text-[9px] font-black border-2 border-slate-950">SIGNING</Badge>
                 </div>
                 <div className="text-center">
                     <Typography weight="black" className="text-base uppercase text-white leading-tight">{suggestion.playerIn.playerName}</Typography>
                     <div className="flex items-center justify-center gap-2">
-                        <Typography variant="caption" className="text-[10px] text-emerald-500/60 font-black tracking-widest">{suggestion.playerIn.team.shortName} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
+                        <Typography variant="caption" className="text-[10px] text-cyan-500/60 font-black tracking-widest">{suggestion.playerIn.team.shortName} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
                         {suggestion.playerIn.reasoning.includes('DOUBLE') && (
-                            <div className="bg-emerald-500 text-black text-[7px] font-black px-1 rounded animate-pulse">DGW</div>
+                            <div className="bg-cyan-500 text-black text-[7px] font-black px-1 rounded animate-pulse">DGW</div>
                         )}
                     </div>
                 </div>
@@ -183,7 +183,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
             <div className="grid grid-cols-3 gap-6">
                 <div className="space-y-1">
                     <Typography variant="caption" weight="black" className="text-[9px] opacity-30 tracking-widest uppercase">Expected Gain</Typography>
-                    <div className="flex items-baseline gap-1 text-emerald-400">
+                    <div className="flex items-baseline gap-1 text-cyan-400">
                         <Typography weight="black" className="text-3xl">+{pointsGain}</Typography>
                         <Typography weight="black" className="text-[10px] opacity-60">OVER 5GWs</Typography>
                     </div>
@@ -228,7 +228,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
 }
 
 function getDiffStyle(diff: number) {
-    if (diff <= 2) return "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]";
+    if (diff <= 2) return "border-cyan-500/30 bg-cyan-500/10 text-cyan-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]";
     if (diff === 3) return "border-white/10 bg-white/5 text-white/50";
     if (diff === 4) return "border-amber-500/30 bg-amber-500/10 text-amber-400";
     return "border-red-500/30 bg-red-500/10 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]";

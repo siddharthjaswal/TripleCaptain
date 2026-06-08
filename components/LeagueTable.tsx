@@ -115,7 +115,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                             {delta.label}
                         </div>
                         {entry.isLive && rankDeltaFromLive !== 0 && (
-                            <div className={`px-1.5 py-0.5 rounded-full text-[8px] font-black border ${rankDeltaFromLive > 0 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                            <div className={`px-1.5 py-0.5 rounded-full text-[8px] font-black border ${rankDeltaFromLive > 0 ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
                                 {rankDeltaFromLive > 0 ? `▲ LIVE +${rankDeltaFromLive}` : `▼ LIVE ${rankDeltaFromLive}`}
                             </div>
                         )}
@@ -123,7 +123,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                   </td>
                   <td className="px-3 sm:px-6 py-4">
                     <div className="flex flex-col gap-0.5 min-w-0">
-                        <Typography weight="black" className={`text-[11px] sm:text-[13px] uppercase tracking-tight truncate max-w-[120px] sm:max-w-none ${isCurrentUser ? 'text-emerald-400' : 'text-slate-100'}`}>
+                        <Typography weight="black" className={`text-[11px] sm:text-[13px] uppercase tracking-tight truncate max-w-[120px] sm:max-w-none ${isCurrentUser ? 'text-cyan-400' : 'text-slate-100'}`}>
                             {entry.entryName}
                         </Typography>
                         <Typography variant="caption" className="text-[8px] sm:text-[10px] opacity-60 font-black uppercase tracking-wider text-slate-300 truncate max-w-[100px] sm:max-w-none">
@@ -132,7 +132,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                         {/* Mobile-only sub-info: Captain and Rank Delta */}
                         <div className="flex items-center gap-2 mt-1 sm:hidden">
                             {entry.isLive && rankDeltaFromLive !== 0 && (
-                                <span className={`text-[7px] font-black px-1 rounded border ${rankDeltaFromLive > 0 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                                <span className={`text-[7px] font-black px-1 rounded border ${rankDeltaFromLive > 0 ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
                                     {rankDeltaFromLive > 0 ? `+${rankDeltaFromLive} LIVE` : `${rankDeltaFromLive} LIVE`}
                                 </span>
                             )}
@@ -166,9 +166,9 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                         </Typography>
                         <div className="flex items-center gap-1">
                             {entry.isLive && (
-                                <span className="text-[6px] sm:text-[7px] font-black text-emerald-400 uppercase tracking-tighter bg-emerald-500/10 px-1 py-0.5 rounded border border-emerald-500/20">Live</span>
+                                <span className="text-[6px] sm:text-[7px] font-black text-cyan-400 uppercase tracking-tighter bg-cyan-500/10 px-1 py-0.5 rounded border border-cyan-500/20">Live</span>
                             )}
-                            <Typography weight="black" className="text-[10px] sm:text-sm font-mono text-emerald-400">+{formatNumber(entry.points)}</Typography>
+                            <Typography weight="black" className="text-[10px] sm:text-sm font-mono text-cyan-400">+{formatNumber(entry.points)}</Typography>
                         </div>
                     </div>
                   </td>
@@ -180,7 +180,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                   {enrichedEntries.length < 20 && (
                     <td className="hidden md:table-cell px-6 py-5 text-center">
                       {entry.teamPicks ? (
-                        <div className="h-8 w-8 mx-auto flex items-center justify-center rounded-lg bg-white/5 text-white/40 group-hover:text-emerald-400 group-hover:bg-emerald-400/10 transition-all">
+                        <div className="h-8 w-8 mx-auto flex items-center justify-center rounded-lg bg-white/5 text-white/40 group-hover:text-cyan-400 group-hover:bg-cyan-400/10 transition-all">
                           <Eye size={16} />
                         </div>
                       ) : (
@@ -250,11 +250,11 @@ function formatRankDelta(
   if (delta === 0) return { label: "↔", className: "opacity-20" };
   if (delta > 0) return { 
     label: (
-        <span className="flex items-center gap-0.5 bg-emerald-500/10 px-2 py-0.5 rounded-full text-emerald-400">
+        <span className="flex items-center gap-0.5 bg-cyan-500/10 px-2 py-0.5 rounded-full text-cyan-400">
             <span className="text-[8px]">▲</span> {delta}
         </span>
     ), 
-    className: "text-emerald-500" 
+    className: "text-cyan-500" 
   };
   return { 
     label: (

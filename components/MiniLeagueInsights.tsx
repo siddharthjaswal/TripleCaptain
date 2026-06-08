@@ -83,7 +83,7 @@ export function MiniLeagueInsights({
           </div>
           <div className="rounded-lg bg-[color:var(--surface-elevated)] border border-[color:var(--surface-border)] p-3">
             <p className="text-xs tc-text-muted mb-1">vs Average</p>
-            <p className={`text-xl font-black ${vsAverage >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+            <p className={`text-xl font-black ${vsAverage >= 0 ? 'text-cyan-500' : 'text-rose-500'}`}>
               {vsAverage >= 0 ? '+' : ''}{vsAverage} pts
             </p>
           </div>

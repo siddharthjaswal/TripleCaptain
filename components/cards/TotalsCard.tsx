@@ -54,7 +54,7 @@ function KpiWithChange({ label, value, rankChange }: { label: string; value: str
       <div className="flex flex-col gap-1">
         <Typography variant="title" weight="black" className="text-3xl leading-none">{value}</Typography>
         {hasChange && (
-          <div className={`flex items-center gap-1.5 ${isImprovement ? 'text-green-500' : 'text-red-500'}`}>
+          <div className={`flex items-center gap-1.5 ${isImprovement ? 'text-cyan-500' : 'text-red-500'}`}>
             {isImprovement ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
             <Typography weight="bold" className="text-xs uppercase tracking-tight">{formatNumber(Math.abs(rankChange))}</Typography>
           </div>

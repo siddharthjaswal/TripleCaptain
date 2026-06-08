@@ -108,8 +108,8 @@ export default async function EntryPage({
         {phase === "LIVE" && (
             <div className="space-y-4 animate-fade-in">
                 <div className="flex items-center gap-2 px-2">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs font-black uppercase tracking-widest text-emerald-500">Matchday Live: Campaign In Progress</span>
+                    <span className="h-2 w-2 rounded-full bg-cyan-500 animate-pulse" />
+                    <span className="text-xs font-black uppercase tracking-widest text-cyan-500">Matchday Live: Campaign In Progress</span>
                 </div>
                 <GameweekPitchCard latest={summary.latest} />
             </div>
