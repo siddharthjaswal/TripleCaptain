@@ -56,7 +56,7 @@ export function FixturesCard({ event, fixtures, playersByFixture, isLoading = fa
                 <Skeleton variant="text" width="200px" height="20px" />
                 <div className="h-px bg-[color:var(--surface-border)] flex-1" />
               </div>
-              <div className="grid gap-3">
+              <div className="grid gap-3 md:grid-cols-2">
                 {[1, 2, 3].map((fixture) => (
                   <div key={fixture} className="tc-card rounded-2xl p-5">
                     <div className="flex items-center justify-between gap-4">
@@ -186,7 +186,7 @@ export function FixturesCard({ event, fixtures, playersByFixture, isLoading = fa
                 </div>
 
                 {/* Fixtures for this date */}
-                <div className="grid gap-3">
+                <div className="grid gap-3 md:grid-cols-2">
                   {dateFixtures.map((fixture) => (
                     <FixtureRow
                       key={fixture.id}

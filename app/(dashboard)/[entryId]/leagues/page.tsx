@@ -72,7 +72,7 @@ export default async function EntryLeaguesPage({
 
   return (
     <main className="tc-surface min-h-dvh px-4 pb-16 pt-8">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
         <header className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <Link
@@ -144,18 +144,23 @@ export default async function EntryLeaguesPage({
           <LeagueAiInsights insights={leaguesView.aiInsights} />
         )}
 
-        {leaguesView.selectedLeague ? (
-          <LeagueTable
-            league={leaguesView.selectedLeague}
-            currentEntryId={leaguesView.entryId}
-          />
-        ) : leaguesView.leagues.length > 0 ? (
-          <ErrorBanner message="We couldn't load standings for this league right now. Try another league or refresh." />
-        ) : null}
-
-        {leaguesView.leagueRace && (
-          <LeagueRaceChart race={leaguesView.leagueRace} />
-        )}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5 lg:items-start">
+          <div className="lg:col-span-3">
+            {leaguesView.selectedLeague ? (
+              <LeagueTable
+                league={leaguesView.selectedLeague}
+                currentEntryId={leaguesView.entryId}
+              />
+            ) : leaguesView.leagues.length > 0 ? (
+              <ErrorBanner message="We couldn't load standings for this league right now. Try another league or refresh." />
+            ) : null}
+          </div>
+          {leaguesView.leagueRace && (
+            <div className="lg:col-span-2 lg:sticky lg:top-6">
+              <LeagueRaceChart race={leaguesView.leagueRace} />
+            </div>
+          )}
+        </div>
         <PersistLastEntry
           entryId={leaguesView.entryId}
           teamName={leaguesView.teamName}
