@@ -86,7 +86,7 @@ export function DifferentialFinder({ differentials, maxOwnership = 10 }: Differe
                         </div>
                       )}
                       <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-purple-500 flex items-center justify-center">
-                        <Gem className="h-3 w-3 text-white" />
+                        <Gem className="h-3 w-3 text-[color:var(--text-primary)]" />
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">

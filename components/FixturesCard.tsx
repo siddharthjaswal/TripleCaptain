@@ -282,7 +282,7 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
         <div className="flex flex-col items-center gap-2 shrink-0 px-4">
           {fixture.finished ? (
             <div className="flex flex-col items-center gap-1">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-500/15 px-3 py-1 text-xs font-black text-slate-400 uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-500/15 px-3 py-1 text-xs font-black text-[color:var(--text-secondary)] uppercase tracking-wider">
                 Full Time
               </span>
             </div>
@@ -363,7 +363,7 @@ function PlayerChip({ player }: { player: FixturePlayerDTO }) {
     if (points > 5) return "bg-cyan-500/20 text-cyan-400 border-cyan-500/40 shadow-cyan-500/20";
     if (points > 0) return "bg-blue-500/20 text-blue-400 border-blue-500/40 shadow-blue-500/20";
     if (points < 0) return "bg-rose-500/20 text-rose-400 border-rose-500/40 shadow-rose-500/20";
-    return "bg-slate-500/20 text-slate-400 border-slate-500/40";
+    return "bg-slate-500/20 text-[color:var(--text-secondary)] border-slate-500/40";
   };
 
   const hasStats = player.stats && (player.stats.minutes > 0 || player.stats.goals_scored > 0);
@@ -457,7 +457,7 @@ function StatBadge({
   color?: "default" | "emerald" | "blue" | "green" | "cyan" | "amber" | "yellow" | "red" | "rose" | "purple";
 }) {
   const colorClasses = {
-    default: "bg-slate-500/10 text-slate-400",
+    default: "bg-slate-500/10 text-[color:var(--text-secondary)]",
     emerald: "bg-cyan-500/10 text-cyan-400",
     blue: "bg-blue-500/10 text-blue-400",
     green: "bg-cyan-500/10 text-cyan-400",

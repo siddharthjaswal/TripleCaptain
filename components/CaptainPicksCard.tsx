@@ -25,13 +25,13 @@ export function CaptainPicksCard({ picks, isLoading = false }: CaptainPicksCardP
 
         <div className="grid gap-6 sm:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="relative overflow-hidden border-white/5" glass>
+            <Card key={i} className="relative overflow-hidden border-[color:var(--surface-border)]" glass>
               <div className="p-6 space-y-6">
                 <div className="flex justify-between items-start">
                   <Skeleton variant="circular" width="40px" height="40px" />
                   <Skeleton variant="rectangular" width="80px" height="20px" className="rounded" />
                 </div>
-                <div className="flex items-center gap-4 pb-4 border-b border-white/5">
+                <div className="flex items-center gap-4 pb-4 border-b border-[color:var(--surface-border)]">
                   <Skeleton variant="rectangular" width="64px" height="64px" className="rounded-2xl" />
                   <div className="flex-1">
                     <Skeleton variant="text" width="80%" height="20px" className="mb-2" />
@@ -92,10 +92,10 @@ function CaptainPickItem({ pick, rank }: { pick: CaptainPickDTO; rank: number })
   ];
 
   return (
-    <Card className="relative overflow-hidden group border-white/5" glass>
+    <Card className="relative overflow-hidden group border-[color:var(--surface-border)]" glass>
       {/* Rank Header */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-white/5 overflow-hidden">
-         <div className={`h-full ${rank === 1 ? 'bg-yellow-500' : 'bg-white/20'}`} style={{ width: rank === 1 ? '100%' : '50%' }} />
+      <div className="absolute top-0 left-0 right-0 h-1 bg-[color:var(--surface-hover)] overflow-hidden">
+         <div className={`h-full ${rank === 1 ? 'bg-yellow-500' : 'bg-[color:var(--surface-hover)]'}`} style={{ width: rank === 1 ? '100%' : '50%' }} />
       </div>
 
       <div className="p-6 space-y-6">
@@ -109,8 +109,8 @@ function CaptainPickItem({ pick, rank }: { pick: CaptainPickDTO; rank: number })
         </div>
 
         {/* Player Header */}
-        <div className="flex items-center gap-4 pb-4 border-b border-white/5">
-            <div className="relative w-16 h-16 shrink-0 bg-slate-800 rounded-2xl overflow-hidden shadow-inner">
+        <div className="flex items-center gap-4 pb-4 border-b border-[color:var(--surface-border)]">
+            <div className="relative w-16 h-16 shrink-0 bg-[color:var(--surface-hover)] rounded-2xl overflow-hidden shadow-inner">
                  <Image 
                     src={photoUrl || '/player-placeholder.png'} 
                     alt={pick.playerName} 
@@ -135,13 +135,13 @@ function CaptainPickItem({ pick, rank }: { pick: CaptainPickDTO; rank: number })
 
         {/* Tactical Metrics */}
         <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5 shadow-inner group-hover:bg-white/10 transition-colors">
+            <div className="bg-[color:var(--surface-hover)] rounded-2xl p-4 text-center border border-[color:var(--surface-border)] shadow-inner group-hover:bg-[color:var(--surface-hover)] transition-colors">
                 <Typography variant="caption" weight="black" className="text-[8px] opacity-40 mb-1">EXPECTED PTS</Typography>
                 <Typography variant="title" weight="black" className="text-2xl text-[color:var(--accent)]">{pick.expectedPoints.toFixed(1)}</Typography>
             </div>
-            <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5 shadow-inner group-hover:bg-white/10 transition-colors">
+            <div className="bg-[color:var(--surface-hover)] rounded-2xl p-4 text-center border border-[color:var(--surface-border)] shadow-inner group-hover:bg-[color:var(--surface-hover)] transition-colors">
                 <Typography variant="caption" weight="black" className="text-[8px] opacity-40 mb-1">RECENT FORM</Typography>
-                <Typography variant="title" weight="black" className={`text-2xl ${pick.form >= 6 ? 'text-cyan-500' : 'text-white'}`}>
+                <Typography variant="title" weight="black" className={`text-2xl ${pick.form >= 6 ? 'text-cyan-500' : 'text-[color:var(--text-primary)]'}`}>
                     {pick.form.toFixed(1)}
                 </Typography>
             </div>
@@ -149,12 +149,12 @@ function CaptainPickItem({ pick, rank }: { pick: CaptainPickDTO; rank: number })
 
         {/* Fixture Analysis */}
         {pick.fixture && (
-            <div className="bg-gradient-to-r from-white/5 to-transparent rounded-2xl p-4 border border-white/5 space-y-3">
+            <div className="bg-gradient-to-r from-white/5 to-transparent rounded-2xl p-4 border border-[color:var(--surface-border)] space-y-3">
                  <div className="flex justify-between items-center">
                     <Typography variant="caption" weight="black" className="text-[8px] opacity-40">NEXT FIXTURE</Typography>
                     <div className="flex gap-1">
                         {[...Array(5)].map((_, i) => (
-                            <div key={i} className={`h-1 w-3 rounded-full ${i < pick.fixture!.difficulty ? getDiffColor(pick.fixture!.difficulty) : 'bg-white/10'}`} />
+                            <div key={i} className={`h-1 w-3 rounded-full ${i < pick.fixture!.difficulty ? getDiffColor(pick.fixture!.difficulty) : 'bg-[color:var(--surface-hover)]'}`} />
                         ))}
                     </div>
                  </div>
@@ -165,8 +165,8 @@ function CaptainPickItem({ pick, rank }: { pick: CaptainPickDTO; rank: number })
         )}
 
         {/* The Verdict */}
-        <div className="relative p-4 rounded-xl bg-white/5 border-l-4 border-l-[color:var(--accent)]">
-            <Typography className="text-xs italic leading-relaxed text-white/70">
+        <div className="relative p-4 rounded-xl bg-[color:var(--surface-hover)] border-l-4 border-l-[color:var(--accent)]">
+            <Typography className="text-xs italic leading-relaxed text-[color:var(--text-secondary)]">
                 &quot;{pick.reasoning}&quot;
             </Typography>
         </div>

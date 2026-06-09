@@ -99,7 +99,7 @@ export function MiniLeagueInsights({
             {topThree.map((member, idx) => (
               <div key={member.entryId} className={`rounded-lg border p-3 transition-all ${member.isCurrentUser ? 'bg-[color:var(--accent)]/5 border-[color:var(--accent)]/30' : 'bg-[color:var(--surface-elevated)] border-[color:var(--surface-border)]'}`}>
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-black ${idx === 0 ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400' : idx === 1 ? 'bg-slate-400/20 text-slate-600 dark:text-slate-400' : 'bg-orange-500/20 text-orange-600 dark:text-orange-400'}`}>
+                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-black ${idx === 0 ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400' : idx === 1 ? 'bg-slate-400/20 text-[color:var(--text-secondary)] dark:text-slate-400' : 'bg-orange-500/20 text-orange-600 dark:text-orange-400'}`}>
                     {idx + 1}
                   </div>
                   <div className="flex-1 min-w-0">

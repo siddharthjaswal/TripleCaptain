@@ -78,7 +78,7 @@ export function LeagueSwitcher({
             className={`flex items-center gap-3 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest transition-all duration-300 ${
               isActive
                 ? "bg-[color:var(--accent-light)] text-[color:var(--accent)] border border-[color:var(--accent)]/35"
-                : "bg-white/5 border border-white/5 text-white/50 hover:bg-white/10 hover:text-white"
+                : "bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] text-[color:var(--text-tertiary)] hover:bg-[color:var(--surface-hover)] hover:text-[color:var(--text-primary)]"
             }`}
           >
             <span className="truncate max-w-[150px]">{league.name}</span>
@@ -92,7 +92,7 @@ export function LeagueSwitcher({
       {largeLeagues.length > 0 && (
         <button
           onClick={() => setShowAll(!showAll)}
-          className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 text-xs font-black uppercase tracking-widest text-white/40 hover:bg-white/10 hover:text-white transition-all"
+          className="flex items-center gap-2 rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-hover)] px-4 py-2 text-xs font-black uppercase tracking-widest text-[color:var(--text-tertiary)] hover:bg-[color:var(--surface-hover)] hover:text-[color:var(--text-primary)] transition-all"
         >
           {showAll ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
           {showAll ? 'Show Smaller' : `+${largeLeagues.length} Large Leagues`}

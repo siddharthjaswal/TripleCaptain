@@ -95,7 +95,7 @@ export function ChipStatus({ usedChips = [], compact = false, isLoading = false 
               <span className="text-xs font-bold">{chip.shortName}</span>
               {isUsed && (
                 <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-[color:var(--text-tertiary)] flex items-center justify-center">
-                  <span className="text-[8px] text-white font-black">✓</span>
+                  <span className="text-[8px] text-[color:var(--text-primary)] font-black">✓</span>
                 </div>
               )}
             </div>
@@ -134,7 +134,7 @@ export function ChipStatus({ usedChips = [], compact = false, isLoading = false 
                 <Icon className="h-5 w-5" />
                 {isUsed && (
                   <div className="h-4 w-4 rounded-full bg-[color:var(--text-tertiary)] flex items-center justify-center">
-                    <span className="text-[10px] text-white font-black">✓</span>
+                    <span className="text-[10px] text-[color:var(--text-primary)] font-black">✓</span>
                   </div>
                 )}
               </div>

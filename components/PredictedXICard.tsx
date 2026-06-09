@@ -35,7 +35,7 @@ export function PredictedXICard({ predicted }: PredictedXICardProps) {
         </div>
 
       {/* Pitch */}
-      <div className="tc-pitch border-4 border-white/10 rounded-[3rem] p-8 shadow-2xl relative">
+      <div className="tc-pitch border-4 border-[color:var(--surface-border)] rounded-[3rem] p-8 shadow-2xl relative">
         <div className="absolute inset-0 bg-black/10 z-0" />
         <div className="tc-pitch-bottom-box" />
         
@@ -70,7 +70,7 @@ export function PredictedXICard({ predicted }: PredictedXICardProps) {
       {/* Predicted Bench */}
       {predicted.bench.length > 0 && (
         <Card className="p-6" glass hover={false}>
-            <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+            <div className="flex items-center justify-between mb-6 border-b border-[color:var(--surface-border)] pb-4">
                 <Typography variant="caption" weight="black" className="opacity-50 uppercase tracking-widest text-[10px]">Strategic Substitutes</Typography>
             </div>
             <div className="flex justify-around items-start">
@@ -120,10 +120,10 @@ function PredictorPlayerChip({ player, isCaptain, compact = false }: { player: P
           />
         ) : (
             <div
-                className="flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-700/50 to-slate-800/50 backdrop-blur-sm border border-white/10"
+                className="flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-700/50 to-slate-800/50 backdrop-blur-sm border border-[color:var(--surface-border)]"
                 style={{ width: compact ? '40px' : '60px', height: compact ? '50px' : '75px' }}
             >
-                <Zap className="h-8 w-8 text-white/20" />
+                <Zap className="h-8 w-8 text-[color:var(--text-tertiary)]" />
             </div>
         )}
         {isCaptain && (

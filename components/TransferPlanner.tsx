@@ -190,7 +190,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
 
                 {/* Bench */}
                 <Card className="p-6" glass hover={false}>
-                    <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                    <div className="flex items-center justify-between mb-6 border-b border-[color:var(--surface-border)] pb-4">
                         <Typography variant="caption" weight="black" className="opacity-50">Squad Bench</Typography>
                         <div className="flex gap-4">
                             <div className="flex items-center gap-1.5">
@@ -229,7 +229,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                                     <Typography variant="caption" weight="black" className="text-[10px]">Replacing</Typography>
                                     <Typography variant="title" weight="black" className="text-sm truncate">{selectedForSwap.name}</Typography>
                                 </div>
-                                <button onClick={() => setSelectedForSwap(null)} className="p-1.5 hover:bg-white/10 rounded-full">
+                                <button onClick={() => setSelectedForSwap(null)} className="p-1.5 hover:bg-[color:var(--surface-hover)] rounded-full">
                                     <Trash2 className="h-4 w-4 opacity-50" />
                                 </button>
                             </div>
@@ -256,7 +256,7 @@ export function TransferPlanner({ entryId, initialSquad, initialBank, nextGw, bg
                                         onClick={() => performSwap(p)}
                                         className="flex items-center gap-3 p-3 rounded-xl hover:bg-[color:var(--surface-hover)] border border-transparent hover:border-[color:var(--surface-border)] cursor-pointer transition-all group"
                                     >
-                                        <div className="w-10 h-10 relative overflow-hidden rounded-lg bg-slate-800 shrink-0">
+                                        <div className="w-10 h-10 relative overflow-hidden rounded-lg bg-[color:var(--surface-hover)] shrink-0">
                                             <Image src={getPlayerPhotoUrl(p.photo)!} alt={p.webName} fill className="object-cover" unoptimized />
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -371,7 +371,7 @@ function FixtureTimeline({ teamId, bgwDgwMap, nextGw }: {
                             className={`w-4 h-4 rounded-sm flex items-center justify-center text-[8px] font-black transition-all ${
                                 isBlank ? 'bg-red-500/20 text-red-500 border border-red-500/50' :
                                 isDouble ? 'bg-cyan-500 text-black shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
-                                'bg-white/10 text-white/60 border border-white/5'
+                                'bg-[color:var(--surface-hover)] text-[color:var(--text-secondary)] border border-[color:var(--surface-border)]'
                             }`}
                         >
                             {isBlank ? 'B' : isDouble ? 'D' : f.opponents[0]?.substring(0, 3)}

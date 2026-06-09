@@ -49,7 +49,7 @@ function CustomTooltip({ active, payload, label, entryColors }: CustomTooltipPro
   });
 
   return (
-    <Card className="p-4 border-white/10 shadow-2xl min-w-[180px]" glass hover={false}>
+    <Card className="p-4 border-[color:var(--surface-border)] shadow-2xl min-w-[180px]" glass hover={false}>
       <Typography variant="caption" weight="black" className="mb-3 opacity-40">Gameweek {label}</Typography>
       <div className="space-y-2">
         {sortedPayload.map((entry, index) => (
@@ -112,7 +112,7 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
   if (!race.entries.length || !chartData.length) return null;
 
   return (
-    <Card className="p-8 space-y-8 animate-fade-in border-white/5" glass hover={false}>
+    <Card className="p-8 space-y-8 animate-fade-in border-[color:var(--surface-border)]" glass hover={false}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
             <div className="p-3 rounded-2xl bg-[color:var(--accent)] text-white">
@@ -164,7 +164,7 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
         </ResponsiveContainer>
       </div>
 
-      <div className="flex flex-wrap gap-3 justify-center pt-6 border-t border-white/5">
+      <div className="flex flex-wrap gap-3 justify-center pt-6 border-t border-[color:var(--surface-border)]">
         {race.entries.map((entry, index) => {
           const color = CHART_COLORS[index % CHART_COLORS.length];
           const isVisible = visibleEntries.has(entry.entryName);
@@ -174,7 +174,7 @@ export function LeagueRaceChart({ race }: LeagueRaceChartProps) {
               onClick={() => toggleEntry(entry.entryName)}
               className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
                 isVisible
-                  ? "bg-white/5 border border-white/10 shadow-lg"
+                  ? "bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] shadow-lg"
                   : "opacity-30 border border-transparent grayscale"
               }`}
               style={{ color: isVisible ? color : 'inherit' }}

@@ -40,9 +40,9 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
   };
 
   return (
-    <Card className="relative overflow-hidden border-white/5 animate-fade-in" glass hover={false}>
+    <Card className="relative overflow-hidden border-[color:var(--surface-border)] animate-fade-in" glass hover={false}>
       {/* Table Header */}
-      <div className="p-8 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="p-8 border-b border-[color:var(--surface-border)] flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-yellow-500/10 text-yellow-500">
                 <Trophy className="w-6 h-6" />
@@ -60,21 +60,21 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
       <div className="overflow-x-auto scrollbar-hide">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-white/5">
-              <th className="px-3 sm:px-6 py-4 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/40">Rank</th>
-              <th className="hidden sm:table-cell px-4 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-center">Trend</th>
-              <th className="px-3 sm:px-6 py-4 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/40">Squad & Manager</th>
+            <tr className="bg-[color:var(--surface-hover)]">
+              <th className="px-3 sm:px-6 py-4 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[color:var(--text-tertiary)]">Rank</th>
+              <th className="hidden sm:table-cell px-4 py-4 text-[10px] font-black uppercase tracking-widest text-[color:var(--text-tertiary)] text-center">Trend</th>
+              <th className="px-3 sm:px-6 py-4 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[color:var(--text-tertiary)]">Squad & Manager</th>
               {enrichedEntries.length < 20 && (
-                <th className="hidden lg:table-cell px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-center">Captain</th>
+                <th className="hidden lg:table-cell px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[color:var(--text-tertiary)] text-center">Captain</th>
               )}
-              <th className="px-3 sm:px-6 py-4 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/40 text-right">Points</th>
-              <th className="hidden sm:table-cell px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-right">Total</th>
+              <th className="px-3 sm:px-6 py-4 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[color:var(--text-tertiary)] text-right">Points</th>
+              <th className="hidden sm:table-cell px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[color:var(--text-tertiary)] text-right">Total</th>
               {enrichedEntries.length < 20 && (
-                <th className="hidden md:table-cell px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-center">Tactics</th>
+                <th className="hidden md:table-cell px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[color:var(--text-tertiary)] text-center">Tactics</th>
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-[color:var(--surface-border)]">
             {enrichedEntries.map((entry, index) => {
               const delta = formatRankDelta(entry.rank, entry.lastRank);
               const isCurrentUser = entry.entryId === currentEntryId;
@@ -95,12 +95,12 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                   className={`group transition-colors cursor-pointer ${
                     isCurrentUser
                       ? "bg-[color:var(--accent)]/10 hover:bg-[color:var(--accent)]/20"
-                      : "hover:bg-white/5"
+                      : "hover:bg-[color:var(--surface-hover)]"
                   }`}
                 >
                   <td className="px-3 sm:px-6 py-4">
                     <div className="flex flex-col items-center gap-1">
-                        <div className={`relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center font-black text-xs sm:text-sm transition-transform group-hover:scale-110 ${liveRank === 1 ? 'bg-gradient-to-br from-yellow-400 to-amber-600 text-black shadow-lg shadow-yellow-500/20' : 'bg-white/5 border border-white/5 text-white/70'}`}>
+                        <div className={`relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center font-black text-xs sm:text-sm transition-transform group-hover:scale-110 ${liveRank === 1 ? 'bg-gradient-to-br from-yellow-400 to-amber-600 text-black shadow-lg shadow-yellow-500/20' : 'bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] text-[color:var(--text-secondary)]'}`}>
                             {liveRank}
                         </div>
                         {/* Mobile-only trend indicator under rank */}
@@ -123,10 +123,10 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                   </td>
                   <td className="px-3 sm:px-6 py-4">
                     <div className="flex flex-col gap-0.5 min-w-0">
-                        <Typography weight="black" className={`text-[11px] sm:text-[13px] uppercase tracking-tight truncate max-w-[120px] sm:max-w-none ${isCurrentUser ? 'text-cyan-400' : 'text-slate-100'}`}>
+                        <Typography weight="black" className={`text-[11px] sm:text-[13px] uppercase tracking-tight truncate max-w-[120px] sm:max-w-none ${isCurrentUser ? 'text-cyan-400' : 'text-[color:var(--text-primary)]'}`}>
                             {entry.entryName}
                         </Typography>
-                        <Typography variant="caption" className="text-[8px] sm:text-[10px] opacity-60 font-black uppercase tracking-wider text-slate-300 truncate max-w-[100px] sm:max-w-none">
+                        <Typography variant="caption" className="text-[8px] sm:text-[10px] opacity-60 font-black uppercase tracking-wider text-[color:var(--text-secondary)] truncate max-w-[100px] sm:max-w-none">
                             {entry.playerName} {isCurrentUser && '• YOU'}
                         </Typography>
                         {/* Mobile-only sub-info: Captain and Rank Delta */}
@@ -137,7 +137,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                                 </span>
                             )}
                             {entry.captain && (
-                                <span className="text-[7px] text-white/40 font-black uppercase tracking-tighter">
+                                <span className="text-[7px] text-[color:var(--text-tertiary)] font-black uppercase tracking-tighter">
                                     {entry.captain.playerName} (C)
                                 </span>
                             )}
@@ -148,20 +148,20 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                   {enrichedEntries.length < 20 && (
                     <td className="hidden lg:table-cell px-6 py-5 text-center">
                       {entry.isLoading ? (
-                        <div className="w-4 h-4 rounded-full border-2 border-white/10 border-t-white/30 animate-spin mx-auto" />
+                        <div className="w-4 h-4 rounded-full border-2 border-[color:var(--surface-border)] border-t-white/30 animate-spin mx-auto" />
                       ) : entry.captain ? (
-                         <Badge variant="secondary" className="bg-white/5 text-white/70 border-white/10 text-[9px] font-black uppercase tracking-tighter">
+                         <Badge variant="secondary" className="bg-[color:var(--surface-hover)] text-[color:var(--text-secondary)] border-[color:var(--surface-border)] text-[9px] font-black uppercase tracking-tighter">
                             {entry.captain.playerName}
                          </Badge>
                       ) : (
-                        <span className="text-white/20">—</span>
+                        <span className="text-[color:var(--text-tertiary)]">—</span>
                       )}
                     </td>
                   )}
 
                   <td className="px-3 sm:px-6 py-4 text-right">
                     <div className="flex flex-col items-end">
-                        <Typography weight="black" className="text-xs sm:text-base font-mono text-white tracking-tighter sm:tracking-normal">
+                        <Typography weight="black" className="text-xs sm:text-base font-mono text-[color:var(--text-primary)] tracking-tighter sm:tracking-normal">
                             {formatNumber(entry.totalPoints)}
                         </Typography>
                         <div className="flex items-center gap-1">
@@ -174,17 +174,17 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
                   </td>
 
                   <td className="hidden sm:table-cell px-6 py-5 text-right">
-                    <Typography weight="black" className="text-base font-mono text-white tracking-tight">{formatNumber(entry.totalPoints)}</Typography>
+                    <Typography weight="black" className="text-base font-mono text-[color:var(--text-primary)] tracking-tight">{formatNumber(entry.totalPoints)}</Typography>
                   </td>
 
                   {enrichedEntries.length < 20 && (
                     <td className="hidden md:table-cell px-6 py-5 text-center">
                       {entry.teamPicks ? (
-                        <div className="h-8 w-8 mx-auto flex items-center justify-center rounded-lg bg-white/5 text-white/40 group-hover:text-cyan-400 group-hover:bg-cyan-400/10 transition-all">
+                        <div className="h-8 w-8 mx-auto flex items-center justify-center rounded-lg bg-[color:var(--surface-hover)] text-[color:var(--text-tertiary)] group-hover:text-cyan-400 group-hover:bg-cyan-400/10 transition-all">
                           <Eye size={16} />
                         </div>
                       ) : (
-                        <span className="text-white/20">—</span>
+                        <span className="text-[color:var(--text-tertiary)]">—</span>
                       )}
                     </td>
                   )}
@@ -197,7 +197,7 @@ export function LeagueTable({ league, currentEntryId }: LeagueTableProps) {
 
       {/* Pagination */}
       {(league.page > 1 || league.hasNextPage) && (
-        <div className="p-8 border-t border-white/5 flex items-center justify-between bg-black/20 backdrop-blur-sm">
+        <div className="p-8 border-t border-[color:var(--surface-border)] flex items-center justify-between bg-[color:var(--surface-hover)] backdrop-blur-sm">
             <Button
                 variant="secondary"
                 size="sm"

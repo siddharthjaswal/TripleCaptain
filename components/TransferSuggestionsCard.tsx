@@ -32,7 +32,7 @@ export function TransferSuggestionsCard({
             <Skeleton variant="text" width="250px" height="40px" className="mb-2" />
             <Skeleton variant="text" width="300px" height="12px" />
           </div>
-          <Card className="px-8 py-4 border-white/5 bg-white/5" glass hover={false}>
+          <Card className="px-8 py-4 border-[color:var(--surface-border)] bg-[color:var(--surface-hover)]" glass hover={false}>
             <Skeleton variant="text" width="120px" height="12px" className="mb-2" />
             <Skeleton variant="text" width="100px" height="32px" />
           </Card>
@@ -40,7 +40,7 @@ export function TransferSuggestionsCard({
 
         <div className="grid gap-8">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="relative overflow-hidden border-white/10 bg-slate-950/40" glass hover={false}>
+            <Card key={i} className="relative overflow-hidden border-[color:var(--surface-border)] bg-[color:var(--surface-hover)]" glass hover={false}>
               <div className="p-8 space-y-6">
                 <div className="flex flex-col md:flex-row items-center gap-6">
                   <Skeleton variant="circular" width="80px" height="80px" />
@@ -62,7 +62,7 @@ export function TransferSuggestionsCard({
         <div className="p-5 w-20 h-20 rounded-3xl bg-cyan-500/10 text-cyan-500 mx-auto mb-8 flex items-center justify-center">
              <TrendingUp className="w-10 h-10" />
         </div>
-        <Typography variant="title" weight="black" className="mb-2 uppercase text-white text-3xl">Squad Optimized</Typography>
+        <Typography variant="title" weight="black" className="mb-2 uppercase text-[color:var(--text-primary)] text-3xl">Squad Optimized</Typography>
         <Typography className="text-[color:var(--text-secondary)] text-lg">No transfer suggestions required at this time.</Typography>
       </Card>
     );
@@ -72,11 +72,11 @@ export function TransferSuggestionsCard({
     <section className="space-y-10 animate-fade-in pb-20">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 px-4">
             <div className="space-y-1">
-                <Typography variant="display" className="text-3xl md:text-5xl text-white">Recruitment</Typography>
+                <Typography variant="display" className="text-3xl md:text-5xl text-[color:var(--text-primary)]">Recruitment</Typography>
                 <Typography variant="caption" weight="black" className="opacity-40 tracking-[0.3em] text-[10px]">SCIENTIFIC TRANSFER STRATEGY</Typography>
             </div>
             
-            <Card className="px-8 py-4 border-white/5 bg-white/5" glass hover={false}>
+            <Card className="px-8 py-4 border-[color:var(--surface-border)] bg-[color:var(--surface-hover)]" glass hover={false}>
                 <Typography variant="caption" weight="black" className="text-[10px] opacity-40 uppercase tracking-widest mb-1">Available Funds</Typography>
                 <Typography variant="title" weight="black" className="text-3xl text-cyan-400">£{budgetAvailable.toFixed(1)}m</Typography>
             </Card>
@@ -109,19 +109,19 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
   const pointsGain = (suggestion.playerIn.expectedPoints - (suggestion.playerOut.expectedPoints || 0)).toFixed(1);
 
   return (
-    <Card className="relative overflow-hidden border-white/10 bg-slate-950/40" glass hover={false}>
+    <Card className="relative overflow-hidden border-[color:var(--surface-border)] bg-[color:var(--surface-hover)]" glass hover={false}>
       {/* Visual Rank Background */}
-      <div className="absolute top-0 left-0 bottom-0 w-24 bg-white/5 flex items-center justify-center -z-10">
+      <div className="absolute top-0 left-0 bottom-0 w-24 bg-[color:var(--surface-hover)] flex items-center justify-center -z-10">
          <Typography variant="display" className="text-6xl opacity-10 rotate-[-90deg] pointer-events-none">#{rank}</Typography>
       </div>
 
       <div className="flex flex-col md:flex-row">
         {/* Left: The Players Trade */}
-        <div className="flex-1 p-8 flex flex-col md:flex-row items-center gap-8 border-b md:border-b-0 md:border-r border-white/5">
+        <div className="flex-1 p-8 flex flex-col md:flex-row items-center gap-8 border-b md:border-b-0 md:border-r border-[color:var(--surface-border)]">
             {/* Player OUT */}
             <div className="flex flex-col items-center gap-3 w-full md:w-40 shrink-0">
                 <div className="relative group">
-                    <div className="relative w-20 h-20 bg-slate-900 rounded-full overflow-hidden border-2 border-red-500/30 group-hover:border-red-500/50 transition-all shadow-xl">
+                    <div className="relative w-20 h-20 bg-[color:var(--surface-hover)] rounded-full overflow-hidden border-2 border-red-500/30 group-hover:border-red-500/50 transition-all shadow-xl">
                          <Image 
                             src={imgOut || getTeamShirtUrl(suggestion.playerOut.teamCode)!} 
                             alt="Out" 
@@ -135,17 +135,17 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                     <Badge className="absolute -bottom-1 -right-1 bg-red-500 text-white text-[8px] font-black border-2 border-slate-950">OUT</Badge>
                 </div>
                 <div className="text-center">
-                    <Typography weight="black" className="text-sm uppercase text-white/90 leading-tight">{suggestion.playerOut.playerName}</Typography>
+                    <Typography weight="black" className="text-sm uppercase text-[color:var(--text-secondary)] leading-tight">{suggestion.playerOut.playerName}</Typography>
                     <Typography variant="caption" className="text-[9px] opacity-40">£{suggestion.playerOut.cost.toFixed(1)}m</Typography>
                 </div>
             </div>
 
             {/* The Arrow */}
             <div className="flex flex-col items-center justify-center">
-                 <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform">
-                    <ArrowRight className="w-5 h-5 text-white/40" />
+                 <div className="w-10 h-10 rounded-full bg-[color:var(--surface-hover)] flex items-center justify-center border border-[color:var(--surface-border)] group-hover:scale-110 transition-transform">
+                    <ArrowRight className="w-5 h-5 text-[color:var(--text-tertiary)]" />
                  </div>
-                 <div className={`mt-2 px-2 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[9px] font-black ${suggestion.netCost > 0 ? 'text-red-400' : 'text-cyan-400'}`}>
+                 <div className={`mt-2 px-2 py-0.5 rounded bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] font-mono text-[9px] font-black ${suggestion.netCost > 0 ? 'text-red-400' : 'text-cyan-400'}`}>
                     {suggestion.netCost > 0 ? '-' : '+'}£{Math.abs(suggestion.netCost).toFixed(1)}m
                  </div>
             </div>
@@ -153,7 +153,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
             {/* Player IN */}
             <div className="flex flex-col items-center gap-3 w-full md:w-40 shrink-0">
                 <div className="relative group">
-                    <div className="relative w-28 h-28 bg-slate-900 rounded-full overflow-hidden border-4 border-cyan-500/40 group-hover:border-cyan-500 group-hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] transition-all shadow-2xl">
+                    <div className="relative w-28 h-28 bg-[color:var(--surface-hover)] rounded-full overflow-hidden border-4 border-cyan-500/40 group-hover:border-cyan-500 group-hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] transition-all shadow-2xl">
                         <Image 
                             src={imgIn || getTeamShirtUrl(suggestion.playerIn.teamCode)!} 
                             alt="In" 
@@ -167,7 +167,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                     <Badge className="absolute -bottom-1 -right-1 bg-cyan-500 text-black text-[9px] font-black border-2 border-slate-950">SIGNING</Badge>
                 </div>
                 <div className="text-center">
-                    <Typography weight="black" className="text-base uppercase text-white leading-tight">{suggestion.playerIn.playerName}</Typography>
+                    <Typography weight="black" className="text-base uppercase text-[color:var(--text-primary)] leading-tight">{suggestion.playerIn.playerName}</Typography>
                     <div className="flex items-center justify-center gap-2">
                         <Typography variant="caption" className="text-[10px] text-cyan-500/60 font-black tracking-widest">{suggestion.playerIn.team.shortName} • £{suggestion.playerIn.cost.toFixed(1)}m</Typography>
                         {suggestion.playerIn.reasoning.includes('DOUBLE') && (
@@ -190,7 +190,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                 </div>
                 <div className="space-y-1">
                     <Typography variant="caption" weight="black" className="text-[9px] opacity-30 tracking-widest">PLAYER XP</Typography>
-                    <div className="flex items-baseline gap-1 text-white">
+                    <div className="flex items-baseline gap-1 text-[color:var(--text-primary)]">
                         <Typography weight="black" className="text-3xl">{suggestion.playerIn.expectedPoints.toFixed(1)}</Typography>
                         <Typography weight="black" className="text-[10px] opacity-40">NEXT</Typography>
                     </div>
@@ -207,7 +207,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                 </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white/5 border border-white/5 relative group overflow-hidden">
+            <div className="p-6 rounded-2xl bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] relative group overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                     <Target className="w-16 h-16 text-indigo-400" />
                 </div>
@@ -216,7 +216,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
                     <div className="shrink-0 pt-1">
                          <div className="w-1 h-12 rounded-full bg-indigo-500/30" />
                     </div>
-                    <Typography className="text-sm leading-relaxed text-white/80 italic">
+                    <Typography className="text-sm leading-relaxed text-[color:var(--text-secondary)] italic">
                         &quot;{suggestion.playerIn.reasoning}&quot;
                     </Typography>
                 </div>
@@ -229,7 +229,7 @@ function TransferSuggestionItem({ suggestion, rank }: { suggestion: TransferSugg
 
 function getDiffStyle(diff: number) {
     if (diff <= 2) return "border-cyan-500/30 bg-cyan-500/10 text-cyan-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]";
-    if (diff === 3) return "border-white/10 bg-white/5 text-white/50";
+    if (diff === 3) return "border-[color:var(--surface-border)] bg-[color:var(--surface-hover)] text-[color:var(--text-tertiary)]";
     if (diff === 4) return "border-amber-500/30 bg-amber-500/10 text-amber-400";
     return "border-red-500/30 bg-red-500/10 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
 }

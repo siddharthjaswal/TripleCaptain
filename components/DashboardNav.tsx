@@ -101,7 +101,7 @@ export function DashboardNav({ entryId, active, currentEvent }: DashboardNavProp
                         className={`transition-all duration-300 ${
                           isActive 
                             ? 'text-[color:var(--accent)] drop-shadow-[0_0_8px_var(--accent)]' 
-                            : 'text-slate-500 dark:text-slate-400 group-active:text-slate-600 dark:group-active:text-slate-300'
+                            : 'text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)] group-active:text-[color:var(--text-secondary)] dark:group-active:text-[color:var(--text-secondary)]'
                         }`}
                       />
                     </div>
@@ -110,7 +110,7 @@ export function DashboardNav({ entryId, active, currentEvent }: DashboardNavProp
                     <span className={`text-[10px] font-semibold leading-none transition-all duration-300 ${
                       isActive 
                         ? 'text-[color:var(--accent)]' 
-                        : 'text-slate-500 dark:text-slate-400'
+                        : 'text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)]'
                     }`}>
                       {label}
                     </span>

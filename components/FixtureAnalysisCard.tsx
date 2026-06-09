@@ -42,7 +42,7 @@ export function FixtureAnalysisCard({ analysis, isLoading = false }: FixtureAnal
               </div>
               <div className="grid gap-6">
                 {[1, 2, 3].map((team) => (
-                  <Card key={team} className="border-white/10 bg-white/5" glass hover={false}>
+                  <Card key={team} className="border-[color:var(--surface-border)] bg-[color:var(--surface-hover)]" glass hover={false}>
                     <div className="p-6 space-y-4">
                       <div className="flex items-center gap-3">
                         <Skeleton variant="circular" width="48px" height="48px" />
@@ -76,7 +76,7 @@ export function FixtureAnalysisCard({ analysis, isLoading = false }: FixtureAnal
                 <BarChart3 className="h-7 w-7" />
             </div>
             <div>
-                <Typography variant="display" className="text-3xl md:text-5xl text-white">Fixture Analysis</Typography>
+                <Typography variant="display" className="text-3xl md:text-5xl text-[color:var(--text-primary)]">Fixture Analysis</Typography>
                 <Typography variant="caption" weight="black" className="opacity-40 tracking-[0.3em] text-[10px]">UPCOMING BATTLEGROUNDS</Typography>
             </div>
         </div>
@@ -85,7 +85,7 @@ export function FixtureAnalysisCard({ analysis, isLoading = false }: FixtureAnal
             <Info className="w-5 h-5 text-blue-400 opacity-50" />
             <Typography variant="caption" weight="black" className="text-[10px] opacity-60 leading-tight">
                 ANALYZING THE NEXT<br/>
-                <span className="text-white text-base">{analysis.gameweeksAnalyzed} GAMEWEEKS</span>
+                <span className="text-[color:var(--text-primary)] text-base">{analysis.gameweeksAnalyzed} GAMEWEEKS</span>
             </Typography>
         </Card>
       </div>
@@ -147,14 +147,14 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
   const gwRange = Array.from({ length: 5 }, (_, i) => minGw + i);
 
   return (
-    <Card className="relative overflow-hidden group border-white/5" glass hover={false}>
+    <Card className="relative overflow-hidden group border-[color:var(--surface-border)]" glass hover={false}>
       {/* Dynamic Background Accent */}
       <div className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full blur-[60px] opacity-10 ${type === 'best' ? 'bg-cyan-500' : 'bg-red-500'}`} />
       
       <div className="p-8 space-y-8">
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-5">
-                <div className="w-16 h-16 relative flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 shadow-2xl shrink-0 p-3">
+                <div className="w-16 h-16 relative flex items-center justify-center rounded-2xl bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] shadow-2xl shrink-0 p-3">
                     <Image 
                         src={`https://resources.premierleague.com/premierleague/badges/t${team.teamCode}.png`} 
                         alt={team.teamShort}
@@ -164,7 +164,7 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
                     />
                 </div>
                 <div>
-                    <Typography variant="title" weight="black" className="text-2xl uppercase leading-none mb-2 text-white">{team.teamName}</Typography>
+                    <Typography variant="title" weight="black" className="text-2xl uppercase leading-none mb-2 text-[color:var(--text-primary)]">{team.teamName}</Typography>
                     <div className="flex items-center gap-3">
                          <Badge variant={type === 'best' ? 'success' : 'error'} className="font-black text-[9px] px-3 py-1 tracking-widest">
                             {type === 'best' ? 'TARGET' : 'AVOID'}
@@ -181,7 +181,7 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
         <div className="space-y-4">
              <div className="flex items-center justify-between px-1">
                 <Typography variant="caption" weight="black" className="text-[9px] opacity-30 tracking-[0.3em] uppercase">Tactical Timeline</Typography>
-                <div className="h-px flex-1 mx-4 bg-white/5" />
+                <div className="h-px flex-1 mx-4 bg-[color:var(--surface-hover)]" />
              </div>
 
              <div className="grid grid-cols-5 gap-4">
@@ -201,8 +201,8 @@ function TeamFixtureRun({ team, type }: { team: TeamFixtureRunDTO; type: "best" 
                                 ) : (
                                     <div className="space-y-1">
                                         {fixtures.map((f, i) => (
-                                            <div key={i} className={i > 0 ? "pt-1 border-t border-white/5 mt-1" : ""}>
-                                                <Typography weight="black" className="text-xs uppercase tracking-tighter leading-none text-white">{f.opponentShort}</Typography>
+                                            <div key={i} className={i > 0 ? "pt-1 border-t border-[color:var(--surface-border)] mt-1" : ""}>
+                                                <Typography weight="black" className="text-xs uppercase tracking-tighter leading-none text-[color:var(--text-primary)]">{f.opponentShort}</Typography>
                                                 <Typography variant="caption" className="text-[8px] font-black opacity-50 uppercase leading-none">{f.isHome ? 'H' : 'A'}</Typography>
                                             </div>
                                         ))}
@@ -238,7 +238,7 @@ function DifficultyIndicator({ difficulty, type }: { difficulty: number, type: "
                 <span>Safe</span>
                 <span>Trap</span>
             </div>
-            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5 p-[1px]">
+            <div className="h-1.5 w-full bg-[color:var(--surface-hover)] rounded-full overflow-hidden border border-[color:var(--surface-border)] p-[1px]">
                 <div 
                     className={`h-full rounded-full transition-all duration-1000 ${type === 'best' ? 'bg-cyan-500' : 'bg-red-500'}`} 
                     style={{ width: `${percent}%` }}
@@ -250,14 +250,14 @@ function DifficultyIndicator({ difficulty, type }: { difficulty: number, type: "
 
 function getDiffStyle(diff: number) {
     if (diff <= 2) return "border-cyan-500/30 bg-cyan-500/10 text-cyan-400 shadow-cyan-500/10";
-    if (diff === 3) return "border-white/10 bg-white/5 text-white/60 shadow-white/5";
+    if (diff === 3) return "border-[color:var(--surface-border)] bg-[color:var(--surface-hover)] text-[color:var(--text-secondary)] shadow-white/5";
     if (diff === 4) return "border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-amber-500/10";
     return "border-red-500/30 bg-red-500/10 text-red-400 shadow-red-500/10";
 }
 
 function getDiffStyleLine(diff: number) {
     if (diff <= 2) return "bg-cyan-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]";
-    if (diff === 3) return "bg-white/10";
+    if (diff === 3) return "bg-[color:var(--surface-hover)]";
     if (diff === 4) return "bg-amber-500";
     return "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]";
 }

@@ -135,7 +135,7 @@ export default async function PredictionsPage({
           <div className="flex items-center justify-between">
             <Link
               href="/"
-              className="tc-focus-visible inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-bold transition hover:bg-slate-800/50 tc-text-muted hover:text-white uppercase tracking-wider"
+              className="tc-focus-visible inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-bold transition hover:bg-[color:var(--surface-hover)] tc-text-muted hover:text-white uppercase tracking-wider"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

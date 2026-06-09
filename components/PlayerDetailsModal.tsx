@@ -81,7 +81,7 @@ export function PlayerDetailsModal({
       onClick={onClose}
     >
       <Card
-        className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto scrollbar-hide border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+        className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto scrollbar-hide border-[color:var(--surface-border)] shadow-[0_0_50px_rgba(0,0,0,0.5)]"
         onClick={(e) => e.stopPropagation()}
         glass
         hover={false}
@@ -90,7 +90,7 @@ export function PlayerDetailsModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-6 right-6 z-50 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white/50 hover:text-white"
+          className="absolute top-6 right-6 z-50 p-2 rounded-full bg-[color:var(--surface-hover)] hover:bg-[color:var(--surface-hover)] transition-colors text-[color:var(--text-tertiary)] hover:text-[color:var(--text-primary)]"
         >
           <X className="h-6 w-6" />
         </button>
@@ -109,7 +109,7 @@ export function PlayerDetailsModal({
         ) : player && (
           <div className="flex flex-col">
             {/* Top Banner / Hero */}
-            <div className="relative p-8 md:p-12 bg-gradient-to-br from-[color:var(--accent)]/20 to-transparent flex flex-col md:flex-row items-center gap-12 border-b border-white/5">
+            <div className="relative p-8 md:p-12 bg-gradient-to-br from-[color:var(--accent)]/20 to-transparent flex flex-col md:flex-row items-center gap-12 border-b border-[color:var(--surface-border)]">
                 <div className="relative group shrink-0">
                     <div className="absolute inset-0 bg-[color:var(--accent)]/20 blur-3xl rounded-full -z-10 group-hover:bg-[color:var(--accent)]/30 transition-all" />
                     {useShirtFallback && shirtUrl ? (
@@ -117,7 +117,7 @@ export function PlayerDetailsModal({
                     ) : imgUrl ? (
                         <Image src={imgUrl} alt={player.name} width={180} height={220} className="object-contain drop-shadow-2xl" unoptimized onError={handleImageError} />
                     ) : (
-                        <div className="w-32 h-40 bg-white/5 rounded-2xl flex items-center justify-center">
+                        <div className="w-32 h-40 bg-[color:var(--surface-hover)] rounded-2xl flex items-center justify-center">
                             <Zap className="h-12 w-12 opacity-20" />
                         </div>
                     )}
@@ -126,7 +126,7 @@ export function PlayerDetailsModal({
                 <div className="flex-1 text-center md:text-left space-y-6">
                     <div className="space-y-2">
                         <Badge variant="primary" className="mb-2 tracking-widest">{player.team} • {player.position}</Badge>
-                        <Typography variant="display" className="text-5xl md:text-6xl text-white drop-shadow-md">{player.fullName || player.name}</Typography>
+                        <Typography variant="display" className="text-5xl md:text-6xl text-[color:var(--text-primary)] drop-shadow-md">{player.fullName || player.name}</Typography>
                     </div>
 
                     <div className="flex flex-wrap justify-center md:justify-start gap-4">
@@ -151,7 +151,7 @@ export function PlayerDetailsModal({
                 {/* Left Column: Key Metrics */}
                 <div className="space-y-10">
                     <section className="space-y-4">
-                        <Typography variant="caption" weight="black" className="text-white/60 tracking-widest">Core Metrics</Typography>
+                        <Typography variant="caption" weight="black" className="text-[color:var(--text-secondary)] tracking-widest">Core Metrics</Typography>
                         <div className="grid grid-cols-2 gap-4">
                             <StatBox icon={<Target />} label="Total Pts" value={player.totalPoints} color="emerald" />
                             <StatBox icon={<TrendingUp />} label="Form" value={player.form.toFixed(1)} color="blue" />
@@ -161,19 +161,19 @@ export function PlayerDetailsModal({
                     </section>
 
                     <section className="space-y-4">
-                        <Typography variant="caption" weight="black" className="text-white/60 tracking-widest">Expected Value</Typography>
-                        <Card className="p-6 bg-white/5 border-white/5 space-y-4" hover={false}>
+                        <Typography variant="caption" weight="black" className="text-[color:var(--text-secondary)] tracking-widest">Expected Value</Typography>
+                        <Card className="p-6 bg-[color:var(--surface-hover)] border-[color:var(--surface-border)] space-y-4" hover={false}>
                              <div className="flex justify-between items-center">
-                                <Typography className="text-sm text-white/70">xP Next GW</Typography>
+                                <Typography className="text-sm text-[color:var(--text-secondary)]">xP Next GW</Typography>
                                 <Typography weight="black" className="text-cyan-500 text-lg">{player.expectedPoints.toFixed(1)}</Typography>
                              </div>
                              <div className="flex justify-between items-center">
-                                <Typography className="text-sm text-white/70">xG (Goals)</Typography>
-                                <Typography weight="black" className="text-white">{player.expectedGoals.toFixed(2)}</Typography>
+                                <Typography className="text-sm text-[color:var(--text-secondary)]">xG (Goals)</Typography>
+                                <Typography weight="black" className="text-[color:var(--text-primary)]">{player.expectedGoals.toFixed(2)}</Typography>
                              </div>
                              <div className="flex justify-between items-center">
-                                <Typography className="text-sm text-white/70">xA (Assists)</Typography>
-                                <Typography weight="black" className="text-white">{player.expectedAssists.toFixed(2)}</Typography>
+                                <Typography className="text-sm text-[color:var(--text-secondary)]">xA (Assists)</Typography>
+                                <Typography weight="black" className="text-[color:var(--text-primary)]">{player.expectedAssists.toFixed(2)}</Typography>
                              </div>
                         </Card>
                     </section>
@@ -182,7 +182,7 @@ export function PlayerDetailsModal({
                 {/* Middle Column: Season Totals */}
                 <div className="space-y-10">
                     <section className="space-y-4">
-                        <Typography variant="caption" weight="black" className="text-white/60 tracking-widest">Season Breakdown</Typography>
+                        <Typography variant="caption" weight="black" className="text-[color:var(--text-secondary)] tracking-widest">Season Breakdown</Typography>
                         <div className="space-y-1">
                              <LinearStat label="Minutes Played" value={player.minutes} max={3420} />
                              <DataRow label="Goals Scored" value={player.goalsScored} />
@@ -194,7 +194,7 @@ export function PlayerDetailsModal({
                     </section>
 
                     <section className="space-y-4">
-                        <Typography variant="caption" weight="black" className="text-white/60 tracking-widest">ICT Index (Rankings)</Typography>
+                        <Typography variant="caption" weight="black" className="text-[color:var(--text-secondary)] tracking-widest">ICT Index (Rankings)</Typography>
                         <div className="grid grid-cols-2 gap-4">
                             <SmallStat label="Influence" value={player.influence.toFixed(1)} />
                             <SmallStat label="Creativity" value={player.creativity.toFixed(1)} />
@@ -207,18 +207,18 @@ export function PlayerDetailsModal({
                 {/* Right Column: Fixtures */}
                 <div className="space-y-10">
                     <section className="space-y-4">
-                        <Typography variant="caption" weight="black" className="text-white/60 tracking-widest">Upcoming Fixtures</Typography>
+                        <Typography variant="caption" weight="black" className="text-[color:var(--text-secondary)] tracking-widest">Upcoming Fixtures</Typography>
                         <div className="space-y-3">
                             {player.nextFixtures.map((f, i) => (
-                                <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 group hover:bg-white/10 transition-colors">
+                                <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] group hover:bg-[color:var(--surface-hover)] transition-colors">
                                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm shadow-inner ${getDiffColor(f.difficulty)}`}>
                                         {f.difficulty}
                                      </div>
                                      <div className="flex-1">
-                                        <Typography weight="black" className="text-sm uppercase text-white">{f.opponentShort}</Typography>
-                                        <Typography variant="caption" className="text-[10px] text-white/50">{f.isHome ? 'Home' : 'Away'}</Typography>
+                                        <Typography weight="black" className="text-sm uppercase text-[color:var(--text-primary)]">{f.opponentShort}</Typography>
+                                        <Typography variant="caption" className="text-[10px] text-[color:var(--text-tertiary)]">{f.isHome ? 'Home' : 'Away'}</Typography>
                                      </div>
-                                     <Calendar className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity text-white" />
+                                     <Calendar className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity text-[color:var(--text-primary)]" />
                                 </div>
                             ))}
                         </div>
@@ -234,9 +234,9 @@ export function PlayerDetailsModal({
 
 function PriceTag({ label, value }: { label: string, value: string }) {
     return (
-        <div className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-center min-w-[140px]">
-            <Typography variant="caption" className="text-[10px] text-white/40 mb-1">{label}</Typography>
-            <Typography weight="black" className="text-2xl text-white">{value}</Typography>
+        <div className="px-6 py-3 rounded-2xl bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] text-center min-w-[140px]">
+            <Typography variant="caption" className="text-[10px] text-[color:var(--text-tertiary)] mb-1">{label}</Typography>
+            <Typography weight="black" className="text-2xl text-[color:var(--text-primary)]">{value}</Typography>
         </div>
     )
 }
@@ -249,13 +249,13 @@ function StatBox({ icon, label, value, color }: { icon: React.ReactNode, label: 
         amber: 'text-amber-500 bg-amber-500/10'
     };
     return (
-        <div className="p-6 rounded-3xl bg-white/5 border border-white/5 text-center space-y-3 hover:bg-white/10 transition-colors">
+        <div className="p-6 rounded-3xl bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] text-center space-y-3 hover:bg-[color:var(--surface-hover)] transition-colors">
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mx-auto ${colors[color]}`}>
                 {React.isValidElement(icon) ? React.cloneElement(icon, { className: 'w-6 h-6' } as React.HTMLAttributes<HTMLElement>) : icon}
             </div>
             <div>
-                <Typography variant="caption" className="text-[10px] text-white/50 mb-1 tracking-tight">{label}</Typography>
-                <Typography weight="black" className="text-xl leading-none text-white">{value}</Typography>
+                <Typography variant="caption" className="text-[10px] text-[color:var(--text-tertiary)] mb-1 tracking-tight">{label}</Typography>
+                <Typography weight="black" className="text-xl leading-none text-[color:var(--text-primary)]">{value}</Typography>
             </div>
         </div>
     )
@@ -263,9 +263,9 @@ function StatBox({ icon, label, value, color }: { icon: React.ReactNode, label: 
 
 function DataRow({ label, value }: { label: string, value: string | number }) {
     return (
-        <div className="flex justify-between items-center py-3.5 border-b border-white/5 last:border-0">
-            <Typography className="text-sm text-white/60">{label}</Typography>
-            <Typography weight="black" className="text-white">{value}</Typography>
+        <div className="flex justify-between items-center py-3.5 border-b border-[color:var(--surface-border)] last:border-0">
+            <Typography className="text-sm text-[color:var(--text-secondary)]">{label}</Typography>
+            <Typography weight="black" className="text-[color:var(--text-primary)]">{value}</Typography>
         </div>
     )
 }
@@ -275,10 +275,10 @@ function LinearStat({ label, value, max }: { label: string, value: number, max: 
     return (
         <div className="space-y-2 py-4">
             <div className="flex justify-between items-center">
-                <Typography className="text-sm text-white/60">{label}</Typography>
-                <Typography weight="black" className="text-white">{value.toLocaleString()}</Typography>
+                <Typography className="text-sm text-[color:var(--text-secondary)]">{label}</Typography>
+                <Typography weight="black" className="text-[color:var(--text-primary)]">{value.toLocaleString()}</Typography>
             </div>
-            <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+            <div className="h-2 w-full bg-[color:var(--surface-hover)] rounded-full overflow-hidden border border-[color:var(--surface-border)]">
                 <div className="h-full bg-cyan-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" style={{ width: `${percent}%` }} />
             </div>
         </div>
@@ -287,9 +287,9 @@ function LinearStat({ label, value, max }: { label: string, value: number, max: 
 
 function SmallStat({ label, value }: { label: string, value: string }) {
     return (
-        <div className="p-4 rounded-2xl bg-white/5 border border-white/5 text-center hover:bg-white/10 transition-colors">
-            <Typography variant="caption" className="text-[9px] text-white/40 mb-1.5 uppercase tracking-wider">{label}</Typography>
-            <Typography weight="black" className="text-base text-white">{value}</Typography>
+        <div className="p-4 rounded-2xl bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] text-center hover:bg-[color:var(--surface-hover)] transition-colors">
+            <Typography variant="caption" className="text-[9px] text-[color:var(--text-tertiary)] mb-1.5 uppercase tracking-wider">{label}</Typography>
+            <Typography weight="black" className="text-base text-[color:var(--text-primary)]">{value}</Typography>
         </div>
     )
 }

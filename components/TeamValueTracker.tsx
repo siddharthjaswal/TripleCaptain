@@ -42,7 +42,7 @@ export function TeamValueTracker({
     emerald: "from-cyan-500/20 to-cyan-500/20 border-cyan-500/30 text-cyan-600 dark:text-cyan-400",
     blue: "from-blue-500/20 to-cyan-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400",
     amber: "from-amber-500/20 to-orange-500/20 border-amber-500/30 text-amber-600 dark:text-amber-400",
-    slate: "from-slate-500/20 to-slate-400/20 border-slate-500/30 text-slate-600 dark:text-slate-400",
+    slate: "from-slate-500/20 to-slate-400/20 border-slate-500/30 text-[color:var(--text-secondary)] dark:text-slate-400",
   };
 
   return (

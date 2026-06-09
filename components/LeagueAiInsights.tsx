@@ -16,7 +16,7 @@ export function LeagueAiInsights({ insights }: LeagueAiInsightsProps) {
       {insights.map((insight, index) => (
         <Card 
           key={index} 
-          className="p-5 border-white/5 bg-gradient-to-br from-slate-900/50 to-slate-800/50 backdrop-blur-md animate-fade-in" 
+          className="p-5 border-[color:var(--surface-border)] bg-gradient-to-br from-[color:var(--accent)]/5 to-transparent backdrop-blur-md animate-fade-in" 
           hover={true}
           style={{ animationDelay: `${index * 100}ms` }}
         >
@@ -35,7 +35,7 @@ export function LeagueAiInsights({ insights }: LeagueAiInsightsProps) {
                      </Badge>
                  )}
                </div>
-               <Typography weight="black" className="text-xs text-white leading-relaxed">
+               <Typography weight="black" className="text-xs text-[color:var(--text-primary)] leading-relaxed">
                   &quot;{insight.insight}&quot;
                </Typography>
             </div>

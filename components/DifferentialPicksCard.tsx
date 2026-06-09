@@ -31,9 +31,9 @@ export function DifferentialPicksCard({
 
         <div className="grid gap-8">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="relative overflow-hidden border-white/10 bg-slate-950/40" glass hover={false}>
+            <Card key={i} className="relative overflow-hidden border-[color:var(--surface-border)] bg-[color:var(--surface-hover)]" glass hover={false}>
               <div className="flex flex-col md:flex-row">
-                <div className="flex-1 p-8 flex flex-col md:flex-row items-center gap-8 border-b md:border-b-0 md:border-r border-white/5">
+                <div className="flex-1 p-8 flex flex-col md:flex-row items-center gap-8 border-b md:border-b-0 md:border-r border-[color:var(--surface-border)]">
                   <Skeleton variant="circular" width="96px" height="96px" />
                   <div className="flex-1 text-center md:text-left">
                     <Skeleton variant="text" width="80%" height="28px" className="mb-2" />
@@ -70,7 +70,7 @@ export function DifferentialPicksCard({
   if (differentials.length === 0) {
     return (
       <Card className="p-20 text-center" glass hover={false}>
-        <Typography variant="title" weight="black" className="mb-2 uppercase text-white text-3xl">Hidden Gems Depleted</Typography>
+        <Typography variant="title" weight="black" className="mb-2 uppercase text-[color:var(--text-primary)] text-3xl">Hidden Gems Depleted</Typography>
         <Typography className="text-[color:var(--text-secondary)] text-lg">No affordable differential picks found for your budget.</Typography>
       </Card>
     );
@@ -83,7 +83,7 @@ export function DifferentialPicksCard({
                 <Gem className="h-7 w-7" />
             </div>
             <div>
-                <Typography variant="display" className="text-3xl md:text-5xl text-white">Differentials</Typography>
+                <Typography variant="display" className="text-3xl md:text-5xl text-[color:var(--text-primary)]">Differentials</Typography>
                 <Typography variant="caption" weight="black" className="opacity-40 tracking-[0.3em] text-[10px]">SCOUTING THE HIDDEN TREASURES</Typography>
             </div>
         </div>
@@ -107,16 +107,16 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
   const rankColors = ["bg-yellow-500 text-black", "bg-slate-300 text-black", "bg-orange-600 text-white"];
 
   return (
-    <Card className="relative overflow-hidden border-white/10 bg-slate-950/40" glass hover={false}>
-       <div className="absolute top-0 right-0 bottom-0 w-32 bg-white/5 flex items-center justify-center -z-10 overflow-hidden">
+    <Card className="relative overflow-hidden border-[color:var(--surface-border)] bg-[color:var(--surface-hover)]" glass hover={false}>
+       <div className="absolute top-0 right-0 bottom-0 w-32 bg-[color:var(--surface-hover)] flex items-center justify-center -z-10 overflow-hidden">
             <Gem className="h-40 w-40 opacity-5 rotate-[15deg]" />
        </div>
 
        <div className="flex flex-col md:flex-row">
             {/* Left: Scout Profile */}
-            <div className="flex-1 p-8 flex flex-col md:flex-row items-center gap-8 border-b md:border-b-0 md:border-r border-white/5">
+            <div className="flex-1 p-8 flex flex-col md:flex-row items-center gap-8 border-b md:border-b-0 md:border-r border-[color:var(--surface-border)]">
                 <div className="relative group shrink-0">
-                    <div className="relative w-24 h-24 bg-slate-900 rounded-full overflow-hidden border-4 border-yellow-500/40 group-hover:border-yellow-500 transition-all shadow-2xl">
+                    <div className="relative w-24 h-24 bg-[color:var(--surface-hover)] rounded-full overflow-hidden border-4 border-yellow-500/40 group-hover:border-yellow-500 transition-all shadow-2xl">
                         <Image 
                             src={imgUrl || getTeamShirtUrl(differential.teamCode)!} 
                             alt={differential.playerName} 
@@ -127,12 +127,12 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
                         />
                         <div className="absolute inset-0 bg-yellow-500/5 mix-blend-overlay" />
                     </div>
-                    <div className={`absolute -top-1 -right-1 w-10 h-10 rounded-full flex items-center justify-center font-black text-lg shadow-2xl ${rankColors[rank-1] || 'bg-white/10'}`}>
+                    <div className={`absolute -top-1 -right-1 w-10 h-10 rounded-full flex items-center justify-center font-black text-lg shadow-2xl ${rankColors[rank-1] || 'bg-[color:var(--surface-hover)]'}`}>
                         {rank}
                     </div>
                 </div>
                 <div className="text-center md:text-left">
-                    <Typography weight="black" className="text-3xl uppercase text-white leading-tight mb-2">{differential.playerName}</Typography>
+                    <Typography weight="black" className="text-3xl uppercase text-[color:var(--text-primary)] leading-tight mb-2">{differential.playerName}</Typography>
                     <div className="flex items-center justify-center md:justify-start gap-3">
                         <Typography variant="caption" className="text-xs font-black text-yellow-500/60 uppercase tracking-[0.2em]">{differential.team} • {differential.position} • £{differential.cost.toFixed(1)}m</Typography>
                         {differential.isDoubleGw && (
@@ -142,7 +142,7 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
                              <Badge variant="error" className="text-[8px] font-black">BLANK GW</Badge>
                         )}
                         {!differential.isDoubleGw && differential.reasoning.includes('DOUBLE') && (
-                             <Badge variant="secondary" className="bg-white/5 text-white/40 border-white/10 text-[8px] font-black">UPCOMING DGW</Badge>
+                             <Badge variant="secondary" className="bg-[color:var(--surface-hover)] text-[color:var(--text-tertiary)] border-[color:var(--surface-border)] text-[8px] font-black">UPCOMING DGW</Badge>
                         )}
                     </div>
                 </div>
@@ -153,7 +153,7 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <MetricBox label="OWNERSHIP" value={`${differential.ownership.toFixed(1)}%`} color="text-[color:var(--accent)]" />
                     <MetricBox label="EXPECTED" value={differential.expectedPoints.toFixed(1)} color="text-cyan-400" />
-                    <MetricBox label="FORM" value={differential.form.toFixed(1)} color="text-white" />
+                    <MetricBox label="FORM" value={differential.form.toFixed(1)} color="text-[color:var(--text-primary)]" />
                     <MetricBox label="UPSIDE" value={differential.upsideScore.toFixed(1)} color={differential.isDoubleGw ? "text-cyan-500" : "text-yellow-500"} />
                 </div>
 
@@ -170,7 +170,7 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
                     </div>
                 </div>
 
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/5 relative group overflow-hidden">
+                <div className="p-6 rounded-2xl bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] relative group overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                         <TrendingUp className="w-16 h-16 text-cyan-400" />
                     </div>
@@ -179,7 +179,7 @@ function DifferentialPickItem({ differential, rank }: { differential: Differenti
                         <div className="shrink-0 pt-1">
                             <div className="w-1 h-12 rounded-full bg-cyan-500/30" />
                         </div>
-                        <Typography className="text-sm leading-relaxed text-white/80 italic">
+                        <Typography className="text-sm leading-relaxed text-[color:var(--text-secondary)] italic">
                             &quot;{differential.reasoning}&quot;
                         </Typography>
                     </div>
@@ -201,7 +201,7 @@ function MetricBox({ label, value, color }: { label: string, value: string, colo
 
 function getDiffBorder(diff: number) {
     if (diff <= 2) return "border-cyan-500/30 bg-cyan-500/10 text-cyan-400";
-    if (diff === 3) return "border-white/10 bg-white/5 text-white/60";
+    if (diff === 3) return "border-[color:var(--surface-border)] bg-[color:var(--surface-hover)] text-[color:var(--text-secondary)]";
     if (diff === 4) return "border-amber-500/30 bg-amber-500/10 text-amber-400";
     return "border-red-500/30 bg-red-500/10 text-red-400";
 }

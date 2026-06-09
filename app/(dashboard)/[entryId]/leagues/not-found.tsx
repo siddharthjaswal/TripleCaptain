@@ -3,7 +3,7 @@ import { ErrorBanner } from "@/components/ErrorBanner";
 
 export default function LeaguesNotFound() {
   return (
-    <main className="min-h-dvh bg-slate-950 px-4 pb-16 pt-12 text-slate-100">
+    <main className="min-h-dvh bg-[color:var(--surface-root)] px-4 pb-16 pt-12 text-[color:var(--text-primary)]">
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
         <h1 className="text-3xl font-semibold text-slate-50">
           Entry not found

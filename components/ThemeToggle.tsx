@@ -42,29 +42,14 @@ function applyTheme(theme: ThemeMode) {
 export function ThemeToggle() {
   const [theme, setTheme] = useState<ThemeMode>("dark");
 
+  // On mount (including client-side navigation remounts), adopt the persisted
+  // theme as the source of truth. Previously a second effect blindly applied the
+  // initial "dark" state on every remount, clobbering a stored "light" choice.
   useEffect(() => {
-    if (typeof document === "undefined") {
-      return;
-    }
-    const syncTheme = () => {
-      const current = document.documentElement.dataset.theme;
-      if (current === "light" || current === "dark") {
-        setTheme(current);
-        applyTheme(current);
-        return;
-      }
-      const preferred = getPreferredTheme();
-      setTheme(preferred);
-      applyTheme(preferred);
-    };
-
-    const rafId = window.requestAnimationFrame(syncTheme);
-    return () => window.cancelAnimationFrame(rafId);
+    const preferred = getPreferredTheme();
+    setTheme(preferred);
+    applyTheme(preferred);
   }, []);
-
-  useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
 
   const nextTheme: ThemeMode = theme === "dark" ? "light" : "dark";
 
@@ -73,6 +58,7 @@ export function ThemeToggle() {
       type="button"
       onClick={() => {
         setTheme(nextTheme);
+        applyTheme(nextTheme);
       }}
       aria-label={`Activate ${nextTheme} mode`}
       aria-pressed={theme === "dark"}

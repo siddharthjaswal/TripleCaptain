@@ -122,9 +122,9 @@ export function FixtureDifficultyMatrix({ players, gameweeksAhead = 5 }: Fixture
                         />
                         <div className="absolute top-0.5 right-0.5">
                           {fixture.isHome ? (
-                            <Home className="h-2.5 w-2.5 text-white drop-shadow-md" />
+                            <Home className="h-2.5 w-2.5 text-[color:var(--text-primary)] drop-shadow-md" />
                           ) : (
-                            <Plane className="h-2.5 w-2.5 text-white drop-shadow-md" />
+                            <Plane className="h-2.5 w-2.5 text-[color:var(--text-primary)] drop-shadow-md" />
                           )}
                         </div>
                       </div>
@@ -147,7 +147,7 @@ export function FixtureDifficultyMatrix({ players, gameweeksAhead = 5 }: Fixture
                 {/* Average Difficulty */}
                 <td className="py-3 pl-4">
                   <div className={`rounded-lg px-3 py-1.5 text-center border ${getDifficultyColor(Math.round(player.avgDifficulty))}`}>
-                    <span className="text-sm font-black text-white">
+                    <span className="text-sm font-black text-[color:var(--text-primary)]">
                       {player.avgDifficulty.toFixed(1)}
                     </span>
                   </div>
@@ -183,7 +183,7 @@ export function FixtureDifficultyMatrix({ players, gameweeksAhead = 5 }: Fixture
             <span className="text-xs font-bold">Home</span>
           </div>
           <div className="flex items-center gap-1">
-            <Plane className="h-3 w-3 text-slate-400" />
+            <Plane className="h-3 w-3 text-[color:var(--text-secondary)]" />
             <span className="text-xs font-bold">Away</span>
           </div>
         </div>
