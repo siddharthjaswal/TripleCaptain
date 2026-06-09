@@ -77,12 +77,12 @@ export function LeagueSwitcher({
             disabled={isActive || isPending}
             className={`flex items-center gap-3 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest transition-all duration-300 ${
               isActive
-                ? "bg-[color:var(--accent)] text-[color:var(--accent-contrast)] shadow-lg shadow-[color:var(--accent)]/30 scale-105"
+                ? "bg-[color:var(--accent-light)] text-[color:var(--accent)] border border-[color:var(--accent)]/35"
                 : "bg-white/5 border border-white/5 text-white/50 hover:bg-white/10 hover:text-white"
             }`}
           >
             <span className="truncate max-w-[150px]">{league.name}</span>
-            <div className={`px-1.5 py-0.5 rounded bg-black/20 text-[9px] font-black ${isActive ? 'text-white' : 'text-[color:var(--accent)]'}`}>
+            <div className={`px-1.5 py-0.5 rounded text-[9px] font-black ${isActive ? 'bg-[color:var(--accent)]/15 text-[color:var(--accent)]' : 'bg-black/20 text-[color:var(--accent)]'}`}>
                 {league.entryRank}
             </div>
           </button>

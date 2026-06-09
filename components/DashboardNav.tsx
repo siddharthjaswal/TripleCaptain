@@ -43,7 +43,7 @@ export function DashboardNav({ entryId, active, currentEvent }: DashboardNavProp
                 href={href}
                 className={`tc-focus-visible rounded-full px-5 py-2 text-sm font-bold transition-all duration-300 ${
                   isActive
-                    ? "bg-[color:var(--accent)] text-[color:var(--accent-contrast)] shadow-lg shadow-[color:var(--accent)]/30 scale-105"
+                    ? "bg-[color:var(--accent-light)] text-[color:var(--accent)] border border-[color:var(--accent)]/35"
                     : "border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/90 text-[color:var(--text-secondary)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] hover:bg-[color:var(--surface-root)]"
                 }`}
                 aria-current={isActive ? "page" : undefined}
