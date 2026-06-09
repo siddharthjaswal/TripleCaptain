@@ -19,6 +19,7 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.102.0",
     "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.0.1",
     "@radix-ui/react-slot": "^1.2.4",

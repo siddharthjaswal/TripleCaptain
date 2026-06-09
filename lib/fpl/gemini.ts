@@ -1,41 +1,51 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import "server-only";
+import Anthropic from "@anthropic-ai/sdk";
 
-const MODELS = [
-    'claude-3-5-sonnet', // Note: User requested 4.5, using latest 3.5 Sonnet
-    'gemini-3-pro',
-    'gemini-3-flash',
-    'gpt-oss-120b' // Open source fallback
-];
+/**
+ * AI client for Triple Captain's tactical features (The Gaffer audit, Chief
+ * Scout differentials, league insights). Built on the official Anthropic SDK.
+ *
+ * Set ANTHROPIC_API_KEY in the environment to enable. When it's absent every
+ * AI feature degrades gracefully (callers check `isAIConfigured()`), so the
+ * app never throws on a missing key.
+ *
+ * The function is still named `callGemini` for backwards-compatibility with the
+ * existing call sites; it now talks to Claude, not Gemini.
+ */
 
-let _genAI: GoogleGenerativeAI | null = null;
-const getGemini = () => {
-    if (!_genAI) {
-        _genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-    }
-    return _genAI;
-};
+const MODEL = "claude-opus-4-8";
 
-export async function callGemini(prompt: string) {
-    const genAI = getGemini();
-    let lastError = null;
+let _client: Anthropic | null = null;
 
-    for (const modelName of MODELS) {
-        try {
-            const model = genAI.getGenerativeModel({ model: `models/${modelName}` });
-            const result = await model.generateContent(prompt);
-            return result.response.text();
-        } catch (error: unknown) {
-            lastError = error;
-            const err = error as { status?: number; message?: string };
-            // If it's a 429, try next model
-            if (err.status === 429 || err.message?.includes('429')) {
-                console.warn(`Model ${modelName} hit quota limit, trying next...`);
-                continue;
-            }
-            // If it's another error, also try next model just in case
-            console.warn(`Model ${modelName} failed:`, err.message);
-        }
-    }
+function getClient(): Anthropic {
+  if (!_client) {
+    _client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
+  }
+  return _client;
+}
 
-    throw lastError || new Error("All Gemini models failed");
+export function isAIConfigured(): boolean {
+  return Boolean(process.env.ANTHROPIC_API_KEY);
+}
+
+export async function callGemini(prompt: string): Promise<string> {
+  if (!isAIConfigured()) {
+    throw new Error(
+      "AI is not configured — set ANTHROPIC_API_KEY to enable Triple Captain's AI features.",
+    );
+  }
+
+  const client = getClient();
+
+  const message = await client.messages.create({
+    model: MODEL,
+    max_tokens: 2048,
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  return message.content
+    .filter((block): block is Anthropic.TextBlock => block.type === "text")
+    .map((block) => block.text)
+    .join("\n")
+    .trim();
 }

@@ -37,7 +37,7 @@ import {
   calculateTransferSuggestions,
 } from "./predictions";
 
-import { callGemini } from "./gemini";
+import { callGemini, isAIConfigured } from "./gemini";
 
 export function parseEntryId(value: string | null): number {
   if (!value) {
@@ -151,6 +151,11 @@ async function generateLeagueInsights(
       }
   } catch (err) {
       console.error("Cache read failed:", err);
+  }
+
+  // No AI key configured — skip generation entirely (keeps the page clean).
+  if (!isAIConfigured()) {
+    return [];
   }
 
   // 2. Generate New Insights
