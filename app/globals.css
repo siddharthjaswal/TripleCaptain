@@ -537,6 +537,13 @@ body {
   box-shadow: 0 14px 28px -10px rgba(0, 0, 0, 0.6);
 }
 
+/* Selected (Planner swap target) */
+.tc-pcard--selected {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 0 0 2px var(--accent), 0 16px 30px -10px rgba(0, 0, 0, 0.65);
+}
+
 /* The stage: team-tinted, diagonally striped, with the watermark + photo. */
 .tc-pcard__stage {
   position: relative;

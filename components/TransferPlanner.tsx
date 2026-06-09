@@ -11,7 +11,8 @@ import {
     Sparkles
 } from 'lucide-react';
 import type { LatestGwPlayerDTO } from '@/lib/fpl/dto';
-import { getPlayerPhotoUrl } from '@/lib/fpl/images';
+import { getPlayerPhotoUrl, getTeamShirtUrl } from '@/lib/fpl/images';
+import { getTeamVisual } from '@/lib/fpl/teams';
 import Image from 'next/image';
 
 interface PlannerProps {
@@ -313,37 +314,72 @@ function PlannerRow({ players, label, onSelect, selectedId, bgwDgwMap, nextGw }:
     nextGw: number
 }) {
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
             <Typography variant="caption" weight="black" className="text-center opacity-30 tracking-[0.5em] text-[10px]">{label}</Typography>
-            <div className="flex justify-around items-end w-full px-4">
+            <div className="flex justify-center items-stretch gap-2 sm:gap-3 w-full">
                 {players.map(p => (
-                    <div 
-                        key={p.elementId} 
-                        onClick={() => onSelect(p)}
-                        className={`flex flex-col items-center gap-3 transition-all duration-500 group cursor-pointer ${selectedId === p.elementId ? 'scale-110' : 'hover:-translate-y-2'}`}
-                    >
-                        <div className="relative">
-                            <Image 
-                                src={getPlayerPhotoUrl(p.photo)!} 
-                                alt={p.name} 
-                                width={selectedId === p.elementId ? 80 : 60} 
-                                height={selectedId === p.elementId ? 100 : 75} 
-                                className={`object-contain transition-all filter drop-shadow-xl ${selectedId === p.elementId ? 'brightness-125' : 'group-hover:brightness-110'}`}
-                                unoptimized 
-                            />
-                            {selectedId === p.elementId && (
-                                <div className="absolute inset-0 bg-[color:var(--accent)]/30 blur-2xl -z-10 rounded-full animate-pulse" />
-                            )}
-                        </div>
-                        <div className="flex flex-col items-center gap-1 w-full max-w-[90px]">
-                            <div className={`px-2 py-1 rounded-md backdrop-blur-md border border-white/10 shadow-lg transition-all w-full text-center ${selectedId === p.elementId ? 'bg-[color:var(--accent)]' : 'bg-black/60 group-hover:bg-black/80'}`}>
-                                <p className="text-[10px] font-black text-white uppercase truncate">{p.name}</p>
-                            </div>
-                            {/* Fixture Info */}
-                            <FixtureTimeline teamId={p.teamId!} bgwDgwMap={bgwDgwMap} nextGw={nextGw} />
-                        </div>
-                    </div>
+                    <PlannerCard
+                        key={p.elementId}
+                        p={p}
+                        selected={selectedId === p.elementId}
+                        onSelect={onSelect}
+                        bgwDgwMap={bgwDgwMap}
+                        nextGw={nextGw}
+                    />
                 ))}
+            </div>
+        </div>
+    );
+}
+
+function PlannerCard({ p, selected, onSelect, bgwDgwMap, nextGw }: {
+    p: LatestGwPlayerDTO,
+    selected: boolean,
+    onSelect: (p: LatestGwPlayerDTO) => void,
+    bgwDgwMap: Record<number, Record<number, { count: number; opponents: string[] }>>,
+    nextGw: number,
+}) {
+    const team = getTeamVisual(p.teamCode);
+    const badge = p.isCaptain ? "C" : p.isViceCaptain ? "V" : null;
+    const [imgUrl, setImgUrl] = useState(getPlayerPhotoUrl(p.photo, p.code));
+    const [useShirt, setUseShirt] = useState(false);
+    const [imgError, setImgError] = useState(false);
+    const shirtUrl = getTeamShirtUrl(p.teamCode);
+
+    const onImgError = () => {
+        if (!imgUrl) return;
+        if (imgUrl.includes('250x250')) { setImgUrl(imgUrl.replace('250x250', '110x140')); return; }
+        if (imgUrl.endsWith('.png')) { setImgUrl(imgUrl.replace('.png', '.jpg')); return; }
+        setUseShirt(true); setImgError(true);
+    };
+    const showFallback = (!imgUrl || imgError) && !useShirt;
+
+    return (
+        <div
+            onClick={() => onSelect(p)}
+            className={`tc-pcard ${selected ? 'tc-pcard--selected' : ''}`}
+            style={{ "--team": team.color } as React.CSSProperties}
+        >
+            <div className="tc-pcard__stage">
+                {team.abbr && <span className="tc-pcard__watermark">{team.abbr}</span>}
+                {useShirt && shirtUrl ? (
+                    <Image src={shirtUrl} alt={p.name} width={110} height={140} className="tc-pcard__photo tc-pcard__photo--shirt" unoptimized />
+                ) : !showFallback ? (
+                    <Image src={imgUrl!} alt={p.name} width={110} height={140} className="tc-pcard__photo" unoptimized onError={onImgError} />
+                ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="tc-pcard__silhouette h-14 w-14">
+                        <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+                    </svg>
+                )}
+                {badge && <span className="tc-pcard__badge">{badge}</span>}
+            </div>
+            <div className="tc-pcard__body">
+                <span className="tc-pcard__name">{p.name}</span>
+                <div className="tc-pcard__meta">
+                    <span className="tc-pcard__pos">{p.position}</span>
+                    {team.abbr && <span className="tc-pcard__opp">{team.abbr}</span>}
+                </div>
+                <FixtureTimeline teamId={p.teamId!} bgwDgwMap={bgwDgwMap} nextGw={nextGw} />
             </div>
         </div>
     );
