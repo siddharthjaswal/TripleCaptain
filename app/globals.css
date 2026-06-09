@@ -385,9 +385,9 @@ body {
 
 .tc-pitch-row__players {
   display: flex;
-  justify-content: space-around;
-  align-items: flex-start;
-  gap: 0.4rem;
+  justify-content: center;
+  align-items: stretch;
+  gap: 0.6rem;
 }
 
 /* Player Chips (Compact) */
@@ -510,6 +510,269 @@ body {
 
 .tc-player-chip-vertical__points--negative {
   color: #ff5b96;
+}
+
+/* --- PLAYER CARD (Direction B: team-coloured stage + grounded photo) --- */
+
+.tc-pcard {
+  --team: var(--accent);
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 150px;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tc-pcard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px -10px rgba(0, 0, 0, 0.6);
+}
+
+/* The stage: team-tinted, diagonally striped, with the watermark + photo. */
+.tc-pcard__stage {
+  position: relative;
+  height: 84px;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 9px,
+      rgba(255, 255, 255, 0.035) 9px 10px
+    ),
+    linear-gradient(
+      150deg,
+      color-mix(in srgb, var(--team) 42%, var(--surface-elevated)) 0%,
+      color-mix(in srgb, var(--team) 14%, var(--surface-elevated)) 55%,
+      var(--surface-elevated) 100%
+    );
+  border-bottom: 2px solid var(--team);
+}
+
+/* Faint club short-name watermark behind the photo. */
+.tc-pcard__watermark {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 900;
+  font-size: 1.9rem;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  color: #fff;
+  opacity: 0.08;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Photo grounds into the panel via a soft bottom fade. */
+.tc-pcard__photo {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 82px;
+  width: auto;
+  object-fit: contain;
+  z-index: 1;
+  -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+}
+
+.tc-pcard__photo--shirt {
+  height: 60px;
+  bottom: 8px;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.tc-pcard__silhouette {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  opacity: 0.25;
+  z-index: 1;
+}
+
+/* Corner status badges */
+.tc-pcard__badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 3;
+  display: flex;
+  height: 20px;
+  min-width: 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border-radius: 7px;
+  background: var(--brand-gold);
+  color: #2a0312;
+  font-size: 0.66rem;
+  font-weight: 900;
+  border: 1.5px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.tc-pcard__live {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  height: 11px;
+  width: 11px;
+  border-radius: 50%;
+  background: #04f5ff;
+  border: 2px solid #fff;
+  animation: pulse-live 2s ease-in-out infinite;
+}
+
+.tc-pcard__blanked {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(120, 10, 30, 0.42);
+  backdrop-filter: blur(1px);
+}
+
+.tc-pcard__blanked span {
+  font-size: 0.6rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: #e11d48;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* Body */
+.tc-pcard__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 9px 9px;
+}
+
+.tc-pcard__name {
+  font-weight: 800;
+  font-size: 0.78rem;
+  line-height: 1.1;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tc-pcard__meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.tc-pcard__pos {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.tc-pcard__pos::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--team);
+}
+
+.tc-pcard__opp {
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.tc-pcard__mult {
+  margin-left: auto;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--brand-gold) 22%, transparent);
+  color: var(--brand-gold);
+  font-size: 0.6rem;
+  font-weight: 900;
+}
+
+.tc-pcard__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 2px;
+  padding-top: 6px;
+  border-top: 1px solid var(--surface-border);
+}
+
+.tc-pcard__pts {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #04f5ff;
+}
+
+.tc-pcard__pts--neg {
+  color: #ff5b96;
+}
+
+.tc-pcard__pts-label {
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+@media (max-width: 768px) {
+  .tc-pcard {
+    border-radius: 11px;
+  }
+  .tc-pcard__stage {
+    height: 68px;
+  }
+  .tc-pcard__photo {
+    height: 66px;
+  }
+  .tc-pcard__watermark {
+    font-size: 1.4rem;
+  }
+  .tc-pcard__name {
+    font-size: 0.66rem;
+  }
+  .tc-pcard__pts {
+    font-size: 1.2rem;
+  }
 }
 
 /* Mobile Optimizations */

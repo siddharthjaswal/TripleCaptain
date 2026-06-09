@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { LatestGwDTO, LatestGwPlayerDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
 import { getPlayerPhotoUrl, getTeamShirtUrl } from "@/lib/fpl/images";
+import { getTeamVisual } from "@/lib/fpl/teams";
 import Image from "next/image";
 import { PlayerDetailsModal } from "./PlayerDetailsModal";
 
@@ -170,102 +171,94 @@ function PlayerChip({ player, compact = false, isLiveGameweek, onClick }: Player
 
   const shirtUrl = getTeamShirtUrl(player.teamCode);
   const showFallback = (!imgUrl || imageError) && !useShirtFallback;
-  const isHighImpact = player.impactScore !== null && player.impactScore >= 5;
+  const team = getTeamVisual(player.teamCode);
   const hasPlayedOrPlaying = (player.minutes ?? 0) > 0 || player.isLive;
   const isPoorPerformance = hasPlayedOrPlaying && player.points <= 2;
-  const isDeadwood = isPoorPerformance && player.ownership !== null && player.ownership > 20;
+  const isDeadwood =
+    isPoorPerformance && player.ownership !== null && player.ownership > 20;
 
   return (
     <div
-      className={`tc-player-chip-vertical ${compact ? "tc-player-chip-vertical--compact" : ""} ${onClick ? "cursor-pointer transition hover:scale-105" : ""} ${isHighImpact ? 'tc-player-chip-vertical--halo z-30' : ''}`}
+      className="tc-pcard"
+      style={{ "--team": team.color } as React.CSSProperties}
       aria-label={`${player.name}, ${player.position}, ${player.points} points`}
       onClick={onClick}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
-      onKeyDown={onClick ? (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick();
-        }
-      } : undefined}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
     >
-      <div className="tc-player-chip-vertical__image">
+      <div className="tc-pcard__stage">
+        {team.abbr && <span className="tc-pcard__watermark">{team.abbr}</span>}
         {useShirtFallback && shirtUrl ? (
-             <Image
-                src={shirtUrl}
-                alt="Team Shirt"
-                width={compact ? 44 : 66}
-                height={compact ? 55 : 82}
-                className="object-contain tc-player-shirt-img"
-                unoptimized
-            />
+          <Image
+            src={shirtUrl}
+            alt={player.name}
+            width={110}
+            height={140}
+            className="tc-pcard__photo tc-pcard__photo--shirt"
+            unoptimized
+          />
         ) : !showFallback ? (
           <Image
             src={imgUrl!}
             alt={player.name}
-            width={compact ? 44 : 66}
-            height={compact ? 55 : 82}
-            className="object-contain"
+            width={110}
+            height={140}
+            className="tc-pcard__photo"
             unoptimized
             onError={handleImageError}
           />
         ) : (
-          <div
-            className="flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-700/50 to-slate-800/50 backdrop-blur-sm border border-white/10"
-            style={{ width: compact ? '40px' : '60px', height: compact ? '50px' : '75px' }}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="tc-pcard__silhouette h-14 w-14"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className={`text-slate-400 ${compact ? 'h-6 w-6' : 'h-8 w-8'}`}
-            >
-              <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
-            </svg>
+            <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+          </svg>
+        )}
+        {badge && <span className="tc-pcard__badge">{badge}</span>}
+        {showLiveIndicator && <span className="tc-pcard__live" />}
+        {isDeadwood && (
+          <div className="tc-pcard__blanked">
+            <span>Blanked</span>
           </div>
         )}
-        {badge && (
-          <span className="tc-player-chip-vertical__badge">
-            {badge}
-          </span>
-        )}
-        {showLiveIndicator && (
-          <span className="tc-player-chip-vertical__live">
-            <span className="tc-player-chip-vertical__live-dot" />
-          </span>
-        )}
-        {isDeadwood && (
-            <div className="absolute inset-0 bg-red-900/40 rounded-xl flex items-center justify-center backdrop-blur-[1px] z-20">
-                <span className="text-[10px] font-black text-white bg-red-600 px-1.5 rounded-sm uppercase tracking-tighter shadow-lg">Blanked</span>
-            </div>
-        )}
-        {player.isLive && (
-             <div className="absolute top-0 right-0 p-1 z-30">
-                <span className="flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-                </span>
-             </div>
-        )}
       </div>
-      <div className="tc-player-chip-vertical__info">
-        <p className="tc-player-chip-vertical__name">{player.name}</p>
-        <div className="tc-player-chip-vertical__position">
-            <span>{player.position}</span>
-            {multiplierLabel && <span>{multiplierLabel}</span>}
-            {player.impactScore !== null && player.impactScore > 5 && (
-                <div title="Rank Booster vs the World" className="tc-impact-badge-inline">
-                    +{player.impactScore}
-                </div>
-            )}
+      <div className="tc-pcard__body">
+        <span className="tc-pcard__name">{player.name}</span>
+        <div className="tc-pcard__meta">
+          <span className="tc-pcard__pos">{player.position}</span>
+          {team.abbr && <span className="tc-pcard__opp">{team.abbr}</span>}
+          {multiplierLabel && (
+            <span className="tc-pcard__mult">{multiplierLabel}</span>
+          )}
         </div>
-        <div className={`tc-player-chip-vertical__points ${isPoorPerformance ? 'tc-points-negative' : 'tc-points-positive'}`}>
+        <div className="tc-pcard__foot">
+          <span
+            className={`tc-pcard__pts ${isPoorPerformance ? "tc-pcard__pts--neg" : ""}`}
+          >
             {player.points}
-            {player.projectedBonus !== undefined && player.projectedBonus > 0 && (
-                <span className="ml-1 text-[10px] text-yellow-400 font-bold" title="Projected Bonus">
-                    +{player.projectedBonus}
+            {player.projectedBonus !== undefined &&
+              player.projectedBonus > 0 && (
+                <span className="ml-1 text-[10px] font-bold text-[color:var(--brand-gold)]">
+                  +{player.projectedBonus}
                 </span>
-            )}
+              )}
+          </span>
+          <span className="tc-pcard__pts-label">
+            {compact ? "Pts" : "GW Pts"}
+          </span>
         </div>
       </div>
     </div>
