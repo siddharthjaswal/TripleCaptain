@@ -18,11 +18,13 @@ export default function Home() {
       {/* Hero Section */}
       <div className="flex max-w-4xl flex-col items-center text-center mb-16 animate-fade-in">
         <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-[#2a0a33] to-[#160520] shadow-2xl mb-8 ring-1 ring-[var(--accent)]/30 p-4">
-            <Image 
-                src="/favicon.svg" 
-                alt="Triple Captain Logo" 
-                width={64} 
-                height={64} 
+            {/* Plain img: next/image can fail to render local SVGs without an optimizer loader */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+                src="/favicon.svg"
+                alt="Triple Captain Logo"
+                width={64}
+                height={64}
                 className="drop-shadow-[0_0_8px_rgba(255,183,0,0.5)]"
             />
         </div>

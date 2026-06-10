@@ -33,6 +33,16 @@ export function PlayerDetailsModal({
   const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [useShirtFallback, setUseShirtFallback] = useState(false);
 
+  // Lock background scroll while the modal is open.
+  useEffect(() => {
+    if (!isOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     if (!isOpen || !playerId) return;
 
@@ -208,6 +218,14 @@ export function PlayerDetailsModal({
                 <div className="space-y-10">
                     <section className="space-y-4">
                         <Typography variant="caption" weight="black" className="text-[color:var(--text-secondary)] tracking-widest">Upcoming Fixtures</Typography>
+                        {player.nextFixtures.length === 0 && (
+                            <div className="rounded-2xl border border-dashed border-[color:var(--surface-border)] p-6 text-center">
+                                <Calendar className="mx-auto mb-2 h-6 w-6 opacity-30" />
+                                <Typography variant="caption" className="text-[10px]">
+                                    No upcoming fixtures — the season is complete.
+                                </Typography>
+                            </div>
+                        )}
                         <div className="space-y-3">
                             {player.nextFixtures.map((f, i) => (
                                 <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-[color:var(--surface-hover)] border border-[color:var(--surface-border)] group hover:bg-[color:var(--surface-hover)] transition-colors">

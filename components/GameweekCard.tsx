@@ -6,6 +6,14 @@ import type { LatestGwDTO } from "@/lib/fpl/dto";
 import { formatNumber } from "@/lib/format";
 import { GameweekPitchCard } from "./GameweekPitchCard";
 
+const CHIP_LABELS: Record<string, string> = {
+  wildcard: "Wildcard",
+  bboost: "Bench Boost",
+  "3xc": "Triple Captain",
+  freehit: "Free Hit",
+  manager: "Assistant Manager",
+};
+
 type GameweekCardProps = {
   gameweek: LatestGwDTO;
 };
@@ -92,7 +100,7 @@ export function GameweekCard({ gameweek }: GameweekCardProps) {
             <p>
               Chip played:{" "}
               <span className="font-semibold uppercase tracking-wide text-[var(--accent)]">
-                {gameweek.chipUsed.replace(/_/g, " ")}
+                {CHIP_LABELS[gameweek.chipUsed] ?? gameweek.chipUsed.replace(/_/g, " ")}
               </span>
             </p>
           </div>

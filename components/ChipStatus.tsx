@@ -112,7 +112,7 @@ export function ChipStatus({ usedChips = [], compact = false, isLoading = false 
           Chips Status
         </h3>
         <span className="text-xs font-bold text-[color:var(--accent)]">
-          {4 - usedChips.length}/4 Available
+          {Math.max(0, 4 - new Set(usedChips).size)}/4 Available
         </span>
       </div>
       <div className="grid grid-cols-2 gap-3">

@@ -94,7 +94,7 @@ export default async function GameweekPage({
                   </svg>
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold sm:text-3xl">
+                  <h1 className="font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
                     {view.teamName}
                   </h1>
                   <p className="text-sm tc-text-muted">

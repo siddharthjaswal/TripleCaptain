@@ -71,7 +71,7 @@ export default async function EntryFixturesPage({
                   <Calendar className="h-7 w-7 text-[color:var(--accent-contrast)]" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-black sm:text-3xl tracking-tight">
+                  <h1 className="font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
                     {fixturesView.teamName}
                   </h1>
                   <p className="text-sm tc-text-muted font-medium">

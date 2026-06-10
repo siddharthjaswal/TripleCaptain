@@ -95,33 +95,30 @@ export default async function PredictionsPage({
               </Link>
               <ThemeToggle />
             </div>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <h1 className="font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
+                AI Insight
+              </h1>
+              <DashboardNav entryId={parsedEntryId} active="predictions" />
+            </div>
           </header>
 
-          <div className="tc-card rounded-3xl p-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--surface-elevated)]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="h-8 w-8 tc-text-muted"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-                />
-              </svg>
+          <div className="tc-card tc-card-feature rounded-3xl p-10 text-center">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[color:var(--accent-light)]">
+              <BrainCircuit className="h-8 w-8 text-[color:var(--accent)]" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">Predictions Unavailable</h2>
-            <p className="tc-text-muted max-w-md mx-auto">{errorMessage}</p>
-            <Link
-              href={`/${entryId}`}
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[color:var(--accent)] px-4 py-2 text-sm font-medium text-[color:var(--accent-contrast)] hover:opacity-90 transition"
-            >
-              View Summary
-            </Link>
+            <h2 className="font-display mb-2 text-2xl font-black uppercase tracking-tight">
+              The Scout Returns Pre-Season
+            </h2>
+            <p className="tc-text-muted mx-auto max-w-md">{errorMessage}</p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link href={`/${entryId}`} className="tc-button tc-button-primary">
+                View Summary
+              </Link>
+              <Link href={`/${entryId}/planner`} className="tc-button tc-button-secondary">
+                Open Transfer Planner
+              </Link>
+            </div>
           </div>
         </div>
       </main>

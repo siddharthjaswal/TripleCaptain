@@ -1,10 +1,13 @@
 'use client';
 
+import { use } from 'react';
 import { Card, Button, Typography, Badge } from '@/components/ui';
-import { Check, Zap, Trophy, Star, ShieldCheck } from 'lucide-react';
+import { Check, Zap, Trophy, Star, ShieldCheck, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
-export default function PricingPage({ params }: { params: { entryId: string } }) {
+export default function PricingPage({ params }: { params: Promise<{ entryId: string }> }) {
+    const { entryId } = use(params);
     const plans = [
         {
             name: "The Recruit",
@@ -63,6 +66,18 @@ export default function PricingPage({ params }: { params: { entryId: string } })
             </div>
 
             <div className="mx-auto max-w-6xl space-y-12">
+                {/* Top bar: back to dashboard + theme */}
+                <div className="flex items-center justify-between">
+                    <Link
+                        href={`/${entryId}`}
+                        className="tc-focus-visible inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition hover:bg-[color:var(--surface-hover)] tc-text-muted hover:text-[color:var(--text-primary)]"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Back to Dashboard
+                    </Link>
+                    <ThemeToggle />
+                </div>
+
                 <div className="text-center space-y-4 max-w-2xl mx-auto">
                     <Badge variant="primary" className="px-4 py-1 animate-glow">
                         <Star className="mr-2 h-3 w-3 fill-current" />
@@ -122,7 +137,7 @@ export default function PricingPage({ params }: { params: { entryId: string } })
                                 {plan.current ? (
                                     <span>{plan.cta}</span>
                                 ) : (
-                                    <Link href={`/${params.entryId}`}>{plan.cta}</Link>
+                                    <Link href={`/${entryId}`}>{plan.cta}</Link>
                                 )}
                             </Button>
                         </Card>
