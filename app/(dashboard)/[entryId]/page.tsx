@@ -14,6 +14,7 @@ import { ProfileCard } from "@/components/cards/ProfileCard";
 import { TeamAuditor } from "@/components/TeamAuditor";
 import { AccountStatus } from "@/components/AccountStatus";
 import { UserMenu } from "@/components/UserMenu";
+import { LinkEntryButton } from "@/components/LinkEntryButton";
 
 type EntryPageParams = {
   entryId: string;
@@ -85,9 +86,12 @@ export default async function EntryPage({
                 <h1 className="font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
                   {summary.profile.teamName}
                 </h1>
-                <p className="text-sm font-bold tc-text-muted">
-                  {summary.profile.managerName}
-                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-sm font-bold tc-text-muted">
+                    {summary.profile.managerName}
+                  </p>
+                  <LinkEntryButton entryId={summary.profile.entryId} />
+                </div>
               </div>
             </div>
             <DashboardNav

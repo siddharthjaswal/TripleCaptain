@@ -3,6 +3,7 @@ import { EntryIdForm } from "@/components/EntryIdForm";
 import { RecentEntryCard } from "@/components/RecentEntryCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserMenu } from "@/components/UserMenu";
+import { MyTeamShortcut } from "@/components/MyTeamShortcut";
 import { AutoRedirect } from "@/components/AutoRedirect";
 import { Card, Typography, Badge } from "@/components/ui";
 import { LayoutDashboard, Sparkles, Trophy, Calendar } from "lucide-react";
@@ -47,7 +48,8 @@ export default function Home() {
         </Typography>
 
         {/* Main CTA */}
-        <div className="w-full max-w-md flex flex-col items-center gap-8">
+        <div className="w-full max-w-md flex flex-col items-center gap-6">
+            <MyTeamShortcut />
             <EntryIdForm />
             <RecentEntryCard />
         </div>
