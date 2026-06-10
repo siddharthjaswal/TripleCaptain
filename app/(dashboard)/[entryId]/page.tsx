@@ -13,6 +13,7 @@ import { loadEntrySummary, parseEntryId } from "@/lib/fpl/service";
 import { ProfileCard } from "@/components/cards/ProfileCard";
 import { TeamAuditor } from "@/components/TeamAuditor";
 import { AccountStatus } from "@/components/AccountStatus";
+import { UserMenu } from "@/components/UserMenu";
 
 type EntryPageParams = {
   entryId: string;
@@ -62,8 +63,9 @@ export default async function EntryPage({
         <header className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <LogoutButton />
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 sm:gap-4">
               <AccountStatus entryId={entryId} />
+              <UserMenu />
               <ThemeToggle />
             </div>
           </div>

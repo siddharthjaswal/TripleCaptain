@@ -1,5 +1,6 @@
 import { prisma } from '../prisma';
-import { callGemini } from './gemini';
+import { callGemini, isAIConfigured } from './gemini';
+import { rankPlayers, type PlayerVerdict } from './brain';
 
 interface Pick {
     name: string;
@@ -8,90 +9,81 @@ interface Pick {
     ownership: number;
 }
 
-export async function scoutDifferentials() {
-    console.log('Scouting for differentials...');
-    
-    // 1. Get current GW
-    const currentGw = await prisma.gameweek.findFirst({
-        where: { isCurrent: true }
-    });
-    if (!currentGw) throw new Error("No current gameweek found");
+/**
+ * Chief Scout differentials. The Brain (deterministic engine + elite-manager
+ * learnings) ranks the candidates; Claude only writes the scouting blurbs.
+ * Works fully without AI — falls back to the engine's own reasoning.
+ */
+export async function scoutDifferentials(): Promise<Pick[]> {
+    const currentGw = await prisma.gameweek.findFirst({ where: { isCurrent: true } });
+    if (!currentGw) throw new Error('No current gameweek found');
 
-    // 2. Find high potential, low ownership players
-    const candidates = await prisma.player.findMany({
-        where: {
-            selectedByPercent: { lt: 10 },
-            epNext: { gt: 3.5 },
-            minutes: { gt: 400 } // Must be a semi-regular starter
-        },
-        include: { team: true },
-        orderBy: { epNext: 'desc' },
-        take: 10
-    });
-
+    // 1. The Brain ranks low-ownership players (elite conviction, form,
+    //    xP, nailedness, value) — no AI involved.
+    const candidates = await rankPlayers({ maxOwnership: 12, limit: 10, gameweek: currentGw.id });
     if (candidates.length === 0) return [];
 
-    // 3. Get fixtures for these players
-    const teamIds = candidates.map((c: { teamId: number }) => c.teamId);
-    const fixtures = await prisma.fixture.findMany({
-        where: {
-            gameweekId: { gte: currentGw.id + 1, lte: currentGw.id + 3 },
-            OR: [
-                { homeTeamId: { in: teamIds } },
-                { awayTeamId: { in: teamIds } }
-            ]
-        },
-        include: { homeTeam: true, awayTeam: true }
-    });
-
-    // 4. Send to AI for reasoning
-    const scoutData = candidates.map((c) => ({
-        name: c.webName,
-        team: c.team.name,
-        ownership: c.selectedByPercent,
+    const enginePicks: Pick[] = candidates.slice(0, 3).map((c) => ({
+        name: c.name,
+        reasoning: c.reasons.join('; ') || `Engine score ${c.score}/100`,
         epNext: c.epNext,
-        fixtures: fixtures
-            .filter((f) => f.homeTeamId === c.teamId || f.awayTeamId === c.teamId)
-            .map((f) => {
-                const isHome = f.homeTeamId === c.teamId;
-                const opponent = isHome ? f.awayTeam.shortName : f.homeTeam.shortName;
-                return `${opponent}(${isHome ? 'H' : 'A'})`;
-            })
+        ownership: c.ownership,
     }));
 
-    const prompt = `You are "The Chief Scout", an expert talent spotter for Premier League clubs.
-Analyze these 10 potential differential players (<10% ownership) for the upcoming gameweeks.
-Data: ${JSON.stringify(scoutData)}
+    let picks: Pick[] = enginePicks;
 
-Provide a list of the top 3 differential picks.
-For each pick, provide:
-- name
-- reasoning: why they are a "hidden gem" or "shrewd signing" right now (use professional scouting terminology).
+    // 2. If AI is available, let it pick the top 3 and write sharper blurbs —
+    //    grounded in the engine's data, not its own guesswork.
+    if (isAIConfigured()) {
+        try {
+            const scoutData = candidates.map((c: PlayerVerdict) => ({
+                name: c.name,
+                team: c.team,
+                position: c.position,
+                price: c.price,
+                ownership: c.ownership,
+                epNext: c.epNext,
+                form: c.form,
+                engineScore: c.score,
+                eliteOwnershipPct: c.elitePct,
+                eliteVsCrowdEdge: c.eliteEdge,
+                engineNotes: c.reasons,
+            }));
 
-Format: JSON array of {name, reasoning, epNext, ownership}.
-Return ONLY the JSON.`;
+            const prompt = `You are "The Chief Scout", an expert talent spotter for Premier League clubs.
+Our scouting engine (which studies the squads of the world's top 50 FPL managers) has ranked these differential candidates (<12% ownership):
+${JSON.stringify(scoutData)}
 
-    const responseText = await callGemini(prompt);
-    
-    const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) return [];
-    const picks = JSON.parse(jsonMatch[0]) as Pick[];
+"eliteOwnershipPct" = how many of the world's top 50 managers own them. "eliteVsCrowdEdge" = elite ownership minus public ownership (a big positive number means the best managers are on him before the crowd).
 
-    if (picks.length > 0) {
-        // Save to DB
-        for (const pick of picks) {
-            const player = candidates.find((c) => c.webName === pick.name);
-            if (player) {
-                await prisma.differentialPick.create({
-                    data: {
-                        playerId: player.id,
-                        gameweek: currentGw.id,
-                        reasoning: pick.reasoning,
-                        expectedPoints: pick.epNext,
-                        ownership: pick.ownership
-                    }
-                });
+Pick the top 3 differentials. For each, write "reasoning": 1-2 sentences of professional scouting insight grounded ONLY in the data above (cite the elite numbers when notable).
+
+Format: JSON array of {name, reasoning, epNext, ownership}. Return ONLY the JSON.`;
+
+            const responseText = await callGemini(prompt);
+            const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+            if (jsonMatch) {
+                const aiPicks = JSON.parse(jsonMatch[0]) as Pick[];
+                if (Array.isArray(aiPicks) && aiPicks.length > 0) picks = aiPicks;
             }
+        } catch (err) {
+            console.error('Scout AI narration failed, using engine picks:', err);
+        }
+    }
+
+    // 3. Persist
+    for (const pick of picks) {
+        const player = candidates.find((c) => c.name === pick.name);
+        if (player) {
+            await prisma.differentialPick.create({
+                data: {
+                    playerId: player.id,
+                    gameweek: currentGw.id,
+                    reasoning: pick.reasoning,
+                    expectedPoints: pick.epNext,
+                    ownership: pick.ownership,
+                },
+            });
         }
     }
 

@@ -11,12 +11,12 @@ export async function GET(req: NextRequest) {
 
     try {
         const id = parseInt(entryId);
-        let account = await prisma.account.findUnique({
+        let account = await prisma.fplAccount.findUnique({
             where: { entryId: id }
         });
 
         if (!account) {
-            account = await prisma.account.create({
+            account = await prisma.fplAccount.create({
                 data: { entryId: id, credits: 5 }
             });
         }

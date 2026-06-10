@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
     try {
         const { entryId, credits } = await req.json();
         
-        const account = await prisma.account.update({
+        const account = await prisma.fplAccount.update({
             where: { entryId: parseInt(entryId) },
             data: { 
                 credits: { increment: credits || 0 },

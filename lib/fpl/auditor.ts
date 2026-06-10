@@ -1,101 +1,177 @@
 import { prisma } from '../prisma';
-import { callGemini } from './gemini';
+import { callGemini, isAIConfigured } from './gemini';
 import { getEntryPicks } from './client';
+import { analyzeSquadVsElite, scorePlayer, getEliteSnapshot } from './brain';
 
-interface Pick {
+interface RawPick {
     element: number;
+    is_captain?: boolean;
 }
 
 interface PicksData {
-    picks: Pick[];
+    picks: RawPick[];
 }
 
-export async function auditTeam(entryId: number) {
-    console.log(`Auditing team for entry ${entryId}...`);
-    
-    // 1. Get current GW
-    const currentGw = await prisma.gameweek.findFirst({
-        where: { isCurrent: true }
-    });
-    
-    if (!currentGw) throw new Error("No current gameweek found");
+export interface AuditResult {
+    healthScore: number;
+    critique: string;
+    recommendations: string[];
+}
+
+/**
+ * The Gaffer's team audit. The Brain supplies deterministic facts — engine
+ * scores per player, elite-template alignment, captaincy data — and Claude
+ * turns them into the Gaffer's verdict. Without AI the audit still works,
+ * built entirely from the engine's own analysis.
+ */
+export async function auditTeam(entryId: number): Promise<AuditResult> {
+    const currentGw = await prisma.gameweek.findFirst({ where: { isCurrent: true } });
+    if (!currentGw) throw new Error('No current gameweek found');
     const nextGwId = currentGw.id + 1;
 
-    // 2. Get user picks
-    const picksData = await getEntryPicks(entryId, currentGw.id) as PicksData;
-    const playerIds = picksData.picks.map((p: { element: number }) => p.element);
+    // 1. User squad
+    const picksData = (await getEntryPicks(entryId, currentGw.id)) as PicksData;
+    const playerIds = picksData.picks.map((p) => p.element);
+    const captainId = picksData.picks.find((p) => p.is_captain)?.element ?? null;
 
-    // 3. Fetch player details from DB
     const players = await prisma.player.findMany({
         where: { id: { in: playerIds } },
-        include: { team: true }
+        include: { team: true },
     });
 
-    // 4. Get upcoming fixtures for these teams
-    const teamIds = players.map((p: { teamId: number }) => p.teamId);
+    // 2. Upcoming fixtures for their clubs (empty in off-season — handled)
+    const teamIds = players.map((p) => p.teamId);
     const upcomingFixtures = await prisma.fixture.findMany({
         where: {
             gameweekId: { gte: nextGwId, lte: nextGwId + 3 },
-            OR: [
-                { homeTeamId: { in: teamIds } },
-                { awayTeamId: { in: teamIds } }
-            ]
+            OR: [{ homeTeamId: { in: teamIds } }, { awayTeamId: { in: teamIds } }],
         },
-        include: {
-            homeTeam: true,
-            awayTeam: true
-        }
+        include: { homeTeam: true, awayTeam: true },
     });
 
-    // 5. Prepare prompt for AI
-    const teamData = players.map((p) => ({
+    // 3. Brain facts: elite comparison + engine scores
+    const elite = await analyzeSquadVsElite(playerIds, captainId, currentGw.id);
+    const snapshot = elite.snapshot ?? (await getEliteSnapshot(currentGw.id));
+    const eliteById = new Map((snapshot?.players ?? []).map((p) => [p.id, p]));
+
+    const scored = players.map((p) => {
+        const fixtures = upcomingFixtures.filter(
+            (f) => f.homeTeamId === p.teamId || f.awayTeamId === p.teamId,
+        );
+        const ease =
+            fixtures.length > 0
+                ? 1 -
+                  fixtures.reduce((sum, f) => {
+                      const isHome = f.homeTeamId === p.teamId;
+                      return sum + ((isHome ? f.difficultyH : f.difficultyA) ?? 3);
+                  }, 0) /
+                      (fixtures.length * 5)
+                : null;
+        const { score, reasons } = scorePlayer(p, eliteById.get(p.id), ease);
+        return { p, fixtures, score, reasons };
+    });
+
+    const teamData = scored.map(({ p, fixtures, score, reasons }) => ({
         name: p.webName,
         position: p.elementType === 1 ? 'GK' : p.elementType === 2 ? 'DEF' : p.elementType === 3 ? 'MID' : 'FWD',
         team: p.team.name,
+        price: p.nowCost / 10,
         form: p.form,
         epNext: p.epNext,
-        cost: p.nowCost / 10,
         ownership: p.selectedByPercent,
-        fixtures: upcomingFixtures
-            .filter((f) => f.homeTeamId === p.teamId || f.awayTeamId === p.teamId)
-            .map((f) => {
-                const isHome = f.homeTeamId === p.teamId;
-                const opponent = isHome ? f.awayTeam.shortName : f.homeTeam.shortName;
-                const difficulty = isHome ? f.difficultyH : f.difficultyA;
-                return `${opponent}(${isHome ? 'H' : 'A'})-Diff:${difficulty}`;
-            })
+        eliteOwnershipPct: eliteById.get(p.id)?.elitePct ?? 0,
+        engineScore: score,
+        engineNotes: reasons,
+        fixtures: fixtures.map((f) => {
+            const isHome = f.homeTeamId === p.teamId;
+            const opponent = isHome ? f.awayTeam.shortName : f.homeTeam.shortName;
+            const difficulty = isHome ? f.difficultyH : f.difficultyA;
+            return `${opponent}(${isHome ? 'H' : 'A'})-Diff:${difficulty}`;
+        }),
     }));
 
-    const prompt = `You are "The Gaffer", a legendary English football manager and FPL tactical expert. 
-Audit the following FPL team for the next 3 gameweeks.
-Team Data: ${JSON.stringify(teamData)}
+    let auditResult: AuditResult;
 
-Provide your audit in JSON format with:
-- healthScore: (0-100)
-- critique: A few paragraphs in a blunt, professional, yet slightly cheeky English manager tone. Focus on tactical weaknesses, fixture traps, and standout assets. Use footballing terms like "squeaky bum time", "park the bus", "clinical", etc.
-- recommendations: Array of specific transfer or strategy tips.
+    if (isAIConfigured()) {
+        const prompt = `You are "The Gaffer", a legendary English football manager and FPL tactical expert.
+Audit this FPL squad. Our scouting engine has already done the maths — ground EVERY claim in the data below; do not invent stats.
+
+SQUAD (with engine scores 0-100 and notes): ${JSON.stringify(teamData)}
+
+ELITE INTELLIGENCE (from the squads of the world's top ${snapshot?.sample ?? 50} FPL managers):
+- Template alignment: this squad owns ${elite.templateAlignmentPct}% of the elite template (players >50% elite ownership).
+- Elite-template players they're MISSING: ${JSON.stringify(elite.missingTemplate)}
+- Most-captained by elites: ${JSON.stringify(elite.eliteCaptain)} — this user's captain has ${elite.userCaptainEliteCapPct}% elite captaincy.
+- Elite formations in use: ${JSON.stringify(snapshot?.formations ?? {})}, avg bank £${snapshot?.avgBank ?? '?'}m, avg team value £${snapshot?.avgTeamValue ?? '?'}m.
+
+Provide your audit as JSON:
+- healthScore: 0-100 (anchor it to the engine scores + template alignment)
+- critique: a few paragraphs in a blunt, professional, slightly cheeky English manager tone. Use footballing terms ("squeaky bum time", "park the bus", "clinical"). Reference the elite intelligence explicitly.
+- recommendations: array of 3-5 specific, actionable transfer/strategy tips (name names from the missing-template list when sensible).
 
 Return ONLY the JSON.`;
 
-    const responseText = await callGemini(prompt);
-    
-    // Clean JSON response
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Invalid AI response");
-    const auditResult = JSON.parse(jsonMatch[0]);
-
-    if (auditResult) {
-        // Save to DB
-        await prisma.teamAudit.create({
-            data: {
-                entryId,
-                gameweek: currentGw.id,
-                healthScore: auditResult.healthScore,
-                critique: auditResult.critique,
-                suggestions: auditResult.recommendations
-            }
-        });
+        const responseText = await callGemini(prompt);
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('Invalid AI response');
+        auditResult = JSON.parse(jsonMatch[0]) as AuditResult;
+    } else {
+        // Engine-only audit — no AI required.
+        auditResult = buildEngineAudit(scored.map((s) => ({ name: s.p.webName, score: s.score })), elite);
     }
 
+    await prisma.teamAudit.create({
+        data: {
+            entryId,
+            gameweek: currentGw.id,
+            healthScore: auditResult.healthScore,
+            critique: auditResult.critique,
+            suggestions: auditResult.recommendations as object,
+        },
+    });
+
     return auditResult;
+}
+
+function buildEngineAudit(
+    scored: Array<{ name: string; score: number }>,
+    elite: Awaited<ReturnType<typeof analyzeSquadVsElite>>,
+): AuditResult {
+    const avg = scored.length
+        ? scored.reduce((s, x) => s + x.score, 0) / scored.length
+        : 0;
+    const healthScore = Math.round(0.7 * avg + 0.3 * elite.templateAlignmentPct);
+
+    const weakest = [...scored].sort((a, b) => a.score - b.score).slice(0, 3);
+    const strongest = [...scored].sort((a, b) => b.score - a.score).slice(0, 3);
+
+    const critiqueParts = [
+        `The engine rates this squad ${Math.round(avg)}/100 on average, with ${strongest.map((s) => s.name).join(', ')} carrying the side.`,
+    ];
+    if (elite.snapshot) {
+        critiqueParts.push(
+            `Against the world's top ${elite.snapshot.sample} managers, you hold ${elite.templateAlignmentPct}% of the elite template${
+                elite.missingTemplate.length
+                    ? ` — the big names you're missing: ${elite.missingTemplate.map((m) => `${m.name} (${m.elitePct}% elite-owned)`).join(', ')}.`
+                    : '.'
+            }`,
+        );
+        if (elite.eliteCaptain) {
+            critiqueParts.push(
+                `The elite captaincy pick is ${elite.eliteCaptain.name} (${elite.eliteCaptain.captainPct}% of top managers); your captain carries ${elite.userCaptainEliteCapPct}% elite backing.`,
+            );
+        }
+    }
+    critiqueParts.push(
+        `Weakest links by the numbers: ${weakest.map((w) => `${w.name} (${w.score})`).join(', ')}.`,
+    );
+
+    const recommendations = [
+        ...elite.missingTemplate
+            .slice(0, 3)
+            .map((m) => `Consider ${m.name} — owned by ${m.elitePct}% of the world's best${m.captainPct >= 20 ? ` and captained by ${m.captainPct}%` : ''}.`),
+        ...(weakest[0] ? [`Move on ${weakest[0].name} — the engine's lowest score in your squad.`] : []),
+    ];
+
+    return { healthScore, critique: critiqueParts.join('\n\n'), recommendations };
 }

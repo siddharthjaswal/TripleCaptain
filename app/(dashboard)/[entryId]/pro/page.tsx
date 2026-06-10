@@ -1,13 +1,26 @@
 'use client';
 
-import { use } from 'react';
+import { use, useEffect, useState } from 'react';
 import { Card, Button, Typography, Badge } from '@/components/ui';
-import { Check, Zap, Trophy, Star, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { Check, Zap, Trophy, Star, ShieldCheck, ArrowLeft, Crown } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
+type Me = {
+    authConfigured: boolean;
+    user: { name: string; image: string | null; isPro: boolean; credits: number } | null;
+};
+
 export default function PricingPage({ params }: { params: Promise<{ entryId: string }> }) {
     const { entryId } = use(params);
+    const [me, setMe] = useState<Me | null>(null);
+
+    useEffect(() => {
+        fetch('/api/me')
+            .then((r) => r.json())
+            .then(setMe)
+            .catch(() => setMe(null));
+    }, []);
     const plans = [
         {
             name: "The Recruit",
@@ -78,6 +91,15 @@ export default function PricingPage({ params }: { params: Promise<{ entryId: str
                     <ThemeToggle />
                 </div>
 
+                {me?.user && (
+                    <div className="mx-auto flex max-w-xl items-center justify-center gap-3 rounded-2xl border border-[color:var(--accent)]/25 bg-[color:var(--accent-light)] px-5 py-3 text-sm font-bold">
+                        <Crown className="h-4 w-4 text-[color:var(--accent)]" />
+                        {me.user.isPro
+                            ? `You're Pro, ${me.user.name?.split(' ')[0]} — the Locker Room is open.`
+                            : `Signed in as ${me.user.name} — secure checkout launches shortly. Your account is ready to upgrade.`}
+                    </div>
+                )}
+
                 <div className="text-center space-y-4 max-w-2xl mx-auto">
                     <Badge variant="primary" className="px-4 py-1 animate-glow">
                         <Star className="mr-2 h-3 w-3 fill-current" />
@@ -136,6 +158,10 @@ export default function PricingPage({ params }: { params: Promise<{ entryId: str
                             >
                                 {plan.current ? (
                                     <span>{plan.cta}</span>
+                                ) : me?.authConfigured && !me.user ? (
+                                    <a href={`/api/auth/signin?callbackUrl=/${entryId}/pro`}>
+                                        Sign in to {plan.cta}
+                                    </a>
                                 ) : (
                                     <Link href={`/${entryId}`}>{plan.cta}</Link>
                                 )}

@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { callGemini } from '@/lib/fpl/gemini';
 import { auditTeam } from '@/lib/fpl/auditor';
 import { prisma } from '@/lib/prisma';
+import { auth, isAuthConfigured } from '@/auth';
+
+/** Logged-in Pro users (with this FPL entry linked) bypass entry credits. */
+async function isProUser(entryId: number): Promise<boolean> {
+    if (!isAuthConfigured()) return false;
+    try {
+        const session = await auth();
+        if (!session?.user) return false;
+        const u = session.user as { isPro?: boolean; entryId?: number | null };
+        return Boolean(u.isPro && (u.entryId === null || u.entryId === entryId));
+    } catch {
+        return false;
+    }
+}
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -13,18 +27,19 @@ export async function GET(req: NextRequest) {
 
     try {
         const id = parseInt(entryId);
-        
-        // Check credits
-        const account = await prisma.account.findUnique({ where: { entryId: id } });
-        if (account && !account.isPro && account.credits <= 0) {
+        const proUser = await isProUser(id);
+
+        // Check credits (skipped entirely for logged-in Pro users)
+        const account = await prisma.fplAccount.findUnique({ where: { entryId: id } });
+        if (!proUser && account && !account.isPro && account.credits <= 0) {
             return NextResponse.json({ error: 'Out of credits', needsUpgrade: true }, { status: 402 });
         }
 
         const audit = await auditTeam(id);
 
         // Deduct credit if not pro
-        if (account && !account.isPro) {
-            await prisma.account.update({
+        if (!proUser && account && !account.isPro) {
+            await prisma.fplAccount.update({
                 where: { entryId: id },
                 data: { credits: { decrement: 1 } }
             });
@@ -44,7 +59,7 @@ export async function POST(req: NextRequest) {
 
         // Check credits if entryId is provided
         if (entryId) {
-            const account = await prisma.account.findUnique({ where: { entryId: parseInt(entryId) } });
+            const account = await prisma.fplAccount.findUnique({ where: { entryId: parseInt(entryId) } });
             if (account && !account.isPro && account.credits <= 0) {
                 return NextResponse.json({ error: 'Out of credits', needsUpgrade: true }, { status: 402 });
             }
@@ -68,9 +83,9 @@ Return ONLY the verdict text.`;
 
         // Deduct credit
         if (entryId) {
-            const account = await prisma.account.findUnique({ where: { entryId: parseInt(entryId) } });
+            const account = await prisma.fplAccount.findUnique({ where: { entryId: parseInt(entryId) } });
             if (account && !account.isPro) {
-                await prisma.account.update({
+                await prisma.fplAccount.update({
                     where: { entryId: parseInt(entryId) },
                     data: { credits: { decrement: 1 } }
                 });

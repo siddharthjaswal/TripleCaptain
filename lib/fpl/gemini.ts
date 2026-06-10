@@ -13,7 +13,9 @@ import Anthropic from "@anthropic-ai/sdk";
  * existing call sites; it now talks to Claude, not Gemini.
  */
 
-const MODEL = "claude-opus-4-8";
+// Haiku keeps per-call cost ~half a US cent; override with AI_MODEL env var
+// (e.g. claude-sonnet-4-6) if you ever want a smarter narrator.
+const MODEL = process.env.AI_MODEL ?? "claude-haiku-4-5";
 
 let _client: Anthropic | null = null;
 
