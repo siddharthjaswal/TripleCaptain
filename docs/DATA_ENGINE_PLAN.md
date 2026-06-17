@@ -143,12 +143,12 @@ Cron: `0 4 * * *` → `pnpm precompute`. In-season add a deadline-day run.
 
 ## 7. Build phases
 
-- **P1 — Data foundation** *(in progress)*: historical models + ingestion (vaastav + FPL history).
-- **P2 — Match predictor**: Elo + Poisson, validated. Surface on Fixtures (team-vs-team).
-- **P3 — Custom xP + FDR**: replace FPL's; power scoring/captaincy/transfers.
-- **P4 — Transfer optimizer + chip strategy**.
-- **P5 — Narrator**: templated Gaffer/Scout; drop AI dependency entirely.
-- **P6 — Precompute cron + accuracy backtesting + polish**.
+- **P1 — Data foundation** *(done)*: historical models + ingestion (vaastav + FPL history).
+- **P2 — Match predictor** *(done)*: Elo + Poisson, validated 49.7% acc. On Fixtures (forecast strip) + /rankings predictor.
+- **P3 — Custom xP + FDR** *(done)*: `lib/data/xp.ts` + `fdr.ts`. Powers PowerPicks + SquadLab.
+- **P4 — Transfer optimizer + chip strategy** *(done)*: `lib/data/optimizer.ts` + `chips.ts`. Surfaced via SquadLab on the planner.
+- **P5 — Narrator** *(done)*: `lib/narrate.ts` templated Gaffer/Scout; wired as the zero-AI fallback in auditor/scout/league-insights.
+- **P6 — Precompute cron + accuracy backtesting + polish** *(scripts done)*: `scripts/precompute.ts` (`pnpm precompute`). Server cron still to be scheduled.
 
 Each phase ships behind the push-to-deploy CI and degrades gracefully if a data
 table is empty (off-season safe).
