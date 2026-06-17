@@ -10,10 +10,14 @@ export const metadata: Metadata = {
   description: "Deterministic Premier League team ratings and match forecasts from 7 seasons of data.",
 };
 
-export const revalidate = 3600;
+// Rendered at request time (reads the DB); ratings are memoized + the query is
+// a single indexed read, so this stays fast without build-time prerender.
+export const dynamic = "force-dynamic";
 
 export default async function RankingsPage() {
-  const ratings = await prisma.teamRating.findMany({ orderBy: { elo: "desc" } });
+  const ratings = await prisma.teamRating
+    .findMany({ orderBy: { elo: "desc" } })
+    .catch(() => []);
   const teams = ratings.map((r) => ({ teamCode: r.teamCode, name: r.name, shortName: r.shortName }));
   const maxElo = ratings[0]?.elo ?? 1800;
   const minElo = ratings[ratings.length - 1]?.elo ?? 1300;

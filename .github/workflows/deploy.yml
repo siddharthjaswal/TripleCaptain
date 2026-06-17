@@ -35,6 +35,8 @@ jobs:
             git reset --hard origin/main
             echo "→ Installing dependencies"
             corepack pnpm install --frozen-lockfile
+            echo "→ Applying schema changes"
+            corepack pnpm prisma db push --skip-generate --accept-data-loss
             echo "→ Building"
             corepack pnpm build
             echo "→ Restarting app"
