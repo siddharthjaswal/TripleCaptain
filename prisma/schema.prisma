@@ -182,3 +182,71 @@ model EliteSnapshot {
   data      Json
   createdAt DateTime @default(now())
 }
+
+// ---------- Historical data + offline engine ----------
+
+model HistoricalMatch {
+  id        String   @id @default(cuid())
+  season    String   // e.g. "2023-24"
+  event     Int      // gameweek
+  homeCode  Int      // stable team code
+  awayCode  Int
+  homeGoals Int
+  awayGoals Int
+  kickoff   DateTime?
+  createdAt DateTime @default(now())
+
+  @@unique([season, homeCode, awayCode])
+  @@index([season])
+  @@index([homeCode])
+  @@index([awayCode])
+}
+
+model TeamRating {
+  teamCode        Int      @id
+  name            String
+  shortName       String
+  elo             Float    @default(1500)
+  attackStrength  Float    @default(1) // goals scored vs league avg
+  defenceStrength Float    @default(1) // goals conceded vs league avg (lower = better)
+  homeAdvantage   Float    @default(0.30)
+  matchesRated    Int      @default(0)
+  updatedAt       DateTime @updatedAt
+}
+
+model MatchPrediction {
+  id         String   @id @default(cuid())
+  season     String
+  event      Int
+  homeCode   Int
+  awayCode   Int
+  pHome      Float
+  pDraw      Float
+  pAway      Float
+  xHome      Float    // expected goals home
+  xAway      Float
+  bttsPct    Float
+  homeCsPct  Float    // home clean sheet probability
+  awayCsPct  Float
+  topScores  Json     // [{score:"2-1", pct:9.4}, ...]
+  updatedAt  DateTime @updatedAt
+
+  @@unique([season, homeCode, awayCode])
+  @@index([season, event])
+}
+
+model PlayerProjection {
+  id        String   @id @default(cuid())
+  playerId  Int      // current-season element id
+  event     Int
+  xPoints   Float
+  capScore  Float
+  ceiling   Float
+  floor     Float
+  archetype String   @default("balanced")
+  reasons   Json
+  updatedAt DateTime @updatedAt
+
+  @@unique([playerId, event])
+  @@index([event])
+}

@@ -17,7 +17,8 @@
     "test:e2e": "playwright test",
     "format": "prettier --cache --write .",
     "format:check": "prettier --check .",
-    "db:brain": "tsx scripts/brain.ts"
+    "db:brain": "tsx scripts/brain.ts",
+    "data:ingest": "tsx scripts/ingest-history.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.102.0",

@@ -14,6 +14,12 @@ export default function Home() {
       <AutoRedirect />
       {/* Header */}
       <div className="flex w-full max-w-7xl items-center justify-end gap-3 mb-12">
+        <a
+          href="/rankings"
+          className="tc-focus-visible inline-flex items-center gap-1.5 rounded-full border border-[color:var(--surface-border)] bg-[color:var(--surface-elevated)]/80 px-3 py-1.5 text-sm font-bold transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+        >
+          📊 Rankings
+        </a>
         <UserMenu />
         <ThemeToggle />
       </div>
