@@ -6,6 +6,8 @@ import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LogoutButton } from "@/components/LogoutButton";
 import { loadFixtures, parseEntryId } from "@/lib/fpl/service";
+import { getRatings } from "@/lib/data/ratings";
+import { predictMatch } from "@/lib/data/predict";
 import { Calendar } from "lucide-react";
 
 type FixturesPageParams = {
@@ -56,6 +58,28 @@ export default async function EntryFixturesPage({
     event: resolvedSearch.event ?? null,
   });
 
+  // Zero-token match forecasts from our Poisson engine (works for upcoming and,
+  // off-season, as a predicted-vs-actual accuracy showcase on finished games).
+  const ratings = await getRatings();
+  const predictions: Record<
+    number,
+    { pHome: number; pDraw: number; pAway: number; xHome: number; xAway: number; topScore: string }
+  > = {};
+  for (const f of fixturesView.fixtures) {
+    if (f.homeTeamCode == null || f.awayTeamCode == null) continue;
+    const fc = predictMatch(f.homeTeamCode, f.awayTeamCode, ratings);
+    if (fc) {
+      predictions[f.id] = {
+        pHome: fc.pHome,
+        pDraw: fc.pDraw,
+        pAway: fc.pAway,
+        xHome: fc.xHome,
+        xAway: fc.xAway,
+        topScore: fc.topScores[0]?.score ?? "",
+      };
+    }
+  }
+
   return (
     <main className="tc-surface min-h-dvh px-4 pb-16 pt-8">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
@@ -92,6 +116,7 @@ export default async function EntryFixturesPage({
           event={fixturesView.event}
           fixtures={fixturesView.fixtures}
           playersByFixture={fixturesView.playersByFixture}
+          predictions={predictions}
         />
 
         <PersistLastEntry

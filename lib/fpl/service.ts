@@ -38,6 +38,11 @@ import {
 } from "./predictions";
 
 import { callGemini, isAIConfigured } from "./gemini";
+import { narrateLeagueInsights } from "../narrate";
+import { projectAllPlayers } from "../data/xp";
+import { suggestTransfers, pickBestXI, clubKey } from "../data/optimizer";
+import { recommendChips } from "../data/chips";
+import type { ProjectionResult, TransferSuggestion, ChipAdvice } from "../data/types";
 
 export function parseEntryId(value: string | null): number {
   if (!value) {
@@ -153,12 +158,7 @@ async function generateLeagueInsights(
       console.error("Cache read failed:", err);
   }
 
-  // No AI key configured — skip generation entirely (keeps the page clean).
-  if (!isAIConfigured()) {
-    return [];
-  }
-
-  // 2. Generate New Insights
+  // 2. Top managers for this league.
   const top10 = entries.slice(0, 10).map(e => ({
     name: e.entryName,
     manager: e.playerName,
@@ -166,6 +166,30 @@ async function generateLeagueInsights(
     total: e.totalPoints,
     rank: e.rank
   }));
+
+  // Zero-token path: the narrator writes Chief-Scout insights from the standings.
+  if (!isAIConfigured()) {
+    const insights = narrateLeagueInsights({
+      leagueName,
+      top: top10.map((e) => ({
+        name: e.name,
+        manager: e.manager,
+        total: e.total,
+        points: e.points,
+        rank: e.rank ?? undefined,
+      })),
+    });
+    try {
+      await prisma.leagueInsight.upsert({
+        where: { leagueId_gameweek: { leagueId, gameweek } },
+        update: { insights, createdAt: new Date() },
+        create: { leagueId, gameweek, insights },
+      });
+    } catch (err) {
+      console.error("Cache write failed:", err);
+    }
+    return insights;
+  }
 
   const prompt = `You are "The Chief Scout", a witty and sharp-tongued English football pundit.
 Analyze the current standings of the FPL league "${leagueName}".
@@ -217,7 +241,12 @@ export async function loadEntryLeagues(
       ? entryIdInput
       : parseEntryId(entryIdInput);
 
-  const profile = await getEntryProfile(entryId);
+  // 404 here means the entry doesn't exist — surface Next's not-found, matching
+  // the other loaders, rather than letting a raw FplError hit the generic boundary.
+  const profile = await getEntryProfile(entryId).catch((e) => {
+    if (e instanceof FplError && e.status === 404) notFound();
+    throw e;
+  });
   const leagues = mapClassicLeagueSummaries(profile.leagues?.classic)
     .filter((league) => league.entryRank !== null && league.entryRank > 0) // Ignore leagues with no rank or zero rank (empty/inactive)
     .sort((a, b) => {
@@ -842,57 +871,216 @@ export async function loadPlannerData(
     bgwDgwMap: Record<number, Record<number, { count: number; opponents: string[] }>>;
 }> {
     const entryId = typeof entryIdInput === "number" ? entryIdInput : parseEntryId(entryIdInput);
-    
-    const [profile, history, bootstrap] = await Promise.all([
-        getEntryProfile(entryId),
-        getEntryHistory(entryId),
-        getBootstrap(),
+
+    try {
+        const [profile, history, bootstrap] = await Promise.all([
+            getEntryProfile(entryId),
+            getEntryHistory(entryId),
+            getBootstrap(),
+        ]);
+
+        const currentEvent = await resolveCurrentEvent(profile.current_event);
+        const nextGw = currentEvent + 1;
+        // Picks can 404 pre-deadline or for an entry that didn't play this GW —
+        // fall back one gameweek, matching the other loaders.
+        let picks;
+        try {
+            picks = await getEntryPicks(entryId, currentEvent);
+        } catch {
+            if (currentEvent > 1) picks = await getEntryPicks(entryId, currentEvent - 1);
+            else throw new FplError("No picks available for this entry", 404);
+        }
+
+        // Fetch fixtures for the next 5 gameweeks
+        const gwRange = Array.from({ length: 5 }, (_, i) => nextGw + i);
+        const fixturesPromises = gwRange.map(gw => getFixtures(gw).catch(() => []));
+        const fixturesArrays = await Promise.all(fixturesPromises);
+        const allFixtures = fixturesArrays.flat();
+
+        // Map Team IDs to Short Names for display
+        const teamMap = new Map(bootstrap.teams.map(t => [t.id, t.short_name]));
+
+        // Calculate BGW/DGW Map
+        const bgwDgwMap: Record<number, Record<number, { count: number; opponents: string[] }>> = {};
+
+        bootstrap.teams.forEach(team => {
+            bgwDgwMap[team.id] = {};
+            gwRange.forEach(gw => {
+                const teamFixtures = allFixtures.filter(f => (f.team_h === team.id || f.team_a === team.id) && f.event === gw);
+                bgwDgwMap[team.id][gw] = {
+                    count: teamFixtures.length,
+                    opponents: teamFixtures.map(f => {
+                        const isHome = f.team_h === team.id;
+                        const opponentId = isHome ? f.team_a : f.team_h;
+                        return `${teamMap.get(opponentId)}${isHome ? '(H)' : '(A)'}`;
+                    })
+                };
+            });
+        });
+
+        // History can be empty (brand-new entry / pre-GW1 off-season) — guard it.
+        const latestHistory = history.current.at(-1);
+
+        const squad = mapLatestGameweekPlayers({
+            picks,
+            elements: bootstrap.elements
+        });
+
+        return {
+            squad,
+            bank: (latestHistory?.bank ?? 0) / 10,
+            teamValue: (latestHistory?.value ?? 0) / 10,
+            nextGw,
+            fixtures: allFixtures,
+            bgwDgwMap
+        };
+    } catch (error) {
+        if (error instanceof FplError && error.status === 404) notFound();
+        throw error;
+    }
+}
+
+export type SquadInsightsDTO = {
+  /** False when projections aren't computed yet (pre-precompute / off-season). */
+  available: boolean;
+  bank: number;
+  freeTransfers: number;
+  squadXp: number;
+  bestXi: {
+    formation: string;
+    projectedTotal: number;
+    starters: Array<{ name: string; position: string; xp: number }>;
+    bench: Array<{ name: string; position: string; xp: number }>;
+  } | null;
+  transfers: TransferSuggestion[];
+  chips: ChipAdvice[];
+};
+
+/**
+ * SquadLab — the deterministic engine applied to a real manager's squad. Pure
+ * maths over our multi-season projections (zero AI tokens): the best legal XI,
+ * the top net-gain single transfers, and chip-timing advice. Off-season / before
+ * the nightly precompute runs, projections are empty and we return
+ * `available: false` so the UI can show a graceful "computing" state.
+ */
+export async function loadSquadInsights(
+  entryIdInput: string | number,
+): Promise<SquadInsightsDTO> {
+  const entryId =
+    typeof entryIdInput === "number" ? entryIdInput : parseEntryId(entryIdInput);
+
+  const empty: SquadInsightsDTO = {
+    available: false,
+    bank: 0,
+    freeTransfers: 1,
+    squadXp: 0,
+    bestXi: null,
+    transfers: [],
+    chips: [],
+  };
+
+  try {
+    const [profile, history] = await Promise.all([
+      getEntryProfile(entryId),
+      getEntryHistory(entryId),
     ]);
 
     const currentEvent = await resolveCurrentEvent(profile.current_event);
-    const nextGw = currentEvent + 1;
-    const picks = await getEntryPicks(entryId, currentEvent);
-    
-    // Fetch fixtures for the next 5 gameweeks
-    const gwRange = Array.from({ length: 5 }, (_, i) => nextGw + i);
-    const fixturesPromises = gwRange.map(gw => getFixtures(gw).catch(() => []));
-    const fixturesArrays = await Promise.all(fixturesPromises);
-    const allFixtures = fixturesArrays.flat();
 
-    // Map Team IDs to Short Names for display
-    const teamMap = new Map(bootstrap.teams.map(t => [t.id, t.short_name]));
+    // Picks for the current GW, falling back one GW if FPL 404s pre-deadline.
+    let picks;
+    try {
+      picks = await getEntryPicks(entryId, currentEvent);
+    } catch {
+      if (currentEvent > 1) picks = await getEntryPicks(entryId, currentEvent - 1);
+      else return empty;
+    }
 
-    // Calculate BGW/DGW Map
-    const bgwDgwMap: Record<number, Record<number, { count: number; opponents: string[] }>> = {};
-    
-    bootstrap.teams.forEach(team => {
-        bgwDgwMap[team.id] = {};
-        gwRange.forEach(gw => {
-            const teamFixtures = allFixtures.filter(f => (f.team_h === team.id || f.team_a === team.id) && f.event === gw);
-            bgwDgwMap[team.id][gw] = {
-                count: teamFixtures.length,
-                opponents: teamFixtures.map(f => {
-                    const isHome = f.team_h === team.id;
-                    const opponentId = isHome ? f.team_a : f.team_h;
-                    return `${teamMap.get(opponentId)}${isHome ? '(H)' : '(A)'}`;
-                })
-            };
-        });
-    });
-    
+    const projections = await projectAllPlayers().catch(() => [] as ProjectionResult[]);
+    if (projections.length === 0) return empty;
+
+    const byId = new Map(projections.map((p) => [p.id, p]));
+    const squadIds = picks.picks.map((p) => p.element);
+    const squad = squadIds
+      .map((id) => byId.get(id))
+      .filter((p): p is ProjectionResult => p !== undefined);
+    if (squad.length === 0) return empty;
+
     const latestHistory = history.current[history.current.length - 1];
-    
-    const squad = mapLatestGameweekPlayers({
-        picks,
-        elements: bootstrap.elements
+    const bank = (latestHistory?.bank ?? 0) / 10;
+
+    // Club caps for the optimizer — keyed by the same hash the optimizer uses.
+    const squadClubCounts: Record<number, number> = {};
+    for (const p of squad) {
+      const k = clubKey(p.teamShort);
+      squadClubCounts[k] = (squadClubCounts[k] ?? 0) + 1;
+    }
+
+    // Candidate pool: top projected players not already owned (keep it tight so
+    // suggestions are premium, and the scan stays fast).
+    const squadSet = new Set(squadIds);
+    const candidates = projections
+      .filter((p) => !squadSet.has(p.id))
+      .slice(0, 200);
+
+    // Ask for a wider set, then keep the best move per *incoming* player so the
+    // list shows distinct upgrade targets (the optimizer dedupes by out-player
+    // only, so the same signing can otherwise appear against several outs).
+    const rawTransfers = suggestTransfers({
+      squad,
+      candidates,
+      bank,
+      freeTransfers: 1,
+      squadClubCounts,
+      maxSuggestions: 15,
     });
+    const seenIn = new Set<number>();
+    const transfers: TransferSuggestion[] = [];
+    for (const t of rawTransfers) {
+      if (seenIn.has(t.inId)) continue;
+      seenIn.add(t.inId);
+      transfers.push(t);
+      if (transfers.length >= 5) break;
+    }
+
+    const usedChips = (history.chips ?? []).map((c) => c.name);
+    const chips = await recommendChips({
+      usedChips,
+      squad,
+      gameweek: currentEvent + 1,
+    }).catch(() => [] as ChipAdvice[]);
+
+    const xi = pickBestXI(squad);
+    const fmt = (id: number) => {
+      const p = byId.get(id);
+      return p
+        ? { name: p.name, position: p.position, xp: Math.round(p.xPoints * 100) / 100 }
+        : { name: "—", position: "", xp: 0 };
+    };
+    const projectedTotal =
+      Math.round(
+        xi.starters.reduce((s, id) => s + (byId.get(id)?.xPoints ?? 0), 0) * 10,
+      ) / 10;
+    const squadXp =
+      Math.round(squad.reduce((s, p) => s + p.xPoints, 0) * 10) / 10;
 
     return {
-        squad,
-        bank: latestHistory.bank / 10,
-        teamValue: latestHistory.value / 10,
-        nextGw,
-        fixtures: allFixtures,
-        bgwDgwMap
+      available: true,
+      bank,
+      freeTransfers: 1,
+      squadXp,
+      bestXi: {
+        formation: xi.formation,
+        projectedTotal,
+        starters: xi.starters.map(fmt),
+        bench: xi.bench.map(fmt),
+      },
+      transfers,
+      chips,
     };
+  } catch (error) {
+    if (error instanceof FplError && error.status === 404) notFound();
+    console.error("loadSquadInsights failed:", error);
+    return empty;
+  }
 }

@@ -2,6 +2,7 @@ import { prisma } from '../prisma';
 import { callGemini, isAIConfigured } from './gemini';
 import { getEntryPicks } from './client';
 import { analyzeSquadVsElite, scorePlayer, getEliteSnapshot } from './brain';
+import { narrateAudit } from '../narrate';
 
 interface RawPick {
     element: number;
@@ -116,8 +117,21 @@ Return ONLY the JSON.`;
         if (!jsonMatch) throw new Error('Invalid AI response');
         auditResult = JSON.parse(jsonMatch[0]) as AuditResult;
     } else {
-        // Engine-only audit — no AI required.
-        auditResult = buildEngineAudit(scored.map((s) => ({ name: s.p.webName, score: s.score })), elite);
+        // Zero-token audit — the narrator turns engine facts into Gaffer prose.
+        const ranked = [...scored].sort((a, b) => b.score - a.score);
+        const avg = ranked.length ? ranked.reduce((s, x) => s + x.score, 0) / ranked.length : 0;
+        const healthScore = Math.round(0.7 * avg + 0.3 * elite.templateAlignmentPct);
+        const narrated = narrateAudit({
+            avgScore: Math.round(avg),
+            healthScore,
+            strongest: ranked.slice(0, 3).map((s) => ({ name: s.p.webName, score: Math.round(s.score) })),
+            weakest: [...ranked].reverse().slice(0, 3).map((s) => ({ name: s.p.webName, score: Math.round(s.score) })),
+            templateAlignmentPct: elite.templateAlignmentPct,
+            missingTemplate: elite.missingTemplate,
+            eliteCaptain: elite.eliteCaptain,
+            userCaptainEliteCapPct: elite.userCaptainEliteCapPct,
+        });
+        auditResult = { healthScore, ...narrated };
     }
 
     await prisma.teamAudit.create({
@@ -133,45 +147,3 @@ Return ONLY the JSON.`;
     return auditResult;
 }
 
-function buildEngineAudit(
-    scored: Array<{ name: string; score: number }>,
-    elite: Awaited<ReturnType<typeof analyzeSquadVsElite>>,
-): AuditResult {
-    const avg = scored.length
-        ? scored.reduce((s, x) => s + x.score, 0) / scored.length
-        : 0;
-    const healthScore = Math.round(0.7 * avg + 0.3 * elite.templateAlignmentPct);
-
-    const weakest = [...scored].sort((a, b) => a.score - b.score).slice(0, 3);
-    const strongest = [...scored].sort((a, b) => b.score - a.score).slice(0, 3);
-
-    const critiqueParts = [
-        `The engine rates this squad ${Math.round(avg)}/100 on average, with ${strongest.map((s) => s.name).join(', ')} carrying the side.`,
-    ];
-    if (elite.snapshot) {
-        critiqueParts.push(
-            `Against the world's top ${elite.snapshot.sample} managers, you hold ${elite.templateAlignmentPct}% of the elite template${
-                elite.missingTemplate.length
-                    ? ` — the big names you're missing: ${elite.missingTemplate.map((m) => `${m.name} (${m.elitePct}% elite-owned)`).join(', ')}.`
-                    : '.'
-            }`,
-        );
-        if (elite.eliteCaptain) {
-            critiqueParts.push(
-                `The elite captaincy pick is ${elite.eliteCaptain.name} (${elite.eliteCaptain.captainPct}% of top managers); your captain carries ${elite.userCaptainEliteCapPct}% elite backing.`,
-            );
-        }
-    }
-    critiqueParts.push(
-        `Weakest links by the numbers: ${weakest.map((w) => `${w.name} (${w.score})`).join(', ')}.`,
-    );
-
-    const recommendations = [
-        ...elite.missingTemplate
-            .slice(0, 3)
-            .map((m) => `Consider ${m.name} — owned by ${m.elitePct}% of the world's best${m.captainPct >= 20 ? ` and captained by ${m.captainPct}%` : ''}.`),
-        ...(weakest[0] ? [`Move on ${weakest[0].name} — the engine's lowest score in your squad.`] : []),
-    ];
-
-    return { healthScore, critique: critiqueParts.join('\n\n'), recommendations };
-}

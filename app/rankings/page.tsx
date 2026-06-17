@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { HeadToHead } from "@/components/HeadToHead";
+import { PowerPicks } from "@/components/PowerPicks";
 
 export const metadata: Metadata = {
   title: "Power Rankings & Match Predictor | Triple Captain",
@@ -48,6 +49,8 @@ export default async function RankingsPage() {
         </header>
 
         <HeadToHead teams={teams} />
+
+        <PowerPicks />
 
         {ratings.length > 0 ? (
           <div className="tc-card overflow-hidden">

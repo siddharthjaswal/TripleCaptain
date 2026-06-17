@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { DashboardNav } from "@/components/DashboardNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { TransferPlanner } from "@/components/TransferPlanner";
+import { SquadLab } from "@/components/SquadLab";
 import { loadPlannerData, parseEntryId } from "@/lib/fpl/service";
 import { Typography } from "@/components/ui";
 import { AccountStatus } from "@/components/AccountStatus";
@@ -76,9 +77,11 @@ export default async function PlannerPage({
           </div>
         </header>
 
-        <TransferPlanner 
-            entryId={entryId} 
-            initialSquad={data.squad} 
+        <SquadLab entryId={entryId} />
+
+        <TransferPlanner
+            entryId={entryId}
+            initialSquad={data.squad}
             initialBank={data.bank}
             nextGw={data.nextGw}
             bgwDgwMap={data.bgwDgwMap}

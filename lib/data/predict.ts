@@ -85,10 +85,13 @@ export function predictMatch(
     pHome: pct(pHome / total),
     pDraw: pct(pDraw / total),
     pAway: pct(pAway / total),
-    bttsPct: pct(btts),
-    homeCsPct: pct(homeCs),
-    awayCsPct: pct(awayCs),
-    topScores: scores.slice(0, 5).map((s) => ({ score: s.score, pct: pct(s.pct) })),
+    // Normalise the secondary markets by the same grid mass as 1X2 so every
+    // percentage on the card shares one basis (the grid is truncated at
+    // MAX_GOALS, so `total` < 1 for high-scoring fixtures near the clamps).
+    bttsPct: pct(btts / total),
+    homeCsPct: pct(homeCs / total),
+    awayCsPct: pct(awayCs / total),
+    topScores: scores.slice(0, 5).map((s) => ({ score: s.score, pct: pct(s.pct / total) })),
   };
 }
 

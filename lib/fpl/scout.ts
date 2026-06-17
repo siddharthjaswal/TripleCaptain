@@ -1,6 +1,7 @@
 import { prisma } from '../prisma';
 import { callGemini, isAIConfigured } from './gemini';
 import { rankPlayers, type PlayerVerdict } from './brain';
+import { narrateScoutPick } from '../narrate';
 
 interface Pick {
     name: string;
@@ -25,7 +26,16 @@ export async function scoutDifferentials(): Promise<Pick[]> {
 
     const enginePicks: Pick[] = candidates.slice(0, 3).map((c) => ({
         name: c.name,
-        reasoning: c.reasons.join('; ') || `Engine score ${c.score}/100`,
+        reasoning: narrateScoutPick({
+            name: c.name,
+            team: c.team,
+            ownership: c.ownership,
+            elitePct: c.elitePct,
+            eliteEdge: c.eliteEdge,
+            form: c.form,
+            epNext: c.epNext,
+            reasons: c.reasons,
+        }),
         epNext: c.epNext,
         ownership: c.ownership,
     }));

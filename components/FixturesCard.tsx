@@ -7,14 +7,24 @@ import { Calendar, ChevronLeft, ChevronRight, Clock, Trophy, ChevronDown, Chevro
 import type { FixtureDTO, FixturePlayerDTO } from "@/lib/fpl/dto";
 import { Skeleton } from "./ui/Skeleton";
 
+export type FixtureForecast = {
+  pHome: number;
+  pDraw: number;
+  pAway: number;
+  xHome: number;
+  xAway: number;
+  topScore: string;
+};
+
 type FixturesCardProps = {
   event: number;
   fixtures: FixtureDTO[];
   playersByFixture: Map<number, FixturePlayerDTO[]>;
+  predictions?: Record<number, FixtureForecast>;
   isLoading?: boolean;
 };
 
-export function FixturesCard({ event, fixtures, playersByFixture, isLoading = false }: FixturesCardProps) {
+export function FixturesCard({ event, fixtures, playersByFixture, predictions, isLoading = false }: FixturesCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -192,6 +202,7 @@ export function FixturesCard({ event, fixtures, playersByFixture, isLoading = fa
                       key={fixture.id}
                       fixture={fixture}
                       players={playersByFixture.get(fixture.id) ?? []}
+                      forecast={predictions?.[fixture.id]}
                     />
                   ))}
                 </div>
@@ -217,9 +228,10 @@ export function FixturesCard({ event, fixtures, playersByFixture, isLoading = fa
 type FixtureRowProps = {
   fixture: FixtureDTO;
   players: FixturePlayerDTO[];
+  forecast?: FixtureForecast;
 };
 
-function FixtureRow({ fixture, players }: FixtureRowProps) {
+function FixtureRow({ fixture, players, forecast }: FixtureRowProps) {
   const getScoreColor = (
     homeScore: number | null,
     awayScore: number | null,
@@ -282,7 +294,7 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
         <div className="flex flex-col items-center gap-2 shrink-0 px-4">
           {fixture.finished ? (
             <div className="flex flex-col items-center gap-1">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-500/15 px-3 py-1 text-xs font-black text-[color:var(--text-secondary)] uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--surface-hover)] px-3 py-1 text-xs font-black text-[color:var(--text-secondary)] uppercase tracking-wider">
                 Full Time
               </span>
             </div>
@@ -333,6 +345,18 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
         </div>
       </div>
 
+      {/* Forecast Strip — zero-token Poisson model */}
+      {forecast && (
+        <ForecastStrip
+          forecast={forecast}
+          homeShort={fixture.homeTeam}
+          awayShort={fixture.awayTeam}
+          finished={fixture.finished}
+          homeScore={fixture.homeScore}
+          awayScore={fixture.awayScore}
+        />
+      )}
+
       {/* Players Section */}
       {hasPlayers && (
         <div className="border-t border-[color:var(--surface-border)] bg-gradient-to-b from-blue-500/5 via-purple-500/5 to-transparent px-5 py-4">
@@ -353,6 +377,89 @@ function FixtureRow({ fixture, players }: FixtureRowProps) {
   );
 }
 
+function ForecastStrip({
+  forecast,
+  homeShort,
+  awayShort,
+  finished,
+  homeScore,
+  awayScore,
+}: {
+  forecast: FixtureForecast;
+  homeShort: string;
+  awayShort: string;
+  finished: boolean;
+  homeScore: number | null;
+  awayScore: number | null;
+}) {
+  const { pHome, pDraw, pAway, xHome, xAway, topScore } = forecast;
+  // Clamp tiny segments so the bar always reads cleanly.
+  const segs = [
+    { key: "H", pct: pHome, color: "var(--brand-secondary)" },
+    { key: "D", pct: pDraw, color: "var(--text-tertiary)" },
+    { key: "A", pct: pAway, color: "var(--accent)" },
+  ];
+
+  // The model's pick = the most likely of the three outcomes.
+  const favourite =
+    pHome >= pDraw && pHome >= pAway ? "H" : pAway >= pDraw ? "A" : "D";
+  const favLabel =
+    favourite === "H" ? homeShort : favourite === "A" ? awayShort : "Draw";
+  const favPct = Math.round(Math.max(pHome, pDraw, pAway));
+
+  // For finished games, score the model against reality (retro accuracy).
+  let verdict: "hit" | "miss" | null = null;
+  if (finished && homeScore != null && awayScore != null) {
+    const actual = homeScore > awayScore ? "H" : awayScore > homeScore ? "A" : "D";
+    verdict = actual === favourite ? "hit" : "miss";
+  }
+
+  return (
+    <div className="border-t border-[color:var(--surface-border)] px-5 py-3">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span className="text-[10px] font-black uppercase tracking-widest text-[color:var(--text-tertiary)]">
+          Our Model {topScore ? `· ${topScore}` : ""}
+        </span>
+        <span className="flex items-center gap-2">
+          {verdict && (
+            <span
+              className={`tc-numeric inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black ${
+                verdict === "hit"
+                  ? "bg-cyan-500/15 text-cyan-400"
+                  : "bg-rose-500/15 text-rose-400"
+              }`}
+            >
+              {verdict === "hit" ? "✓ Called it" : "✗ Upset"}
+            </span>
+          )}
+          <span className="tc-numeric text-[11px] font-black text-[color:var(--text-secondary)]">
+            {favLabel} {favPct}%
+          </span>
+        </span>
+      </div>
+
+      {/* W / D / L probability bar */}
+      <div className="flex h-2 w-full overflow-hidden rounded-full">
+        {segs.map((s) => (
+          <div
+            key={s.key}
+            style={{ width: `${Math.max(0, s.pct)}%`, background: s.color }}
+            className="h-full"
+          />
+        ))}
+      </div>
+
+      <div className="mt-1.5 flex items-center justify-between text-[10px] font-bold tc-text-muted">
+        <span className="tc-numeric">{Math.round(pHome)}% W</span>
+        <span className="tc-numeric">
+          xG {xHome.toFixed(1)}–{xAway.toFixed(1)}
+        </span>
+        <span className="tc-numeric">{Math.round(pAway)}% W</span>
+      </div>
+    </div>
+  );
+}
+
 function PlayerChip({ player }: { player: FixturePlayerDTO }) {
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -363,7 +470,7 @@ function PlayerChip({ player }: { player: FixturePlayerDTO }) {
     if (points > 5) return "bg-cyan-500/20 text-cyan-400 border-cyan-500/40 shadow-cyan-500/20";
     if (points > 0) return "bg-blue-500/20 text-blue-400 border-blue-500/40 shadow-blue-500/20";
     if (points < 0) return "bg-rose-500/20 text-rose-400 border-rose-500/40 shadow-rose-500/20";
-    return "bg-slate-500/20 text-[color:var(--text-secondary)] border-slate-500/40";
+    return "bg-[color:var(--surface-hover)] text-[color:var(--text-secondary)] border-[color:var(--surface-border)]";
   };
 
   const hasStats = player.stats && (player.stats.minutes > 0 || player.stats.goals_scored > 0);
@@ -457,7 +564,7 @@ function StatBadge({
   color?: "default" | "emerald" | "blue" | "green" | "cyan" | "amber" | "yellow" | "red" | "rose" | "purple";
 }) {
   const colorClasses = {
-    default: "bg-slate-500/10 text-[color:var(--text-secondary)]",
+    default: "bg-[color:var(--surface-hover)] text-[color:var(--text-secondary)]",
     emerald: "bg-cyan-500/10 text-cyan-400",
     blue: "bg-blue-500/10 text-blue-400",
     green: "bg-cyan-500/10 text-cyan-400",

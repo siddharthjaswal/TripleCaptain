@@ -18,7 +18,9 @@
     "format": "prettier --cache --write .",
     "format:check": "prettier --check .",
     "db:brain": "tsx scripts/brain.ts",
-    "data:ingest": "tsx scripts/ingest-history.ts"
+    "data:ingest": "tsx scripts/ingest-history.ts",
+    "data:players": "tsx scripts/ingest-players.ts",
+    "precompute": "tsx scripts/precompute.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.102.0",

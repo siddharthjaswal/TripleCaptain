@@ -858,8 +858,10 @@ body {
   border: none;
 }
 
-/* Focus States */
-.tc-focus-ring:focus-visible {
+/* Focus States — both names are used across the app (tc-focus-visible is the
+   dominant convention; tc-focus-ring is used by Button). Cover both. */
+.tc-focus-ring:focus-visible,
+.tc-focus-visible:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }

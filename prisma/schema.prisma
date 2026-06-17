@@ -250,3 +250,23 @@ model PlayerProjection {
   @@unique([playerId, event])
   @@index([event])
 }
+
+model HistoricalPlayerSeason {
+  id          String   @id @default(cuid())
+  playerId    Int      // current-season element id (link to Player)
+  playerCode  Int      // stable element_code (cross-season)
+  season      String   // e.g. "2023/24"
+  minutes     Int      @default(0)
+  starts      Int      @default(0)
+  goals       Int      @default(0)
+  assists     Int      @default(0)
+  cleanSheets Int      @default(0)
+  xG          Float    @default(0)
+  xA          Float    @default(0)
+  points      Int      @default(0)
+  ppg         Float    @default(0)
+
+  @@unique([playerId, season])
+  @@index([playerId])
+  @@index([playerCode])
+}
