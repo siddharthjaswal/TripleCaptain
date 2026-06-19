@@ -112,7 +112,9 @@ export function mapLatestGameweek(params: {
 
   return {
     entryId,
-    event: currentEvent,
+    // Report the gameweek we actually resolved data for — findHistoryRecord may
+    // have fallen back to the latest available record when currentEvent is missing.
+    event: historyRecord.event,
     points: totalPoints,
     rank: historyRecord.rank ?? historyRecord.overall_rank ?? null,
     pointsOnBench: benchPoints,

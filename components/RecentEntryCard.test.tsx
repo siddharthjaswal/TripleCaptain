@@ -36,7 +36,8 @@ describe("RecentEntryCard", () => {
 
     render(<RecentEntryCard />);
 
-    expect(screen.getByText(/Showing 2 of up to/i)).toBeInTheDocument();
+    // The card reads localStorage via a deferred setTimeout(0), so wait for it.
+    expect(await screen.findByText(/Showing 2 of up to/i)).toBeInTheDocument();
     expect(screen.getByText(/Triple Captain/i)).toBeInTheDocument();
     expect(screen.getByText(/Double Switch/i)).toBeInTheDocument();
     expect(
@@ -44,7 +45,7 @@ describe("RecentEntryCard", () => {
     ).toHaveAttribute("href", "/123");
   });
 
-  it("clears storage when Clear is clicked", () => {
+  it("clears storage when Clear is clicked", async () => {
     const payload = [
       {
         entryId: 123,
@@ -60,7 +61,7 @@ describe("RecentEntryCard", () => {
 
     render(<RecentEntryCard />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Clear All/i }));
+    fireEvent.click(await screen.findByRole("button", { name: /Clear All/i }));
 
     expect(window.localStorage.getItem(LAST_ENTRY_STORAGE_KEY)).toBeNull();
   });

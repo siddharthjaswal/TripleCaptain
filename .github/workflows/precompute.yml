@@ -1,0 +1,42 @@
+name: Precompute
+
+# Zero-token nightly refresh: SSH into the server and recompute team ratings,
+# player projections, and match predictions so pages always read fresh rows
+# without spending AI tokens. Weekly (Mondays) it also rebuilds the elite-manager
+# Brain snapshot. Keeps all automation in GitHub — no server crontab needed.
+#
+# Reuses the same repo secrets as the deploy workflow: SSH_HOST, SSH_USER, SSH_KEY.
+on:
+  schedule:
+    # 04:30 UTC every day (after FPL's overnight price/data settle).
+    - cron: "30 4 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: production-precompute
+  cancel-in-progress: false
+
+jobs:
+  precompute:
+    name: Recompute projections on server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Precompute over SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          command_timeout: 20m
+          script: |
+            set -euo pipefail
+            export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
+            cd /bionics/projects/triplecaptain
+            echo "→ Recomputing ratings + projections + predictions"
+            corepack pnpm precompute
+            # Mondays: rebuild the elite-manager Brain snapshot too.
+            if [ "$(date -u +%u)" = "1" ]; then
+              echo "→ Monday — rebuilding elite Brain snapshot"
+              corepack pnpm db:brain || echo "⚠ db:brain failed (non-fatal)"
+            fi
+            echo "✓ Precompute complete $(date -u +%FT%TZ)"

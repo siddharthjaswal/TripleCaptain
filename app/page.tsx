@@ -43,8 +43,8 @@ export default function Home() {
             V2 Premium Companion
         </Badge>
         
-        <Typography variant="display" weight="black" className="mb-8 leading-[0.9]">
-            Triple<br/>
+        <Typography as="h1" variant="display" weight="black" className="mb-8 leading-[0.9]">
+            Triple{" "}
             <span className="tc-gradient-text">Captain</span>
         </Typography>
 

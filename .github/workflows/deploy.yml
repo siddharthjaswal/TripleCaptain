@@ -42,4 +42,6 @@ jobs:
             echo "→ Restarting app"
             pm2 restart triplecaptain-web --update-env
             pm2 save
+            echo "→ Refreshing zero-token projections (non-fatal)"
+            corepack pnpm precompute || echo "⚠ precompute failed — app is up, data will refresh on the nightly run"
             echo "✓ Deployed $(git rev-parse --short HEAD)"
