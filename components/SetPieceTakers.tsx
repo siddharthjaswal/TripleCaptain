@@ -38,7 +38,8 @@ export async function SetPieceTakers() {
           Zero AI
         </span>
       </div>
-      <div className="grid gap-px bg-[color:var(--surface-border)] sm:grid-cols-2 lg:grid-cols-3">
+      {/* 4 columns divides the 20 PL clubs evenly — no ragged trailing gap. */}
+      <div className="grid gap-px bg-[color:var(--surface-border)] sm:grid-cols-2 lg:grid-cols-4">
         {teams.map((t) => (
           <TeamCard key={t.teamShort} team={t} />
         ))}

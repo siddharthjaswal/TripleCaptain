@@ -19,9 +19,22 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function RankingsPage() {
-  const ratings = await prisma.teamRating
-    .findMany({ orderBy: { elo: "desc" } })
-    .catch(() => []);
+  // Ratings span 7 seasons, so they include relegated/historical clubs. Restrict
+  // the display to the current Premier League (by stable team code) so we never
+  // show "Team 40"-style placeholders for clubs without a current-season name.
+  const [allRatings, currentTeams] = await Promise.all([
+    prisma.teamRating.findMany({ orderBy: { elo: "desc" } }).catch(() => []),
+    prisma.team.findMany({ select: { code: true, name: true, shortName: true } }).catch(() => []),
+  ]);
+  const currentByCode = new Map(currentTeams.map((t) => [t.code, t]));
+  // Prefer current names; fall back to the rating's own name if the Team table is empty.
+  const ratings = (currentByCode.size > 0
+    ? allRatings.filter((r) => currentByCode.has(r.teamCode))
+    : allRatings
+  ).map((r) => {
+    const cur = currentByCode.get(r.teamCode);
+    return { ...r, name: cur?.name ?? r.name, shortName: cur?.shortName ?? r.shortName };
+  });
   const teams = ratings.map((r) => ({ teamCode: r.teamCode, name: r.name, shortName: r.shortName }));
   const maxElo = ratings[0]?.elo ?? 1800;
   const minElo = ratings[ratings.length - 1]?.elo ?? 1300;
