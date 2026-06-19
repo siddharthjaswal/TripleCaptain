@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma";
 import { computeTeamRatings, getRatings } from "../lib/data/ratings";
 import { predictMatch } from "../lib/data/predict";
 import { projectAllPlayers } from "../lib/data/xp";
+import { runBacktest } from "../lib/data/backtest";
 
 /**
  * Nightly zero-token precompute: refresh team ratings, player projections, and
@@ -46,6 +47,24 @@ async function main() {
     n++;
   }
   console.log(`   ${n} match predictions stored (off-season → 0 is expected)`);
+
+  console.log("4) Backtest accuracy (Proven Accuracy badge)…");
+  const bt = await runBacktest();
+  if (bt) {
+    // trainSeasons is informational only — not a persisted column.
+    const { trainSeasons: _train, ...row } = bt;
+    void _train;
+    await prisma.modelAccuracy.upsert({
+      where: { model: "match-predictor" },
+      update: row,
+      create: { model: "match-predictor", ...row },
+    });
+    console.log(
+      `   ${bt.testSeason}: ${bt.accuracy}% acc vs ${bt.baselineAccuracy}% baseline, logLoss ${bt.logLoss} (${bt.matches} matches)`,
+    );
+  } else {
+    console.log("   not enough seasons to backtest yet — skipped");
+  }
   console.log("✓ precompute complete");
 }
 main().then(() => process.exit(0)).catch((e) => { console.error(e); process.exit(1); });

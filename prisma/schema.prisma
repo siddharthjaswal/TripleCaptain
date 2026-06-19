@@ -270,3 +270,20 @@ model HistoricalPlayerSeason {
   @@index([playerId])
   @@index([playerCode])
 }
+
+// Backtest scorecard for the "Proven Accuracy" badge — one row per model,
+// refreshed by precompute. Keyed by model name so reads are a single lookup.
+model ModelAccuracy {
+  model            String   @id // e.g. "match-predictor"
+  testSeason       String
+  matches          Int
+  accuracy         Float // 0-100, model argmax outcome correct
+  logLoss          Float
+  baselineAccuracy Float // 0-100, "always home wins"
+  uniformLogLoss   Float // ln(3) reference
+  brier            Float
+  homeWinPct       Float
+  drawPct          Float
+  awayWinPct       Float
+  updatedAt        DateTime @updatedAt
+}

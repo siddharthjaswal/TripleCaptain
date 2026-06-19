@@ -4,10 +4,10 @@ test.describe("Landing page", () => {
   test("shows project hero content", async ({ page }) => {
     await page.goto("/");
     await expect(
-      page.getByRole("heading", { name: /triple captain/i }),
+      page.getByRole("heading", { level: 1, name: /triple\s*captain/i }),
     ).toBeVisible();
     await expect(
-      page.getByText(/fantasy premier league companion/i),
+      page.getByText(/your ultimate fpl companion/i),
     ).toBeVisible();
   });
 });

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { HeadToHead } from "@/components/HeadToHead";
 import { PowerPicks } from "@/components/PowerPicks";
+import { AccuracyBadge } from "@/components/AccuracyBadge";
 
 export const metadata: Metadata = {
   title: "Power Rankings & Match Predictor | Triple Captain",
@@ -47,6 +48,8 @@ export default async function RankingsPage() {
             </p>
           </div>
         </header>
+
+        <AccuracyBadge />
 
         <HeadToHead teams={teams} />
 
