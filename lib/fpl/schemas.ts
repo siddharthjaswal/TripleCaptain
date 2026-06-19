@@ -50,6 +50,16 @@ export const BootstrapStaticSchema = z
           chance_of_playing_next_round: z.number().nullable().optional(), // Injury status
           chance_of_playing_this_round: z.number().nullable().optional(),
           minutes: z.number().optional(), // Total minutes played
+          // Price-momentum signals
+          transfers_in_event: z.number().optional(), // bought this gameweek
+          transfers_out_event: z.number().optional(), // sold this gameweek
+          cost_change_event: z.number().optional(), // price change so far this event (0.1m)
+          cost_change_start: z.number().optional(), // price change since season start (0.1m)
+          status: z.string().optional(), // a=available, i=injured, d=doubt, s=suspended, u=unavailable
+          // Set-piece taker order (1 = first choice; null = not on duty)
+          penalties_order: z.number().nullable().optional(),
+          direct_freekicks_order: z.number().nullable().optional(),
+          corners_and_indirect_freekicks_order: z.number().nullable().optional(),
         })
         .passthrough(),
     ),

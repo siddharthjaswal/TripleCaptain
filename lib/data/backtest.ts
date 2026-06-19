@@ -39,6 +39,22 @@ function outcome(homeGoals: number, awayGoals: number): "H" | "D" | "A" {
   return "D";
 }
 
+/**
+ * The date to recency-weight training as of: the earliest kickoff in the test
+ * season, or — if kickoffs are missing — August 1st of the season's start year
+ * parsed from a "YYYY-YY" / "YYYY/YY" label. Deterministic; no wall clock.
+ */
+function testSeasonAsOf(test: Match[], testSeason: string): number {
+  let earliest = Number.POSITIVE_INFINITY;
+  for (const m of test) {
+    if (m.kickoff) earliest = Math.min(earliest, m.kickoff.getTime());
+  }
+  if (Number.isFinite(earliest)) return earliest;
+  const startYear = Number.parseInt(testSeason.slice(0, 4), 10);
+  if (Number.isFinite(startYear)) return Date.UTC(startYear, 7, 1); // 1 Aug
+  return Date.now();
+}
+
 export async function runBacktest(): Promise<BacktestResult | null> {
   const matches = (await prisma.historicalMatch.findMany()) as Match[];
   return backtestFromMatches(matches);
@@ -56,7 +72,11 @@ export function backtestFromMatches(matches: Match[]): BacktestResult | null {
   const test = matches.filter((m) => m.season === testSeason);
   if (train.length === 0 || test.length === 0) return null;
 
-  const ratings = buildRatings(train);
+  // Recency-weight training "as of" the test season so the reported accuracy is
+  // reproducible over time (not anchored to today's wall clock). Use the test
+  // season's earliest kickoff, falling back to its start year (e.g. "2024-25").
+  const asOf = testSeasonAsOf(test, testSeason);
+  const ratings = buildRatings(train, asOf);
 
   let correct = 0;
   let scored = 0;

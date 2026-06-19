@@ -27,11 +27,14 @@ export type TeamRatings = {
 };
 
 const HALF_LIFE_YEARS = 1.6;
-const NOW = Date.now();
 
-function recencyWeight(kickoff: Date | null): number {
+// Decay a match's weight by its age relative to `asOf`. Defaults to wall-clock
+// now for production ratings, but the backtest passes the test-season date so
+// the reported accuracy is computed "as if" standing at that season — making it
+// reproducible over time and free of look-ahead in the recency weighting.
+function recencyWeight(kickoff: Date | null, asOf: number): number {
   if (!kickoff) return 0.4;
-  const ageYears = (NOW - kickoff.getTime()) / (365.25 * 24 * 3600 * 1000);
+  const ageYears = (asOf - kickoff.getTime()) / (365.25 * 24 * 3600 * 1000);
   return Math.pow(0.5, Math.max(0, ageYears) / HALF_LIFE_YEARS);
 }
 
@@ -71,7 +74,7 @@ export async function getRatings(): Promise<TeamRatings> {
 }
 
 /** Pure: build ratings from an explicit match list (used for train/test validation). */
-export function buildRatings(matches: Match[]): TeamRatings {
+export function buildRatings(matches: Match[], asOf: number = Date.now()): TeamRatings {
   if (matches.length === 0) {
     return { leagueAvgHomeGoals: 1.5, leagueAvgAwayGoals: 1.15, teams: new Map() };
   }
@@ -81,7 +84,7 @@ export function buildRatings(matches: Match[]): TeamRatings {
     wag = 0,
     wsum = 0;
   for (const m of matches) {
-    const w = recencyWeight(m.kickoff);
+    const w = recencyWeight(m.kickoff, asOf);
     whg += m.homeGoals * w;
     wag += m.awayGoals * w;
     wsum += w;
@@ -99,7 +102,7 @@ export function buildRatings(matches: Match[]): TeamRatings {
     acc.get(c) ?? acc.set(c, { hsFor: 0, hsAg: 0, hW: 0, asFor: 0, asAg: 0, aW: 0 }).get(c)!;
 
   for (const m of matches) {
-    const w = recencyWeight(m.kickoff);
+    const w = recencyWeight(m.kickoff, asOf);
     const h = ensure(m.homeCode);
     const a = ensure(m.awayCode);
     h.hsFor += m.homeGoals * w; h.hsAg += m.awayGoals * w; h.hW += w;

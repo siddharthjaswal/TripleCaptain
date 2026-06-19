@@ -6,6 +6,8 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { HeadToHead } from "@/components/HeadToHead";
 import { PowerPicks } from "@/components/PowerPicks";
 import { AccuracyBadge } from "@/components/AccuracyBadge";
+import { PriceWatch } from "@/components/PriceWatch";
+import { SetPieceTakers } from "@/components/SetPieceTakers";
 
 export const metadata: Metadata = {
   title: "Power Rankings & Match Predictor | Triple Captain",
@@ -54,6 +56,10 @@ export default async function RankingsPage() {
         <HeadToHead teams={teams} />
 
         <PowerPicks />
+
+        <PriceWatch />
+
+        <SetPieceTakers />
 
         {ratings.length > 0 ? (
           <div className="tc-card overflow-hidden">
