@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DashboardNav } from "@/components/DashboardNav";
 import { GameweekCard } from "@/components/GameweekCard";
+import { LiveCenter } from "@/components/LiveCenter";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { loadGameweek, parseEntryId } from "@/lib/fpl/service";
@@ -110,6 +111,8 @@ export default async function GameweekPage({
             />
           </div>
         </header>
+
+        <LiveCenter entryId={view.entryId} event={view.gameweek.event} />
 
         <GameweekCard gameweek={view.gameweek} />
 

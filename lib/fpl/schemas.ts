@@ -11,6 +11,8 @@ export const BootstrapEventSchema = z
     is_current: z.boolean(),
     is_next: z.boolean(),
     is_previous: z.boolean(),
+    average_entry_score: z.number().optional(),
+    highest_score: z.number().nullable().optional(),
   })
   .passthrough();
 

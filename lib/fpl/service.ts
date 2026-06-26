@@ -44,6 +44,13 @@ import { suggestTransfers, pickBestXI, clubKey } from "../data/optimizer";
 import { recommendChips } from "../data/chips";
 import type { ProjectionResult, TransferSuggestion, ChipAdvice } from "../data/types";
 import { buildEntryAlerts, type Alert, type AlertElement } from "../data/alerts";
+import {
+  computeLiveSummary,
+  type LivePick,
+  type LiveStat,
+  type LiveFixture,
+  type LiveSummary,
+} from "../data/live";
 
 export function parseEntryId(value: string | null): number {
   if (!value) {
@@ -1174,5 +1181,112 @@ export async function loadEntryAlerts(
     if (error instanceof FplError && error.status === 404) notFound();
     console.error("loadEntryAlerts failed:", error);
     throw error;
+  }
+}
+
+export type LiveCenterDTO = {
+  event: number;
+  hasStarted: boolean; // at least one fixture kicked off (else nothing to show)
+  isFinished: boolean;
+  summary: LiveSummary;
+  captainName: string | null;
+  autoSubs: Array<{ outName: string; inName: string }>;
+} | null;
+
+/**
+ * Live Gameweek Command Center data — deterministic live score with provisional
+ * bonus, auto-subs and progress. Returns null when there's no started gameweek
+ * to show (off-season / pre-kickoff), so the surface can hide cleanly.
+ */
+export async function loadLiveCenter(
+  entryIdInput: string | number,
+  eventInput?: number,
+): Promise<LiveCenterDTO> {
+  const entryId =
+    typeof entryIdInput === "number" ? entryIdInput : parseEntryId(entryIdInput);
+
+  try {
+    const bootstrap = await getBootstrap();
+    const currentMeta =
+      bootstrap.events.find((e) => e.is_current) ??
+      bootstrap.events.find((e) => e.is_next) ??
+      null;
+    const event = eventInput ?? currentMeta?.id;
+    if (!event) return null;
+
+    const eventMeta = bootstrap.events.find((e) => e.id === event) ?? null;
+
+    const [picks, live, fixtures] = await Promise.all([
+      getEntryPicks(entryId, event).catch(() => null),
+      getEventLive(event).catch(() => null),
+      getFixtures(event).catch(() => [] as Awaited<ReturnType<typeof getFixtures>>),
+    ]);
+
+    if (!picks || !live) return null;
+
+    const liveFixtures: LiveFixture[] = fixtures.map((f) => ({
+      teamH: f.team_h,
+      teamA: f.team_a,
+      started: f.started ?? false,
+      finished: f.finished,
+    }));
+    const hasStarted = liveFixtures.some((f) => f.started);
+    if (!hasStarted) return null; // nothing live yet
+
+    const meta = new Map(
+      bootstrap.elements.map((el) => [
+        el.id,
+        { team: el.team, elementType: el.element_type, name: el.web_name },
+      ]),
+    );
+    const allPlayersTeam = new Map(bootstrap.elements.map((el) => [el.id, el.team]));
+
+    const liveById = new Map<number, LiveStat>(
+      live.elements.map((el) => [
+        el.id,
+        {
+          totalPoints: el.stats.total_points,
+          minutes: el.stats.minutes ?? 0,
+          bps: el.stats.bps ?? 0,
+        },
+      ]),
+    );
+
+    const livePicks: LivePick[] = picks.picks.map((p) => ({
+      element: p.element,
+      position: p.position,
+      multiplier: p.multiplier,
+      isCaptain: p.is_captain,
+      isViceCaptain: p.is_vice_captain,
+      elementType: meta.get(p.element)?.elementType ?? 0,
+      team: meta.get(p.element)?.team ?? 0,
+    }));
+
+    const summary = computeLiveSummary({
+      picks: livePicks,
+      liveById,
+      fixtures: liveFixtures,
+      allPlayersTeam,
+      averageScore: eventMeta?.average_entry_score ?? null,
+      activeChip: picks.active_chip ?? null,
+    });
+
+    const name = (id: number | null) => (id != null ? meta.get(id)?.name ?? null : null);
+
+    return {
+      event,
+      hasStarted,
+      isFinished: eventMeta?.finished ?? liveFixtures.every((f) => f.finished),
+      summary,
+      captainName: name(summary.captain.element),
+      autoSubs: summary.autoSubs.map((s) => ({
+        outName: meta.get(s.outElement)?.name ?? "—",
+        inName: meta.get(s.inElement)?.name ?? "—",
+      })),
+    };
+  } catch (error) {
+    if (error instanceof FplError && error.status === 404) return null;
+    console.error("loadLiveCenter failed:", error);
+    return null;
   }
 }
