@@ -95,7 +95,7 @@ export default async function PredictionsPage({
               </Link>
               <ThemeToggle />
             </div>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex flex-col gap-5">
               <h1 className="font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
                 AI Insight
               </h1>
@@ -153,7 +153,7 @@ export default async function PredictionsPage({
                 <ThemeToggle />
             </div>
           </div>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-5">
             <div className="flex-1">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-[color:var(--accent)] text-[color:var(--accent-contrast)]">

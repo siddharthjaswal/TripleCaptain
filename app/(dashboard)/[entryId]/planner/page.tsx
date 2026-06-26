@@ -59,7 +59,7 @@ export default async function PlannerPage({
             </div>
           </div>
           
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-5">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-2xl bg-[color:var(--accent)] text-[color:var(--accent-contrast)] shadow-lg shadow-[color:var(--accent)]/20">
                 <Anchor className="h-6 w-6" />

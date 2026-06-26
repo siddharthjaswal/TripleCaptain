@@ -44,7 +44,7 @@ export default async function EntryAlertsPage({
             <LogoutButton />
             <ThemeToggle />
           </div>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-5">
             <div className="flex items-center gap-3">
               <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent)]/80 shadow-lg shadow-[color:var(--accent)]/20">
                 <Bell className="h-7 w-7 text-[color:var(--accent-contrast)]" />

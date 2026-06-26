@@ -8,7 +8,7 @@ export default function PredictionsLoading() {
             <div className="h-10 w-32 animate-pulse rounded-lg bg-[color:var(--surface-border)]/60" />
             <div className="h-10 w-10 animate-pulse rounded-lg bg-[color:var(--surface-border)]/60" />
           </div>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-5">
             <div className="flex-1">
               <div className="flex items-center gap-3">
                 <div className="h-12 w-12 animate-pulse rounded-xl bg-[color:var(--surface-border)]/60" />
