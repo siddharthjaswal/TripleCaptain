@@ -43,6 +43,7 @@ import { projectAllPlayers } from "../data/xp";
 import { suggestTransfers, pickBestXI, clubKey } from "../data/optimizer";
 import { recommendChips } from "../data/chips";
 import type { ProjectionResult, TransferSuggestion, ChipAdvice } from "../data/types";
+import { buildEntryAlerts, type Alert, type AlertElement } from "../data/alerts";
 
 export function parseEntryId(value: string | null): number {
   if (!value) {
@@ -1082,5 +1083,96 @@ export async function loadSquadInsights(
     if (error instanceof FplError && error.status === 404) notFound();
     console.error("loadSquadInsights failed:", error);
     return empty;
+  }
+}
+
+export type EntryAlertsDTO = {
+  entryId: number;
+  teamName: string;
+  managerName: string;
+  nextEvent: number | null;
+  alerts: Alert[];
+};
+
+/**
+ * Per-entry alerts for the Alerts Center + the push job. Deterministic, zero AI.
+ * Works off-season (deadline-only) and degrades gracefully when picks are
+ * unavailable. Reusable headless via the exported function.
+ */
+export async function loadEntryAlerts(
+  entryIdInput: string | number,
+): Promise<EntryAlertsDTO> {
+  const entryId =
+    typeof entryIdInput === "number" ? entryIdInput : parseEntryId(entryIdInput);
+
+  try {
+    const [profile, bootstrap] = await Promise.all([
+      getEntryProfile(entryId).catch((e) => {
+        if (e instanceof FplError && e.status === 404) notFound();
+        throw e;
+      }),
+      getBootstrap(),
+    ]);
+
+    const teamName = profile.name;
+    const managerName =
+      `${profile.player_first_name} ${profile.player_last_name}`.trim();
+    const nextDeadline = calculateNextDeadline(bootstrap.events);
+    const currentEvent = await resolveCurrentEvent(profile.current_event);
+
+    // Owned squad for the latest available gameweek (404s pre-deadline → fall back).
+    let picks = null;
+    try {
+      picks = await getEntryPicks(entryId, currentEvent);
+    } catch {
+      if (currentEvent > 1) picks = await getEntryPicks(entryId, currentEvent - 1).catch(() => null);
+    }
+
+    const squad = (picks?.picks ?? []).map((p) => ({
+      elementId: p.element,
+      isCaptain: p.is_captain,
+      isStarter: p.position <= 11,
+    }));
+
+    const elementsById = new Map<number, AlertElement>(
+      bootstrap.elements.map((el) => [
+        el.id,
+        {
+          id: el.id,
+          web_name: el.web_name,
+          team: el.team,
+          status: el.status,
+          chance_of_playing_next_round: el.chance_of_playing_next_round ?? null,
+          transfers_in_event: el.transfers_in_event,
+          transfers_out_event: el.transfers_out_event,
+          cost_change_event: el.cost_change_event,
+          now_cost: el.now_cost,
+        },
+      ]),
+    );
+    const teamShortById = new Map(bootstrap.teams.map((t) => [t.id, t.short_name]));
+
+    const alerts = buildEntryAlerts({
+      squad,
+      elementsById,
+      teamShortById,
+      nextDeadline: nextDeadline
+        ? { event: nextDeadline.nextGameweek, deadline: nextDeadline.deadline }
+        : null,
+      totalPlayers: bootstrap.total_players,
+      now: Date.now(),
+    });
+
+    return {
+      entryId,
+      teamName,
+      managerName,
+      nextEvent: nextDeadline?.nextGameweek ?? null,
+      alerts,
+    };
+  } catch (error) {
+    if (error instanceof FplError && error.status === 404) notFound();
+    console.error("loadEntryAlerts failed:", error);
+    throw error;
   }
 }

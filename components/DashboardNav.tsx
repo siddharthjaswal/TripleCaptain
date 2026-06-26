@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { 
-  LayoutDashboard, 
-  Users, 
-  BrainCircuit, 
-  Map as MapIcon, 
-  Trophy, 
-  Calendar 
+import {
+  LayoutDashboard,
+  Users,
+  BrainCircuit,
+  Map as MapIcon,
+  Trophy,
+  Calendar,
+  Bell
 } from "lucide-react";
 
 const links = [
@@ -15,6 +16,7 @@ const links = [
   { slug: "planner", name: "Planner", isDynamic: false, icon: MapIcon },
   { slug: "leagues", name: "Leagues", isDynamic: false, icon: Trophy },
   { slug: "fixtures", name: "Fixtures", isDynamic: false, icon: Calendar },
+  { slug: "alerts", name: "Alerts", isDynamic: false, icon: Bell },
 ] as const;
 
 type DashboardNavProps = {

@@ -1,0 +1,34 @@
+name: Send Alerts
+
+# Web Push alert sender. SSHes into the server and runs the headless alert job,
+# which computes each subscriber's FPL alerts and pushes the notable ones.
+# No-ops cleanly until the VAPID keys are present in the server .env.
+#
+# Reuses the deploy SSH secrets: SSH_HOST, SSH_USER, SSH_KEY.
+on:
+  schedule:
+    - cron: "0 2 * * *" # 02:00 UTC — after overnight FPL price changes
+    - cron: "0 9 * * *" # 09:00 UTC — morning digest / deadline reminders
+  workflow_dispatch:
+
+concurrency:
+  group: production-alerts
+  cancel-in-progress: false
+
+jobs:
+  send:
+    name: Send push alerts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run alert job over SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          command_timeout: 10m
+          script: |
+            set -euo pipefail
+            export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
+            cd /bionics/projects/triplecaptain
+            corepack pnpm send-alerts

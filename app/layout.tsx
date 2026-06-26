@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Archivo } from "next/font/google";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -73,6 +74,7 @@ export default function RootLayout({
           <div className="absolute top-[30%] right-[15%] w-[22%] h-[22%] bg-[var(--accent)]/5 rounded-full blur-[90px]" />
         </div>
         {children}
+        <ServiceWorkerRegister />
         <Analytics />
       </body>
     </html>

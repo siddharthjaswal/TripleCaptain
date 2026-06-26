@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Your Ultimate Fantasy Premier League Companion',
     start_url: '/',
     display: 'standalone',
-    background_color: '#0a0e1a',
-    theme_color: '#3b82f6',
+    background_color: '#160520', // aubergine base
+    theme_color: '#e90052', // magenta action
     icons: [
       {
         src: '/icon-192.png',

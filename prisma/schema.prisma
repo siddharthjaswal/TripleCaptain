@@ -287,3 +287,17 @@ model ModelAccuracy {
   awayWinPct       Float
   updatedAt        DateTime @updatedAt
 }
+
+// Web Push subscriptions, one per browser/device, tied to the FPL entry to
+// notify. The send job iterates these, computes that entry's alerts, and pushes.
+model PushSubscription {
+  endpoint       String   @id // unique per push subscription
+  p256dh         String // client public key
+  auth           String // client auth secret
+  entryId        Int // FPL entry to compute alerts for
+  lastNotifiedAt DateTime?
+  lastAlertHash  String? // dedupe: skip pushing the same alert set twice
+  createdAt      DateTime @default(now())
+
+  @@index([entryId])
+}
