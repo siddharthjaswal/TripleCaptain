@@ -54,6 +54,7 @@ import {
 import { computeNailedness, type NailedReport } from "../data/nailedness";
 import { positionOf } from "../data/types";
 import { buildSquadHorizon, type HorizonPlayer, type HorizonRow } from "../data/horizon";
+import { computeRivalsAnalysis, type RivalSquad } from "../data/rivals";
 
 export function parseEntryId(value: string | null): number {
   if (!value) {
@@ -1494,6 +1495,128 @@ export async function loadSeasonPlan(
   } catch (error) {
     if (error instanceof FplError && error.status === 404) notFound();
     console.error("loadSeasonPlan failed:", error);
+    return null;
+  }
+}
+
+export type RivalsWatchDTO = {
+  entryId: number;
+  leagueId: number;
+  leagueName: string;
+  event: number;
+  fieldSize: number;
+  myCaptainName: string | null;
+  captaincy: Array<{ name: string; teamShort: string; count: number; pct: number; isMine: boolean }>;
+  differentials: Array<{ name: string; teamShort: string; position: string; rivalPct: number }>;
+  templateGaps: Array<{ name: string; teamShort: string; position: string; rivalPct: number }>;
+  rivals: Array<{ name: string; manager: string; rank: number | null; overlap: number; captainName: string | null; differsCaptain: boolean }>;
+} | null;
+
+const RIVALS_FIELD = 12; // managers analysed (incl. you)
+
+/**
+ * Rivals Watch — mini-league intelligence for the selected league: captaincy
+ * board, your differentials, template gaps and per-rival head-to-head. Zero AI.
+ * Fetches each manager's current squad; null when no league / data.
+ */
+export async function loadRivalsWatch(
+  entryIdInput: string | number,
+  leagueId: number,
+): Promise<RivalsWatchDTO> {
+  const entryId =
+    typeof entryIdInput === "number" ? entryIdInput : parseEntryId(entryIdInput);
+
+  try {
+    const [profile, bootstrap] = await Promise.all([
+      getEntryProfile(entryId).catch((e) => {
+        if (e instanceof FplError && e.status === 404) notFound();
+        throw e;
+      }),
+      getBootstrap(),
+    ]);
+
+    const event = await resolveCurrentEvent(profile.current_event);
+
+    const standings = await getClassicLeagueStandings(leagueId, { page: 1 }).catch(() => null);
+    if (!standings) return null;
+    const view = mapClassicLeagueStandings(standings, { gameweek: event });
+    const leagueName = view.leagueName ?? "Your league";
+
+    // Top managers + you (if outside the top slice).
+    const top = view.entries.slice(0, RIVALS_FIELD);
+    if (!top.some((e) => e.entryId === entryId)) {
+      const mine = view.entries.find((e) => e.entryId === entryId);
+      if (mine) top.unshift(mine);
+      else top.unshift({ entryId, entryName: profile.name, playerName: `${profile.player_first_name} ${profile.player_last_name}`.trim(), rank: null } as (typeof view.entries)[number]);
+    }
+
+    // Resolve ONE comparison gameweek for the whole field, so we never compare
+    // squads from different gameweeks. Probe the user's picks at the current
+    // event; if they aren't recorded yet (the brief post-deadline window), fall
+    // the entire field back a gameweek.
+    let compareEvent = event;
+    const myProbe = await getEntryPicks(entryId, event).catch(() => null);
+    if (!myProbe && event > 1) compareEvent = event - 1;
+
+    const squads = await Promise.all(
+      top.map(async (e) => {
+        const picks =
+          e.entryId === entryId && compareEvent === event && myProbe
+            ? myProbe
+            : await getEntryPicks(e.entryId, compareEvent).catch(() => null);
+        if (!picks) return null; // skip — keeps the whole field on one gameweek
+        return {
+          entryId: e.entryId,
+          name: e.entryName,
+          manager: e.playerName,
+          rank: e.rank ?? null,
+          squad: picks.picks.map((p) => p.element),
+          captain: picks.picks.find((p) => p.is_captain)?.element ?? null,
+        } satisfies RivalSquad;
+      }),
+    );
+    const valid = squads.filter((s): s is RivalSquad => s !== null);
+    const me = valid.find((s) => s.entryId === entryId);
+    if (!me || valid.length < 2) return null;
+    const rivals = valid.filter((s) => s.entryId !== entryId);
+
+    const analysis = computeRivalsAnalysis({ me, rivals });
+
+    // Resolve element ids → display.
+    const elById = new Map(bootstrap.elements.map((e) => [e.id, e]));
+    const teamShortById = new Map(bootstrap.teams.map((t) => [t.id, t.short_name]));
+    const nameOf = (id: number | null) => (id != null ? elById.get(id)?.web_name ?? null : null);
+    const resolve = (id: number) => {
+      const el = elById.get(id);
+      return {
+        name: el?.web_name ?? "—",
+        teamShort: el ? teamShortById.get(el.team) ?? "?" : "?",
+        position: positionOf(el?.element_type ?? 0),
+      };
+    };
+
+    return {
+      entryId,
+      leagueId,
+      leagueName,
+      event: compareEvent,
+      fieldSize: analysis.fieldSize,
+      myCaptainName: nameOf(analysis.myCaptain),
+      captaincy: analysis.captaincy.slice(0, 6).map((c) => ({ ...resolve(c.element), count: c.count, pct: c.pct, isMine: c.isMine })),
+      differentials: analysis.differentials.slice(0, 6).map((d) => ({ ...resolve(d.element), rivalPct: d.rivalPct })),
+      templateGaps: analysis.templateGaps.slice(0, 6).map((g) => ({ ...resolve(g.element), rivalPct: g.rivalPct })),
+      rivals: analysis.rivals.slice(0, 10).map((r) => ({
+        name: r.name,
+        manager: r.manager,
+        rank: r.rank,
+        overlap: r.overlap,
+        captainName: nameOf(r.captain),
+        differsCaptain: r.differsCaptain,
+      })),
+    };
+  } catch (error) {
+    if (error instanceof FplError && error.status === 404) notFound();
+    console.error("loadRivalsWatch failed:", error);
     return null;
   }
 }

@@ -8,6 +8,7 @@ import { LeagueAiInsights } from "@/components/LeagueAiInsights";
 import { LeagueRaceChart } from "@/components/LeagueRaceChart";
 import { LeagueSwitcher } from "@/components/LeagueSwitcher";
 import { LeagueTable } from "@/components/LeagueTable";
+import { RivalsWatch } from "@/components/RivalsWatch";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { loadEntryLeagues, parseEntryId } from "@/lib/fpl/service";
@@ -161,6 +162,11 @@ export default async function EntryLeaguesPage({
             </div>
           )}
         </div>
+
+        {leaguesView.selectedLeagueId && (
+          <RivalsWatch entryId={leaguesView.entryId} leagueId={leaguesView.selectedLeagueId} />
+        )}
+
         <PersistLastEntry
           entryId={leaguesView.entryId}
           teamName={leaguesView.teamName}
