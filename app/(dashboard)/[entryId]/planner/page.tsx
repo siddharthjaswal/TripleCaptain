@@ -3,6 +3,7 @@ import { DashboardNav } from "@/components/DashboardNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { TransferPlanner } from "@/components/TransferPlanner";
 import { SquadLab } from "@/components/SquadLab";
+import { SeasonPlanner } from "@/components/SeasonPlanner";
 import { loadPlannerData, parseEntryId } from "@/lib/fpl/service";
 import { Typography } from "@/components/ui";
 import { AccountStatus } from "@/components/AccountStatus";
@@ -78,6 +79,8 @@ export default async function PlannerPage({
         </header>
 
         <SquadLab entryId={entryId} />
+
+        <SeasonPlanner entryId={entryId} />
 
         <TransferPlanner
             entryId={entryId}

@@ -53,6 +53,7 @@ import {
 } from "../data/live";
 import { computeNailedness, type NailedReport } from "../data/nailedness";
 import { positionOf } from "../data/types";
+import { buildSquadHorizon, type HorizonPlayer, type HorizonRow } from "../data/horizon";
 
 export function parseEntryId(value: string | null): number {
   if (!value) {
@@ -1385,6 +1386,114 @@ export async function loadSquadNailedness(
   } catch (error) {
     if (error instanceof FplError && error.status === 404) notFound();
     console.error("loadSquadNailedness failed:", error);
+    return null;
+  }
+}
+
+export type SeasonPlanDTO = {
+  entryId: number;
+  teamName: string;
+  managerName: string;
+  fromGw: number;
+  gws: number[];
+  rows: HorizonRow[];
+} | null;
+
+/**
+ * Season Planner — each squad player's projected xP across the next N gameweeks
+ * over their real fixtures (neutral base × per-GW FDR). Zero AI. Returns null
+ * when picks or projections aren't available (off-season / pre-precompute).
+ */
+export async function loadSeasonPlan(
+  entryIdInput: string | number,
+  horizon = 6,
+): Promise<SeasonPlanDTO> {
+  const entryId =
+    typeof entryIdInput === "number" ? entryIdInput : parseEntryId(entryIdInput);
+
+  try {
+    const [profile, bootstrap] = await Promise.all([
+      getEntryProfile(entryId).catch((e) => {
+        if (e instanceof FplError && e.status === 404) notFound();
+        throw e;
+      }),
+      getBootstrap(),
+    ]);
+
+    const currentEvent = await resolveCurrentEvent(profile.current_event);
+    let picks = null;
+    try {
+      picks = await getEntryPicks(entryId, currentEvent);
+    } catch {
+      if (currentEvent > 1) picks = await getEntryPicks(entryId, currentEvent - 1).catch(() => null);
+    }
+    if (!picks) return null;
+
+    // Neutral (fixture-free) base xP from the precomputed projections.
+    const squadIds = picks.picks.map((p) => p.element);
+    const projections = await prisma.playerProjection
+      .findMany({ where: { playerId: { in: squadIds } }, orderBy: { event: "desc" } })
+      .catch(() => []);
+    if (projections.length === 0) return null;
+    const baseXpById = new Map<number, number>();
+    for (const pr of projections) if (!baseXpById.has(pr.playerId)) baseXpById.set(pr.playerId, pr.xPoints);
+
+    const fromGw = bootstrap.events.find((e) => !e.finished)?.id ?? currentEvent + 1;
+    const gwRange = Array.from({ length: horizon }, (_, i) => fromGw + i);
+    const fixtureArrays = await Promise.all(gwRange.map((gw) => getFixtures(gw).catch(() => [])));
+    const fixtures = fixtureArrays.flat().map((f) => ({
+      event: f.event ?? 0,
+      teamH: f.team_h,
+      teamA: f.team_a,
+      fdrH: f.team_h_difficulty ?? 3,
+      fdrA: f.team_a_difficulty ?? 3,
+    }));
+    // Off-season / pre-schedule: no upcoming fixtures → hide the planner rather
+    // than render an all-blank grid.
+    if (fixtures.length === 0) return null;
+
+    const teamShortById = new Map(bootstrap.teams.map((t) => [t.id, t.short_name]));
+    const elById = new Map(bootstrap.elements.map((e) => [e.id, e]));
+
+    const squad: HorizonPlayer[] = picks.picks
+      .map((p): HorizonPlayer | null => {
+        const el = elById.get(p.element);
+        if (!el) return null;
+        return {
+          element: p.element,
+          name: el.web_name,
+          position: positionOf(el.element_type),
+          teamId: el.team,
+          teamShort: teamShortById.get(el.team) ?? "?",
+          price: (el.now_cost ?? 0) / 10,
+          baseXp: baseXpById.get(p.element) ?? 0,
+        };
+      })
+      .filter((p): p is HorizonPlayer => p !== null);
+
+    const { gws, rows } = buildSquadHorizon({
+      squad,
+      fixtures,
+      teamShortById,
+      fromGw,
+      horizon,
+    });
+
+    // Group by position (GK→FWD), best horizon total first within a line.
+    const posOrder: Record<string, number> = { GK: 0, DEF: 1, MID: 2, FWD: 3 };
+    rows.sort((a, b) => (posOrder[a.position] - posOrder[b.position]) || b.total - a.total);
+
+    return {
+      entryId,
+      teamName: profile.name,
+      managerName: `${profile.player_first_name} ${profile.player_last_name}`.trim(),
+      fromGw,
+      gws,
+      rows,
+    };
+  } catch (error) {
+    if (error instanceof FplError && error.status === 404) notFound();
+    console.error("loadSeasonPlan failed:", error);
     return null;
   }
 }
