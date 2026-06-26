@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { DashboardNav } from "@/components/DashboardNav";
 import { GameweekCard } from "@/components/GameweekCard";
 import { LiveCenter } from "@/components/LiveCenter";
+import { SquadRiskPanel } from "@/components/SquadRiskPanel";
 import { PersistLastEntry } from "@/components/PersistLastEntry";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { loadGameweek, parseEntryId } from "@/lib/fpl/service";
@@ -115,6 +116,8 @@ export default async function GameweekPage({
         <LiveCenter entryId={view.entryId} event={view.gameweek.event} />
 
         <GameweekCard gameweek={view.gameweek} />
+
+        <SquadRiskPanel entryId={view.entryId} />
 
         <PersistLastEntry
           entryId={view.entryId}

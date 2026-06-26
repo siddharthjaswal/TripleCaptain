@@ -51,6 +51,8 @@ import {
   type LiveFixture,
   type LiveSummary,
 } from "../data/live";
+import { computeNailedness, type NailedReport } from "../data/nailedness";
+import { positionOf } from "../data/types";
 
 export function parseEntryId(value: string | null): number {
   if (!value) {
@@ -1287,6 +1289,102 @@ export async function loadLiveCenter(
   } catch (error) {
     if (error instanceof FplError && error.status === 404) return null;
     console.error("loadLiveCenter failed:", error);
+    return null;
+  }
+}
+
+export type SquadNailednessDTO = {
+  entryId: number;
+  teamName: string;
+  managerName: string;
+  nextEvent: number | null;
+  players: Array<{
+    name: string;
+    position: string; // GK/DEF/MID/FWD
+    teamShort: string;
+    isCaptain: boolean;
+    isStarter: boolean;
+    report: NailedReport;
+  }>;
+  risks: number; // starters that are doubtful/injured/rotation risks
+} | null;
+
+/**
+ * Squad rotation/injury risk for the Predicted-Lineups surface. Deterministic
+ * nailedness per owned player, sorted riskiest-first among starters. Returns
+ * null when picks aren't available.
+ */
+export async function loadSquadNailedness(
+  entryIdInput: string | number,
+): Promise<SquadNailednessDTO> {
+  const entryId =
+    typeof entryIdInput === "number" ? entryIdInput : parseEntryId(entryIdInput);
+
+  try {
+    const [profile, bootstrap] = await Promise.all([
+      getEntryProfile(entryId).catch((e) => {
+        if (e instanceof FplError && e.status === 404) notFound();
+        throw e;
+      }),
+      getBootstrap(),
+    ]);
+
+    const currentEvent = await resolveCurrentEvent(profile.current_event);
+    let picks = null;
+    try {
+      picks = await getEntryPicks(entryId, currentEvent);
+    } catch {
+      if (currentEvent > 1) picks = await getEntryPicks(entryId, currentEvent - 1).catch(() => null);
+    }
+    if (!picks) return null;
+
+    // Games played ≈ finished gameweeks (good enough across the league).
+    const gamesPlayed = Math.max(1, bootstrap.events.filter((e) => e.finished).length);
+    const teamShortById = new Map(bootstrap.teams.map((t) => [t.id, t.short_name]));
+    const elById = new Map(bootstrap.elements.map((e) => [e.id, e]));
+
+    const players = picks.picks.map((p) => {
+      const el = elById.get(p.element);
+      const report = computeNailedness({
+        status: el?.status,
+        chanceNext: el?.chance_of_playing_next_round ?? null,
+        minutes: el?.minutes ?? 0,
+        starts: el?.starts ?? 0,
+        gamesPlayed,
+      });
+      return {
+        name: el?.web_name ?? "—",
+        position: positionOf(el?.element_type ?? 0),
+        teamShort: el ? teamShortById.get(el.team) ?? "—" : "—",
+        isCaptain: p.is_captain,
+        isStarter: p.position <= 11,
+        report,
+      };
+    });
+
+    // Starters first, riskiest (lowest startProb) on top; bench after.
+    players.sort((a, b) => {
+      if (a.isStarter !== b.isStarter) return a.isStarter ? -1 : 1;
+      return a.report.startProb - b.report.startProb;
+    });
+
+    const risks = players.filter(
+      (p) => p.isStarter && (p.report.tier === "unavailable" || p.report.tier === "doubt" || p.report.tier === "rotation"),
+    ).length;
+
+    const nextDeadline = calculateNextDeadline(bootstrap.events);
+
+    return {
+      entryId,
+      teamName: profile.name,
+      managerName: `${profile.player_first_name} ${profile.player_last_name}`.trim(),
+      nextEvent: nextDeadline?.nextGameweek ?? null,
+      players,
+      risks,
+    };
+  } catch (error) {
+    if (error instanceof FplError && error.status === 404) notFound();
+    console.error("loadSquadNailedness failed:", error);
     return null;
   }
 }

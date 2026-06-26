@@ -8,6 +8,7 @@ import { PowerPicks } from "@/components/PowerPicks";
 import { AccuracyBadge } from "@/components/AccuracyBadge";
 import { PriceWatch } from "@/components/PriceWatch";
 import { SetPieceTakers } from "@/components/SetPieceTakers";
+import { PredictedLineups } from "@/components/PredictedLineups";
 
 export const metadata: Metadata = {
   title: "Power Rankings & Match Predictor | Triple Captain",
@@ -71,6 +72,8 @@ export default async function RankingsPage() {
         <PowerPicks />
 
         <PriceWatch />
+
+        <PredictedLineups />
 
         <SetPieceTakers />
 
