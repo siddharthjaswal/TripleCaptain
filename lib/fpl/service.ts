@@ -39,7 +39,6 @@ import {
 
 import { callGemini, isAIConfigured } from "./gemini";
 import { narrateLeagueInsights } from "../narrate";
-import { projectAllPlayers } from "../data/xp";
 import { suggestTransfers, pickBestXI, clubKey } from "../data/optimizer";
 import { recommendChips } from "../data/chips";
 import type { ProjectionResult, TransferSuggestion, ChipAdvice } from "../data/types";
@@ -704,11 +703,15 @@ export async function loadGameweek(
       event = currentEvent;
     }
 
-    const [picks, liveData, fixtures] = await Promise.all([
+    const [initialPicks, liveData, fixtures] = await Promise.all([
       getEntryPicks(entryId, event).catch(() => null),
       getEventLive(event).catch(() => null),
       getFixtures(event).catch(() => null),
     ]);
+    // Picks can 404 in the post-rollover / pre-deadline window — fall back a
+    // gameweek so the pitch isn't momentarily empty (matching the other loaders).
+    const picks =
+      initialPicks ?? (event > 1 ? await getEntryPicks(entryId, event - 1).catch(() => null) : null);
 
     const currentEventMeta = bootstrap.events.find((e) => e.id === event);
     const isLive = Boolean(currentEventMeta?.is_current && !currentEventMeta?.finished);
@@ -969,6 +972,48 @@ export type SquadInsightsDTO = {
 };
 
 /**
+ * Read the nightly-precomputed player projections (PlayerProjection joined to
+ * Player) as ProjectionResult[], deduped to the latest event per player. Cheap
+ * indexed reads — used at request time instead of recomputing xP from full-table
+ * scans. Empty when precompute hasn't run yet.
+ */
+async function readPrecomputedProjections(): Promise<ProjectionResult[]> {
+  const [rows, players] = await Promise.all([
+    prisma.playerProjection.findMany({ orderBy: { event: "desc" } }).catch(() => []),
+    prisma.player.findMany({ include: { team: { select: { shortName: true } } } }).catch(() => []),
+  ]);
+  if (rows.length === 0 || players.length === 0) return [];
+  const playerById = new Map(players.map((p) => [p.id, p]));
+
+  const out: ProjectionResult[] = [];
+  const seen = new Set<number>();
+  for (const r of rows) {
+    if (seen.has(r.playerId)) continue; // latest event wins (rows ordered desc)
+    const p = playerById.get(r.playerId);
+    if (!p) continue;
+    seen.add(r.playerId);
+    const price = Math.max(p.nowCost / 10, 3.8);
+    out.push({
+      id: p.id,
+      name: p.webName,
+      position: positionOf(p.elementType),
+      teamShort: p.team.shortName,
+      price,
+      xPoints: r.xPoints,
+      ceiling: r.ceiling,
+      floor: r.floor,
+      capScore: r.capScore,
+      startProb: 1, // not persisted; the optimizer/chips don't use it
+      value: Math.round((r.xPoints / price) * 100) / 100,
+      archetype: r.archetype as ProjectionResult["archetype"],
+      reasons: (r.reasons as string[]) ?? [],
+    });
+  }
+  out.sort((a, b) => b.xPoints - a.xPoints || a.id - b.id);
+  return out;
+}
+
+/**
  * SquadLab — the deterministic engine applied to a real manager's squad. Pure
  * maths over our multi-season projections (zero AI tokens): the best legal XI,
  * the top net-gain single transfers, and chip-timing advice. Off-season / before
@@ -1008,7 +1053,9 @@ export async function loadSquadInsights(
       else return empty;
     }
 
-    const projections = await projectAllPlayers().catch(() => [] as ProjectionResult[]);
+    // Read the nightly-precomputed projections instead of rebuilding every
+    // player's xP from full-table scans on each request (cheap indexed reads).
+    const projections = await readPrecomputedProjections();
     if (projections.length === 0) return empty;
 
     const byId = new Map(projections.map((p) => [p.id, p]));

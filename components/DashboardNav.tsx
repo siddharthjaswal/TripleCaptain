@@ -74,7 +74,7 @@ export function DashboardNav({ entryId, active, currentEvent }: DashboardNavProp
           
           {/* Navigation container */}
           <div className="relative h-full flex items-start pt-2 pb-safe">
-            <div className="w-full flex justify-around items-center px-2">
+            <div data-testid="mobile-nav" className="w-full flex justify-around items-center px-2">
               {links.map((link) => {
                 const href =
                   link.slug === "summary" ? `/${entryId}` : `/${entryId}/${link.slug}`;
@@ -86,7 +86,7 @@ export function DashboardNav({ entryId, active, currentEvent }: DashboardNavProp
                   <Link
                     key={link.slug}
                     href={href}
-                    className="relative flex flex-col items-center justify-center gap-[3px] py-2 px-3 min-w-[56px] group touch-manipulation"
+                    className="tc-focus-visible relative flex flex-col items-center justify-center gap-[3px] py-2 px-2 min-w-[44px] group touch-manipulation rounded-xl"
                   >
                     {/* Active indicator pill - Apple style */}
                     {isActive && (

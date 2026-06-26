@@ -90,8 +90,12 @@ export async function RivalsWatch({ entryId, leagueId }: { entryId: number; leag
                   </td>
                   <td className="tc-numeric px-2 py-2 text-center text-xs font-black">{r.overlap}/15</td>
                   <td className="px-5 py-2 text-right">
-                    <span className={`text-xs font-bold ${r.differsCaptain ? "text-[color:var(--accent)]" : "tc-text-muted"}`}>
+                    <span className={`inline-flex items-center justify-end gap-1 text-xs font-bold ${r.differsCaptain ? "text-[color:var(--accent)]" : "tc-text-muted"}`}>
+                      {r.differsCaptain && (
+                        <Swords className="h-3 w-3" aria-hidden="true" />
+                      )}
                       {r.captainName ?? "—"}
+                      {r.differsCaptain && <span className="sr-only"> (differs from your captain)</span>}
                     </span>
                   </td>
                 </tr>

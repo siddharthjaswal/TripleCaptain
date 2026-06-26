@@ -83,14 +83,18 @@ export async function SeasonPlanner({ entryId }: { entryId: number }) {
 function Cell({ cell }: { cell: HorizonCell }) {
   if (cell.opponents.length === 0) {
     return (
-      <td className="px-1 py-2 text-center align-middle" style={fdrStyle(null)}>
+      <td className="px-1 py-2 text-center align-middle" style={fdrStyle(null)} aria-label={`GW${cell.gw}: blank gameweek, 0 expected points`}>
         <span className="text-[10px] font-bold tc-text-muted">—</span>
       </td>
     );
   }
   const s = fdrStyle(cell.avgFdr);
+  // Non-colour difficulty cue for screen readers + hover (the colour alone isn't enough).
+  const label = `GW${cell.gw}: ${cell.opponents
+    .map((o) => `${o.short} ${o.home ? "home" : "away"}, difficulty ${o.fdr} of 5`)
+    .join("; ")}; ${cell.xp.toFixed(1)} expected points`;
   return (
-    <td className="px-1 py-2 text-center align-middle" style={{ background: s.background, color: s.color }}>
+    <td className="px-1 py-2 text-center align-middle" style={{ background: s.background, color: s.color }} title={label} aria-label={label}>
       <div className="leading-tight">
         {cell.opponents.map((o, i) => (
           <p key={i} className="text-[10px] font-black uppercase">

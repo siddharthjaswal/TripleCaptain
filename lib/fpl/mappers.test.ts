@@ -239,6 +239,21 @@ describe("mapLatestGameweek", () => {
     expect(dto.players).toEqual([]);
   });
 
+  it("renders an empty gameweek (does not throw) when history is empty", () => {
+    const dto = mapLatestGameweek({
+      entryId: 1234,
+      currentEvent: 1,
+      history: { current: [], chips: [], past: [] },
+      isLive: false,
+      isFinished: false,
+    });
+
+    expect(dto.event).toBe(1);
+    expect(dto.points).toBe(0);
+    expect(dto.rank).toBeNull();
+    expect(dto.players).toEqual([]);
+  });
+
   it("maps picks, chip info, and player statistics", () => {
     const dto = mapLatestGameweek({
       entryId: 1234,

@@ -85,8 +85,23 @@ export function mapLatestGameweek(params: {
   } = params;
   const historyRecord = findHistoryRecord(history.current, currentEvent);
 
+  // Empty history (a brand-new entry, or the deep off-season after FPL resets
+  // the entry before GW1 is scored). Render an empty gameweek rather than
+  // throwing to the error boundary.
   if (!historyRecord) {
-    throw new Error("Unable to determine latest gameweek data for entry");
+    return {
+      entryId,
+      event: currentEvent,
+      points: 0,
+      rank: null,
+      pointsOnBench: 0,
+      chipUsed: picks?.active_chip ?? null,
+      isLive,
+      isFinished,
+      players: picks
+        ? mapLatestGameweekPlayers({ picks, liveData, elements, fixtures })
+        : [],
+    };
   }
 
   const benchPoints =
